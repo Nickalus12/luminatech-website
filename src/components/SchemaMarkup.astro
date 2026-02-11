@@ -1,0 +1,139 @@
+---
+interface Props {
+  type: 'home' | 'about' | 'services' | 'contact' | 'blog-post';
+  post?: {
+    title: string;
+    description: string;
+    publishDate: string;
+    image?: string;
+    url: string;
+  };
+  faqs?: Array<{ question: string; answer: string }>;
+}
+
+const { type, post, faqs } = Astro.props;
+const siteUrl = Astro.site?.href ?? 'https://luminatech.xyz';
+
+const professionalService = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Lumina ERP',
+  url: siteUrl,
+  logo: `${siteUrl}favicon.svg`,
+  description: 'Expert Prophet 21 (P21) consulting for wholesale distributors. Implementation, business rules, cloud migration, and managed support.',
+  founder: {
+    '@type': 'Person',
+    name: 'Nick Brewer',
+    jobTitle: 'ERP Consultant & Founder',
+  },
+  areaServed: {
+    '@type': 'Country',
+    name: 'United States',
+  },
+  knowsAbout: [
+    'Prophet 21',
+    'Epicor P21',
+    'ERP Consulting',
+    'Cloud Migration',
+    'Business Rules Development',
+    'Wholesale Distribution',
+    'SQL Reporting',
+    'ERP Integration',
+  ],
+  priceRange: '$$',
+};
+
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${siteUrl}#business`,
+  name: 'Lumina ERP',
+  url: siteUrl,
+  description: 'Boutique Prophet 21 ERP consulting for wholesale distributors. Based in Humble, TX, serving distributors nationwide.',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Humble',
+    addressRegion: 'TX',
+    addressCountry: 'US',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 29.9988,
+    longitude: -95.2622,
+  },
+  founder: {
+    '@type': 'Person',
+    name: 'Nick Brewer',
+  },
+  areaServed: [
+    { '@type': 'Country', name: 'United States' },
+    { '@type': 'City', name: 'Houston' },
+  ],
+  serviceType: [
+    'ERP Consulting',
+    'Prophet 21 Implementation',
+    'P21 Cloud Migration',
+    'Business Rules Development',
+    'ERP Training',
+  ],
+};
+
+function buildFAQSchema(items: Array<{ question: string; answer: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}
+
+function buildArticleSchema(p: NonNullable<typeof post>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: p.title,
+    description: p.description,
+    datePublished: p.publishDate,
+    image: p.image ? new URL(p.image, siteUrl).href : undefined,
+    url: new URL(p.url, siteUrl).href,
+    author: {
+      '@type': 'Person',
+      name: 'Nick Brewer',
+      url: `${siteUrl}about`,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Lumina ERP',
+      url: siteUrl,
+    },
+  };
+}
+---
+
+{type === 'home' && (
+  <>
+    <script type="application/ld+json" set:html={JSON.stringify(professionalService)} />
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+  </>
+)}
+
+{type === 'about' && (
+  <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+)}
+
+{type === 'contact' && faqs && (
+  <>
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+    <script type="application/ld+json" set:html={JSON.stringify(buildFAQSchema(faqs))} />
+  </>
+)}
+
+{type === 'blog-post' && post && (
+  <script type="application/ld+json" set:html={JSON.stringify(buildArticleSchema(post))} />
+)}

@@ -1,0 +1,33 @@
+---
+interface Props {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'span';
+  gradient?: boolean;
+  class?: string;
+}
+
+const {
+  as: Tag = 'h2',
+  gradient = false,
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  gradient
+    ? 'bg-gradient-to-r from-accent-primary to-accent-violet bg-clip-text text-transparent'
+    : 'text-accent-primary',
+  '[text-shadow:0_0_30px_rgba(59,130,246,0.3)]',
+  className,
+].join(' ');
+---
+
+<Tag class={classes}>
+  <slot />
+</Tag>
+
+<style>
+  /* Gradient text cannot have text-shadow, apply glow via pseudo-element */
+  :global(.bg-clip-text) {
+    text-shadow: none;
+    position: relative;
+  }
+</style>

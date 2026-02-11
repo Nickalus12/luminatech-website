@@ -1,0 +1,91 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  class?: string;
+  disabled?: boolean;
+  arrow?: boolean;
+  glow?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  class: className = '',
+  disabled = false,
+  arrow = false,
+  glow = false,
+  type = 'button',
+} = Astro.props;
+
+const baseClasses = [
+  'inline-flex items-center justify-center gap-2',
+  'font-semibold rounded-md',
+  'transition-all duration-fast ease-out',
+  'focus-visible:outline-2 focus-visible:outline-accent-primary focus-visible:outline-offset-2',
+  'disabled:opacity-50 disabled:pointer-events-none',
+  'cursor-pointer',
+];
+
+const variantClasses = {
+  primary: [
+    'bg-accent-primary text-white',
+    'hover:bg-accent-primary-hover hover:scale-[1.02]',
+    'active:scale-[0.98]',
+    glow ? 'shadow-glow animate-glow-pulse' : '',
+  ],
+  secondary: [
+    'bg-bg-surface-2 text-text-primary',
+    'hover:bg-bg-surface-3 hover:scale-[1.02]',
+    'active:scale-[0.98]',
+  ],
+  ghost: [
+    'bg-transparent text-text-secondary',
+    'hover:bg-bg-surface-2 hover:text-text-primary',
+  ],
+  outline: [
+    'bg-transparent text-accent-primary',
+    'border border-accent-primary',
+    'hover:bg-accent-primary/10 hover:scale-[1.02]',
+    'active:scale-[0.98]',
+  ],
+};
+
+const sizeClasses = {
+  sm: 'px-4 py-2 text-sm',
+  md: 'px-6 py-3 text-base',
+  lg: 'px-7 py-3.5 text-lg',
+};
+
+const classes = [
+  ...baseClasses,
+  ...variantClasses[variant],
+  sizeClasses[size],
+  className,
+].filter(Boolean).join(' ');
+
+const Tag = href ? 'a' : 'button';
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+    {arrow && (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1" aria-hidden="true">
+        <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+      </svg>
+    )}
+  </a>
+) : (
+  <button type={type} class={classes} disabled={disabled}>
+    <slot />
+    {arrow && (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1" aria-hidden="true">
+        <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+      </svg>
+    )}
+  </button>
+)}

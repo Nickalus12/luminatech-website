@@ -1,0 +1,39 @@
+---
+interface Props {
+  id?: string;
+  background?: 'base' | 'surface-1' | 'surface-2' | 'gradient';
+  class?: string;
+  padding?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  id,
+  background = 'base',
+  class: className = '',
+  padding = 'md',
+} = Astro.props;
+
+const bgClasses = {
+  base: 'bg-bg-base',
+  'surface-1': 'bg-bg-surface-1',
+  'surface-2': 'bg-bg-surface-2',
+  gradient: 'bg-gradient-to-b from-bg-surface-1 to-bg-base',
+};
+
+const paddingClasses = {
+  sm: 'py-12 md:py-16',
+  md: 'py-16 md:py-24',
+  lg: 'py-24 md:py-32',
+};
+
+const classes = [
+  'w-full',
+  bgClasses[background],
+  paddingClasses[padding],
+  className,
+].join(' ');
+---
+
+<section {id} class={classes}>
+  <slot />
+</section>

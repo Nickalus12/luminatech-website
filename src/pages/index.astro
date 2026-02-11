@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Home">
+  <section class="min-h-[80vh] flex items-center justify-center px-6">
+    <div class="max-w-[1280px] mx-auto text-center">
+      <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6">
+        Stop Losing Revenue to<br />Broken P21 Workflows
+      </h1>
+      <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+        Expert Prophet 21 consulting for wholesale distributors.
+        From business rules to cloud migration, I illuminate the path to ERP excellence.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary text-white font-semibold rounded-lg shadow-[var(--shadow-glow)] hover:bg-accent-primary-hover hover:scale-[1.02] transition-all duration-200"
+        >
+          Schedule a Free Consultation
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a
+          href="/case-studies"
+          class="inline-flex items-center gap-2 px-7 py-3.5 border border-accent-primary text-accent-primary font-semibold rounded-lg hover:bg-accent-primary/10 transition-all duration-200"
+        >
+          View Case Studies
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

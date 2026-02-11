@@ -1,0 +1,27 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+const blog = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    author: z.string().default('Nick Brewer'),
+    category: z.enum([
+      'cloud-migration',
+      'technical',
+      'best-practices',
+      'thought-leadership',
+      'problem-solving',
+    ]).default('technical'),
+    tags: z.array(z.string()),
+    image: z.string().optional(),
+    draft: z.boolean().default(false),
+    readTime: z.string().optional(),
+  }),
+});
+
+export const collections = { blog };
