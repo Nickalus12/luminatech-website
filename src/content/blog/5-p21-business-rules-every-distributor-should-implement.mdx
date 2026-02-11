@@ -1,0 +1,198 @@
+---
+title: "5 P21 Business Rules Every Distributor Should Implement"
+description: "Stop leaving money on the table. These five Prophet 21 business rules automate pricing protection, inventory accuracy, and order validation -- saving hours of manual work every week."
+pubDate: 2026-02-10
+author: "Nick Brewer"
+category: "technical"
+tags: ["Business Rules", "P21", "Automation", "DynaChange"]
+readTime: "5 min"
+---
+
+Most P21 installations I audit are running with fewer than ten business rules. That means the ERP is doing maybe 20% of what it could be doing automatically, and your team is picking up the slack with manual checks, spreadsheets, and "tribal knowledge" that lives in one person's head.
+
+Business rules are the single highest-ROI customization in Prophet 21. They fire automatically on events you define -- order entry, invoice creation, inventory adjustments -- and enforce logic that humans forget, skip, or get wrong under pressure.
+
+Here are five rules I implement at nearly every distributor I work with. Each one pays for itself within the first month.
+
+## 1. Minimum Margin Protection on Orders
+
+This is the rule that pays for all the others. Without it, your sales team can (and will) accidentally sell below cost.
+
+**What it does:** Fires on order line save. Calculates the margin percentage against the line's cost. If the margin falls below your threshold, it either blocks the save or routes the order for approval.
+
+```sql
+-- Business rule: Check margin on order line save
+-- Trigger: Order Line - Before Save
+
+DECLARE @margin DECIMAL(10,4);
+DECLARE @min_margin DECIMAL(10,4) = 0.15; -- 15% floor
+
+SELECT @margin =
+  CASE
+    WHEN unit_price > 0
+    THEN (unit_price - unit_cost) / unit_price
+    ELSE 0
+  END
+FROM order_line
+WHERE order_line_uid = @order_line_uid;
+
+IF @margin < @min_margin
+BEGIN
+  -- Option A: Block the save
+  RAISERROR('Margin %.1f%% is below the %.1f%% minimum. Manager approval required.',
+    16, 1, @margin * 100, @min_margin * 100);
+
+  -- Option B: Flag for approval (comment out Option A, uncomment below)
+  -- UPDATE order_header
+  -- SET approval_status = 'PENDING'
+  -- WHERE order_no = @order_no;
+END
+```
+
+<div class="callout callout-tip">
+<strong>Pro tip:</strong> Set different margin floors by product class. Commodity items might need 8%, while specialty products should hold 25%+. Use a lookup table instead of hardcoding the threshold.
+</div>
+
+**Real impact:** One distributor I worked with discovered they had been shipping $12K/month in orders below cost. This single rule stopped the bleeding on day one.
+
+## 2. Duplicate PO Number Detection
+
+Your AP team will thank you for this one. Duplicate purchase orders create duplicate invoices, which create duplicate payments. By the time accounting catches it, you're chasing credits from vendors.
+
+**What it does:** Fires on purchase order save. Checks if the vendor PO number already exists for that vendor. If it does, blocks the save with a clear error message.
+
+```sql
+-- Business rule: Prevent duplicate vendor PO numbers
+-- Trigger: Purchase Order - Before Save
+
+IF EXISTS (
+  SELECT 1
+  FROM purchase_order_header
+  WHERE supplier_id = @supplier_id
+    AND vendor_po_no = @vendor_po_no
+    AND po_no != @po_no  -- Exclude current PO
+    AND delete_flag = 'N'
+)
+BEGIN
+  RAISERROR('PO number %s already exists for this vendor (see PO# %d). Verify this is not a duplicate.',
+    16, 1, @vendor_po_no,
+    (SELECT TOP 1 po_no FROM purchase_order_header
+     WHERE supplier_id = @supplier_id AND vendor_po_no = @vendor_po_no AND po_no != @po_no));
+END
+```
+
+This rule takes 15 minutes to implement and prevents thousands in duplicate payments.
+
+## 3. Auto-Assign Warehouse on Order Entry
+
+If you operate multiple warehouses, your order entry team is making warehouse selection decisions dozens of times per day. Sometimes they pick the wrong one. Sometimes they pick the one that's out of stock when the item is sitting in another warehouse 50 miles away.
+
+**What it does:** Fires on order line creation. Checks inventory availability across warehouses and auto-assigns based on your priority rules -- closest warehouse with stock, lowest cost warehouse, or primary warehouse with fallback.
+
+```sql
+-- Business rule: Auto-assign optimal warehouse
+-- Trigger: Order Line - Before Save (new lines only)
+
+DECLARE @best_warehouse INT;
+
+-- Priority: ship-to's default warehouse first, then by available qty
+SELECT TOP 1 @best_warehouse = iw.location_id
+FROM inv_warehouse iw
+INNER JOIN inv_mast im ON iw.inv_mast_uid = im.inv_mast_uid
+WHERE im.item_id = @item_id
+  AND iw.qty_on_hand - iw.qty_committed >= @qty_ordered
+ORDER BY
+  CASE WHEN iw.location_id = @default_location_id THEN 0 ELSE 1 END,
+  iw.qty_on_hand DESC;
+
+IF @best_warehouse IS NOT NULL
+BEGIN
+  UPDATE order_line
+  SET location_id = @best_warehouse
+  WHERE order_line_uid = @order_line_uid;
+END
+```
+
+<div class="callout callout-warning">
+<strong>Watch out:</strong> Make sure your inventory quantities are accurate before enabling this rule. If your cycle counts are off, the rule will route orders to warehouses that show stock but actually don't have it. Fix your inventory accuracy first.
+</div>
+
+## 4. Required Fields Enforcement by Order Type
+
+P21's built-in required fields are all-or-nothing. But your business likely needs different validation for different order types. A will-call order needs a pickup date. A drop-ship order needs a vendor ship-to. A blanket order needs an expiration date.
+
+**What it does:** Fires on order save. Checks the order type and validates that the appropriate fields are populated. Returns a specific, helpful error message so the user knows exactly what to fix.
+
+```sql
+-- Business rule: Conditional required fields by order type
+-- Trigger: Order Header - Before Save
+
+DECLARE @order_type VARCHAR(10);
+DECLARE @errors VARCHAR(500) = '';
+
+SELECT @order_type = order_type
+FROM order_header
+WHERE order_no = @order_no;
+
+-- Will-Call: require pickup date
+IF @order_type = 'W' AND @promised_date IS NULL
+  SET @errors = @errors + 'Will-call orders require a Promised Date. ';
+
+-- Drop-Ship: require vendor and ship-to
+IF @order_type = 'D' AND @supplier_id IS NULL
+  SET @errors = @errors + 'Drop-ship orders require a Vendor. ';
+
+-- Blanket: require expiration
+IF @order_type = 'B' AND @expiration_date IS NULL
+  SET @errors = @errors + 'Blanket orders require an Expiration Date. ';
+
+IF LEN(@errors) > 0
+  RAISERROR('%s', 16, 1, @errors);
+```
+
+This eliminates the "we shipped it but forgot to..." conversations that happen every week.
+
+## 5. Inventory Adjustment Audit Trail with Reason Codes
+
+P21 tracks that an adjustment happened, but it doesn't force your warehouse team to say *why*. Without reason codes, your cycle count variance reports are useless -- you know the numbers are wrong but not whether it's theft, damage, receiving errors, or counting mistakes.
+
+**What it does:** Fires on inventory adjustment save. Requires a reason code from a predefined list. Logs the adjustment with the reason, user, and timestamp to a custom audit table for reporting.
+
+```sql
+-- Business rule: Require reason code on inventory adjustments
+-- Trigger: Inventory Adjustment - Before Save
+
+IF @reason_code IS NULL OR @reason_code = ''
+BEGIN
+  RAISERROR('A reason code is required for all inventory adjustments. Valid codes: CYCLE_COUNT, DAMAGE, RECEIVING_ERROR, RETURN, SCRAP, OTHER', 16, 1);
+END
+
+-- Log to audit table for reporting
+INSERT INTO z_inv_adjustment_audit (
+  item_id, location_id, qty_adjusted,
+  reason_code, adjusted_by, adjusted_date, notes
+)
+VALUES (
+  @item_id, @location_id, @qty_adjusted,
+  @reason_code, SYSTEM_USER, GETDATE(), @notes
+);
+```
+
+<div class="callout callout-info">
+<strong>Reporting payoff:</strong> After three months of collecting reason codes, you'll have the data to identify patterns. If 40% of adjustments are "RECEIVING_ERROR," you know exactly where to focus your process improvement.
+</div>
+
+## Implementation Notes
+
+A few things to keep in mind when deploying business rules:
+
+- **Test in a sandbox first.** Always. Business rules fire on live transactions, and a bad rule can lock up order entry for your entire company.
+- **Start with warnings, then enforce.** Deploy rules in "warn" mode first (log the violation but allow the save). After a week of data, switch to "block" mode.
+- **Document everything.** Future-you (or future-someone-else) needs to know what each rule does and why it exists. Put the business justification in the rule description, not just the technical behavior.
+- **Monitor performance.** Business rules add processing time to every transaction they touch. A poorly written rule with a table scan can add seconds to every order line save. Index your lookup tables.
+
+## Ready to Automate Your P21?
+
+These five rules are just the starting point. Every distributor has unique workflows that can be automated, validated, and optimized through business rules. The key is identifying where your team is doing repetitive manual checks -- that's where rules deliver the biggest ROI.
+
+If you're not sure where to start, or if you've got rules that aren't firing correctly, [get in touch](/contact). I'll review your current setup and identify the highest-impact opportunities.

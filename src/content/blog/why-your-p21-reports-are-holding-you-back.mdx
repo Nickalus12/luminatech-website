@@ -1,0 +1,190 @@
+---
+title: "Why Your P21 Reports Are Holding You Back (And How Custom SQL Fixes It)"
+description: "P21's built-in reports give you data, but not answers. Here's why custom SQL queries deliver the insights distributors actually need to make faster, better decisions."
+pubDate: 2026-02-03
+author: "Nick Brewer"
+category: "technical"
+tags: ["SQL", "Reporting", "P21", "Analytics"]
+readTime: "4 min"
+---
+
+Every P21 installation ships with a library of canned reports. And every distributor I've worked with has the same complaint about them: "They give us numbers, but not the numbers we need."
+
+The built-in reports were designed to cover the broadest set of use cases. They're fine for basic lookups. But when you need to answer real business questions -- *which customers are trending down, which products have margin erosion, where are we losing money on freight* -- the canned reports fall short.
+
+Custom SQL isn't a luxury. For distributors running $10M+ through P21, it's the difference between managing by gut feel and managing by data.
+
+## The Problem with Canned Reports
+
+P21's standard reports share a few common limitations:
+
+**They're inflexible.** You get the columns they give you, in the order they chose. Need to add the customer's last order date to the AR aging report? You can't. Need to exclude certain order types from the sales report? Maybe, if there's a filter for it.
+
+**They're slow.** Many canned reports aren't optimized for large datasets. A sales report that covers a full year might take 10 minutes to render because it's scanning every invoice line without the right indexes.
+
+**They answer "what" but not "why."** A report that says "sales are down 12% this month" is useless without context. Down compared to what? Which customers drove the decline? Which product categories? Was it fewer orders or smaller orders?
+
+## Five Queries That Replace an Analyst
+
+Here are five SQL queries I build for nearly every distributor. Each one answers a question that no canned report can.
+
+### 1. Customer Trend Detection
+
+Which customers are buying less than they did last year? This query flags accounts with declining revenue so your sales team can intervene before they leave.
+
+```sql
+SELECT
+  c.customer_name,
+  c.customer_id,
+  SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -3, GETDATE())
+       THEN il.ext_price ELSE 0 END) AS last_3mo,
+  SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -15, GETDATE())
+            AND il.invoice_date < DATEADD(MONTH, -12, GETDATE())
+       THEN il.ext_price ELSE 0 END) AS same_3mo_last_year,
+  CAST(
+    (SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -3, GETDATE())
+         THEN il.ext_price ELSE 0 END) -
+     SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -15, GETDATE())
+              AND il.invoice_date < DATEADD(MONTH, -12, GETDATE())
+         THEN il.ext_price ELSE 0 END)) /
+    NULLIF(SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -15, GETDATE())
+                    AND il.invoice_date < DATEADD(MONTH, -12, GETDATE())
+               THEN il.ext_price ELSE 0 END), 0) * 100
+  AS DECIMAL(5,1)) AS pct_change
+FROM invoice_line il
+INNER JOIN customer c ON il.customer_id = c.customer_id
+WHERE il.invoice_date >= DATEADD(MONTH, -15, GETDATE())
+GROUP BY c.customer_name, c.customer_id
+HAVING SUM(CASE WHEN il.invoice_date >= DATEADD(MONTH, -15, GETDATE())
+                AND il.invoice_date < DATEADD(MONTH, -12, GETDATE())
+           THEN il.ext_price ELSE 0 END) > 5000  -- Only meaningful accounts
+ORDER BY pct_change ASC;
+```
+
+The output shows you exactly who's dropping off and by how much. A sales rep armed with this data can make a targeted call instead of guessing.
+
+### 2. Product Margin Erosion
+
+Which products are you making less money on than last quarter? Price increases from vendors without corresponding customer price updates are the usual culprit.
+
+```sql
+SELECT
+  im.item_id,
+  im.item_desc,
+  AVG(CASE WHEN il.invoice_date >= DATEADD(MONTH, -3, GETDATE())
+       THEN (il.unit_price - il.unit_cost) / NULLIF(il.unit_price, 0) * 100
+  END) AS current_margin_pct,
+  AVG(CASE WHEN il.invoice_date >= DATEADD(MONTH, -6, GETDATE())
+            AND il.invoice_date < DATEADD(MONTH, -3, GETDATE())
+       THEN (il.unit_price - il.unit_cost) / NULLIF(il.unit_price, 0) * 100
+  END) AS prior_margin_pct
+FROM invoice_line il
+INNER JOIN inv_mast im ON il.inv_mast_uid = im.inv_mast_uid
+WHERE il.invoice_date >= DATEADD(MONTH, -6, GETDATE())
+  AND il.unit_price > 0
+GROUP BY im.item_id, im.item_desc
+HAVING COUNT(*) > 10  -- Enough data points to be meaningful
+ORDER BY (
+  AVG(CASE WHEN il.invoice_date >= DATEADD(MONTH, -3, GETDATE())
+       THEN (il.unit_price - il.unit_cost) / NULLIF(il.unit_price, 0) * 100 END) -
+  AVG(CASE WHEN il.invoice_date >= DATEADD(MONTH, -6, GETDATE())
+            AND il.invoice_date < DATEADD(MONTH, -3, GETDATE())
+       THEN (il.unit_price - il.unit_cost) / NULLIF(il.unit_price, 0) * 100 END)
+) ASC;
+```
+
+<div class="callout callout-tip">
+<strong>Quick win:</strong> Run this monthly and share the top 20 eroding products with your pricing team. A 2% margin improvement on your top 100 SKUs can add up to six figures annually.
+</div>
+
+### 3. Dead Inventory Identification
+
+What's sitting in your warehouse collecting dust? This query finds items with no sales activity that are still tying up capital.
+
+```sql
+SELECT
+  im.item_id,
+  im.item_desc,
+  iw.location_id,
+  iw.qty_on_hand,
+  iw.qty_on_hand * im.last_cost AS inventory_value,
+  MAX(il.invoice_date) AS last_sale_date,
+  DATEDIFF(DAY, MAX(il.invoice_date), GETDATE()) AS days_since_last_sale
+FROM inv_warehouse iw
+INNER JOIN inv_mast im ON iw.inv_mast_uid = im.inv_mast_uid
+LEFT JOIN invoice_line il ON im.inv_mast_uid = il.inv_mast_uid
+  AND il.location_id = iw.location_id
+WHERE iw.qty_on_hand > 0
+GROUP BY im.item_id, im.item_desc, iw.location_id,
+         iw.qty_on_hand, im.last_cost
+HAVING MAX(il.invoice_date) < DATEADD(MONTH, -6, GETDATE())
+   OR MAX(il.invoice_date) IS NULL
+ORDER BY iw.qty_on_hand * im.last_cost DESC;
+```
+
+I've found $50K-$200K in dead inventory at mid-size distributors using this query. That's cash you can redeploy immediately.
+
+### 4. Order-to-Ship Time by Warehouse
+
+How fast are you actually fulfilling orders? Not the average -- the distribution. Are some warehouses consistently slower? Are certain order types bottlenecking?
+
+```sql
+SELECT
+  oh.location_id,
+  oh.order_type,
+  COUNT(*) AS order_count,
+  AVG(DATEDIFF(HOUR, oh.order_date, oh.ship_date)) AS avg_hours,
+  PERCENTILE_CONT(0.5) WITHIN GROUP (
+    ORDER BY DATEDIFF(HOUR, oh.order_date, oh.ship_date)
+  ) OVER (PARTITION BY oh.location_id) AS median_hours,
+  PERCENTILE_CONT(0.95) WITHIN GROUP (
+    ORDER BY DATEDIFF(HOUR, oh.order_date, oh.ship_date)
+  ) OVER (PARTITION BY oh.location_id) AS p95_hours
+FROM order_header oh
+WHERE oh.ship_date IS NOT NULL
+  AND oh.order_date >= DATEADD(MONTH, -3, GETDATE())
+GROUP BY oh.location_id, oh.order_type;
+```
+
+The P95 metric is the key one. Your average might be 4 hours, but if 5% of orders take 3+ days, that's where your customer complaints are coming from.
+
+### 5. Sales Rep Performance Dashboard
+
+Compare rep performance on metrics that actually matter -- not just revenue, but margin, order frequency, and customer retention.
+
+```sql
+SELECT
+  sr.salesperson_name,
+  COUNT(DISTINCT oh.customer_id) AS active_customers,
+  COUNT(oh.order_no) AS order_count,
+  SUM(il.ext_price) AS total_revenue,
+  SUM(il.ext_price - il.ext_cost) AS total_margin,
+  CAST(SUM(il.ext_price - il.ext_cost) /
+    NULLIF(SUM(il.ext_price), 0) * 100 AS DECIMAL(5,1)) AS margin_pct,
+  SUM(il.ext_price) / NULLIF(COUNT(DISTINCT oh.customer_id), 0) AS revenue_per_customer
+FROM order_header oh
+INNER JOIN invoice_line il ON oh.order_no = il.order_no
+INNER JOIN salesperson sr ON oh.salesperson_id = sr.salesperson_id
+WHERE il.invoice_date >= DATEADD(MONTH, -3, GETDATE())
+GROUP BY sr.salesperson_name
+ORDER BY total_margin DESC;
+```
+
+Revenue is vanity, margin is sanity. The rep with $2M in sales at 12% margin is less valuable than the rep with $1.5M at 22%.
+
+## From Queries to Automated Reports
+
+These queries are useful on their own, but the real power comes from automation:
+
+1. **Schedule them** as SQL Server Agent jobs that run nightly
+2. **Export results** to a shared drive or email them to stakeholders
+3. **Build SSRS dashboards** that pull from these queries with parameter filters
+4. **Set up alerts** -- when a customer's spend drops 30%, when margin on a product falls below threshold, when dead inventory exceeds a dollar amount
+
+The goal is to move from "pulling reports" to "reports pulling you" -- proactive alerts that drive action instead of reactive data dumps that sit unread.
+
+## Want Custom Reports for Your P21?
+
+Every distributor's data tells a different story. The queries above are starting points -- the real value comes from tailoring them to your specific business questions, product mix, and operational goals.
+
+[Let's talk about what your data could be telling you](/contact).

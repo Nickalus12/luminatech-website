@@ -1,0 +1,200 @@
+---
+title: "Preparing for Kinetic: Your P21 Cloud Migration Checklist"
+description: "Epicor is sunsetting on-prem P21. Here's a practical, step-by-step checklist to audit your customizations, plan your migration, and avoid the mistakes that derail cloud transitions."
+pubDate: 2026-02-07
+author: "Nick Brewer"
+category: "cloud-migration"
+tags: ["Cloud Migration", "Kinetic", "P21", "Planning"]
+readTime: "6 min"
+---
+
+The clock is ticking. Epicor's Kinetic 2026.1 release (May 2026) discontinues the Classic UI. The final on-premises feature release hits in 2028.1, with active support ending June 30, 2029. If you're running Prophet 21 on-prem today, migration isn't a question of *if* -- it's a question of *when* and *how well prepared you are when it happens*.
+
+I've been working inside P21 daily for over a decade. I've seen what happens when companies rush a migration without preparation, and I've seen what happens when they plan methodically. The difference isn't subtle -- it's the difference between a two-week transition and a six-month firefight.
+
+This checklist is what I'd hand you if you hired me tomorrow. Work through it in order.
+
+## Phase 1: Assess What You Have (Weeks 1-2)
+
+Before you can plan a migration, you need an honest inventory of your current environment. Most companies dramatically underestimate how customized their P21 installation is.
+
+### Customization Audit
+
+Run this query against your P21 database to get a starting count of business rules:
+
+```sql
+-- Count all active business rules by type
+SELECT
+  rule_type,
+  COUNT(*) AS rule_count,
+  SUM(CASE WHEN active_flag = 'Y' THEN 1 ELSE 0 END) AS active_rules
+FROM business_rule_header
+GROUP BY rule_type
+ORDER BY rule_count DESC;
+```
+
+Then document each customization in a spreadsheet with these columns:
+
+| Column | Why It Matters |
+|--------|---------------|
+| **Rule/Customization Name** | Identification |
+| **What It Does** | Business purpose (not technical description) |
+| **Who Uses It** | Which department depends on this |
+| **Frequency** | How often it fires (daily? every transaction?) |
+| **Cloud Compatible?** | Can this work in SaaS, or does it need redesign? |
+| **Priority** | Must-have vs. nice-to-have |
+
+<div class="callout callout-warning">
+<strong>The hidden customizations:</strong> Don't forget SSRS reports, Crystal Reports, custom stored procedures, SQL Agent jobs, third-party integrations, and DynaChange configurations. These are the ones that break silently during migration because nobody documented them.
+</div>
+
+### Integration Inventory
+
+List every system that talks to P21:
+
+- **eCommerce platforms** (connections, API calls, data sync frequency)
+- **EDI providers** (trading partners, document types)
+- **CRM systems** (customer data sync, order history feeds)
+- **WMS/barcode systems** (RF guns, pick/pack/ship workflows)
+- **Accounting/GL** (journal entry exports, account mapping)
+- **Shipping platforms** (carrier integrations, label printing)
+- **Custom dashboards or BI tools** (direct database connections)
+
+For each integration, document: the connection method (direct SQL, API, flat file, middleware), the direction (push, pull, bidirectional), and the owner (who maintains it).
+
+### User Workflow Documentation
+
+This is the step everyone skips. Sit with your key users -- order entry, purchasing, warehouse, accounting -- and watch them work for an hour each. Document:
+
+- Custom keyboard shortcuts and macros
+- Saved searches and custom views
+- Workarounds they use for things P21 "doesn't do well"
+- Reports they run daily/weekly and what decisions they drive
+
+These workflows are your acceptance criteria for the migration. If the cloud version breaks someone's daily routine, you'll hear about it immediately.
+
+## Phase 2: Evaluate Cloud Readiness (Weeks 3-4)
+
+### Infrastructure Assessment
+
+Answer these questions:
+
+1. **What's your current SQL Server version?** Kinetic Cloud runs on specific versions. Older databases may need an intermediate upgrade.
+2. **How large is your database?** Get the actual size:
+
+```sql
+-- Database size and data file details
+SELECT
+  DB_NAME() AS DatabaseName,
+  CAST(SUM(size * 8.0 / 1024) AS DECIMAL(10,2)) AS SizeMB,
+  CAST(SUM(size * 8.0 / 1024 / 1024) AS DECIMAL(10,2)) AS SizeGB
+FROM sys.database_files;
+```
+
+3. **What's your internet bandwidth?** Cloud P21 needs reliable, low-latency connectivity. If your warehouse is on a 50Mbps connection with 80ms latency, your RF guns will feel sluggish.
+4. **Do you have a VPN or SD-WAN?** Multiple locations need consistent, secure connectivity to the cloud environment.
+
+### Business Rule Compatibility Review
+
+Not all business rules survive the cloud migration as-is. Here's what to watch for:
+
+**Usually compatible:**
+- Rules that use standard P21 triggers and conditions
+- Rules that reference standard P21 tables and fields
+- Simple validation and calculation rules
+
+**Needs review or redesign:**
+- Rules with direct SQL Server Agent job dependencies
+- Rules that reference file system paths (UNC paths, local drives)
+- Rules that call external DLLs or COM objects
+- Rules that depend on SQL Server-level features (linked servers, CLR assemblies)
+- Rules with timing dependencies on other rules or scheduled tasks
+
+**Will not work as-is:**
+- Anything that writes to or reads from the local file system
+- Direct database triggers (not P21 business rules, actual SQL triggers)
+- Custom Windows services that interact with P21 tables
+- Third-party tools that connect via ODBC directly to the database
+
+<div class="callout callout-info">
+<strong>The extensibility question:</strong> Epicor's SaaS extensibility framework is different from on-prem customization. Some things that were easy on-prem (write a stored procedure, done) require a different approach in the cloud. Factor in redesign time for these.
+</div>
+
+## Phase 3: Plan the Migration (Weeks 5-8)
+
+### Timeline Construction
+
+Work backwards from your target go-live date:
+
+- **Go-live minus 12 weeks:** Begin parallel testing (run both systems)
+- **Go-live minus 8 weeks:** User acceptance testing starts
+- **Go-live minus 6 weeks:** Integration testing with all connected systems
+- **Go-live minus 4 weeks:** Data migration dry run (full dataset)
+- **Go-live minus 2 weeks:** Final data validation and signoff
+- **Go-live minus 1 week:** Cutover rehearsal with key users
+- **Go-live:** Execute cutover plan, war room staffed
+
+### Data Migration Strategy
+
+Decide your approach:
+
+1. **Big bang:** Everything migrates at once over a weekend. Simpler but higher risk.
+2. **Phased:** Migrate modules or locations incrementally. Lower risk but longer timeline and more complex.
+
+For either approach, you need:
+
+- A data cleansing plan (archive old data, fix duplicates, standardize formats)
+- A mapping document for any schema changes
+- A rollback plan if the migration fails
+- A data validation checklist (counts, totals, sample record verification)
+
+### Training Plan
+
+Don't underestimate this. The Kinetic UI looks and feels different from Classic. Even though the underlying data and workflows are the same, your users will feel disoriented.
+
+- **Power users:** 4-8 hours of hands-on training, two weeks before go-live
+- **Standard users:** 2-4 hours of role-specific training, one week before go-live
+- **Warehouse/mobile users:** Hands-on practice with new RF/mobile interface
+- **Create a "cheat sheet"** mapping old UI navigation to new UI navigation
+
+## Phase 4: Execute (Weeks 9-12+)
+
+### Pre-Migration Checklist
+
+Run through this the week before your migration date:
+
+- [ ] All business rules documented and cloud-ready versions tested
+- [ ] All integrations tested against cloud environment
+- [ ] Data migration dry run completed successfully
+- [ ] User acceptance testing signed off by department leads
+- [ ] Rollback plan documented and rehearsed
+- [ ] Support escalation contacts confirmed (Epicor, your consultant, internal IT)
+- [ ] Communication sent to all users with go-live date, training schedule, and support contacts
+- [ ] Vendor/customer-facing systems tested (EDI, eCommerce, portals)
+
+### Go-Live Day Protocol
+
+- **5:00 AM:** Begin cutover -- take on-prem system offline, begin final data sync
+- **7:00 AM:** Data validation spot checks (order counts, inventory levels, AR/AP balances)
+- **8:00 AM:** Cloud environment opened to power users for validation
+- **9:00 AM:** All users online, support team stationed in each department
+- **12:00 PM:** First checkpoint -- collect issues, prioritize fixes
+- **5:00 PM:** End of day assessment -- go/no-go for Day 2
+- **Week 1:** Daily 15-minute standup to triage issues
+- **Week 2-4:** Twice-weekly check-ins, transition to normal support
+
+## What Not to Do
+
+I've seen these mistakes derail migrations. Avoid them:
+
+1. **Don't migrate and customize simultaneously.** Get to the cloud first, stabilize, then optimize. Trying to do both creates chaos.
+2. **Don't skip the dry run.** A practice migration reveals problems you cannot predict. Always do at least one full rehearsal.
+3. **Don't forget the reports.** Custom SSRS reports are the #1 thing that breaks during migration. Test every report your finance team uses.
+4. **Don't ignore your users' anxiety.** Change is hard. Over-communicate the timeline, provide training, and be available for questions. The technical migration will succeed or fail based on user adoption.
+5. **Don't go it alone if you're short-staffed.** A migration consultant who knows P21 can compress your timeline dramatically and catch issues before they become emergencies.
+
+## Need a Migration Partner?
+
+I help distributors plan and execute P21 cloud migrations without the chaos. From initial assessment through go-live and beyond, I bring the perspective of someone who uses P21 every single day -- not just someone who implements it and leaves.
+
+[Schedule a free assessment](/contact) and let's see where your migration stands.

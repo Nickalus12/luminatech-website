@@ -477,7 +477,7 @@ export const contact = {
       description:
         "Skip the form and pick a time that works for you.",
       ctaLabel: "View Available Times",
-      ctaHref: "/schedule",
+      ctaHref: "/contact#schedule",
     },
   },
   faq: {

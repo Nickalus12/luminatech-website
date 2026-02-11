@@ -1,0 +1,457 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+import { services, brand } from '../content/copy';
+
+const description = "Comprehensive Prophet 21 consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support for wholesale distributors.";
+
+const iconPaths: Record<string, string> = {
+  advisory: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
+  development: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
+  cloud: "M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12",
+  reporting: "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+  integration: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
+  managed: "M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z",
+};
+
+const retainerTiers = [
+  {
+    name: "Essentials",
+    price: "$625",
+    period: "/mo",
+    hours: "5 hrs",
+    highlight: false,
+    features: [
+      { text: "5 hours of support", included: true },
+      { text: "Email support", included: true },
+      { text: "48-hour response time", included: true },
+      { text: "Quarterly system review", included: true },
+      { text: "Minor fixes & troubleshooting", included: true },
+      { text: "Priority support", included: false },
+      { text: "Custom development", included: false },
+      { text: "Dedicated availability", included: false },
+    ],
+  },
+  {
+    name: "Professional",
+    price: "$1,500",
+    period: "/mo",
+    hours: "12 hrs",
+    highlight: true,
+    features: [
+      { text: "12 hours of support", included: true },
+      { text: "Email & phone support", included: true },
+      { text: "24-hour response time", included: true },
+      { text: "Monthly system review", included: true },
+      { text: "Business rules maintenance", included: true },
+      { text: "Priority support", included: true },
+      { text: "Custom development included", included: true },
+      { text: "Dedicated availability", included: false },
+    ],
+  },
+  {
+    name: "Enterprise",
+    price: "$4,500",
+    period: "/mo",
+    hours: "30 hrs",
+    highlight: false,
+    features: [
+      { text: "30 hours of support", included: true },
+      { text: "Email, phone & video support", included: true },
+      { text: "4-hour response time", included: true },
+      { text: "Weekly system review", included: true },
+      { text: "Business rules maintenance", included: true },
+      { text: "Priority support", included: true },
+      { text: "Custom development included", included: true },
+      { text: "Dedicated availability", included: true },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Services"
+  description={description}
+  schemaType="services"
+>
+
+  <!-- Hero -->
+  <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
+          {services.hero.headline}
+        </h1>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          {services.hero.subheadline}
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Sticky Anchor Nav -->
+  <div class="sticky top-16 z-30 bg-bg-base/90 backdrop-blur-lg border-b border-border/50">
+    <Container>
+      <nav class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none" aria-label="Service sections">
+        {services.anchors.map((anchor) => (
+          <a
+            href={anchor.href}
+            class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline"
+          >
+            {anchor.label}
+          </a>
+        ))}
+      </nav>
+    </Container>
+  </div>
+
+  <!-- Service Sections -->
+  {services.items.map((service, index) => (
+    <Section
+      id={service.id}
+      background={index % 2 === 0 ? "base" : "surface-1"}
+      padding="md"
+    >
+      <Container>
+        <div class:list={[
+          "grid grid-cols-1 lg:grid-cols-2 gap-12 items-start",
+        ]}>
+          <!-- Text Content -->
+          <div class={index % 2 !== 0 ? "lg:order-2" : ""}>
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-primary/10 shrink-0">
+                <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d={iconPaths[service.icon] || iconPaths.advisory} />
+                </svg>
+              </div>
+              <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">
+                {service.title}
+              </h2>
+            </div>
+
+            <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed mb-8">
+              {service.description}
+            </p>
+
+            <div class="flex items-center gap-6 mb-8">
+              <div>
+                <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Timeline</span>
+                <p class="text-sm font-mono text-text-primary mt-1">{service.timeline}</p>
+              </div>
+              <div class="w-px h-10 bg-border"></div>
+              <div>
+                <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Pricing</span>
+                <p class="text-sm font-mono text-accent-primary font-semibold mt-1">{service.pricing}</p>
+              </div>
+            </div>
+
+            <Button href={service.cta.href} variant="primary" size="md" arrow>
+              {service.cta.label}
+            </Button>
+          </div>
+
+          <!-- Includes Card -->
+          <div class={index % 2 !== 0 ? "lg:order-1" : ""}>
+            <Card hover={false} padding="lg">
+              <h3 class="text-lg font-semibold text-text-primary mb-5">What's Included</h3>
+              <ul class="space-y-3 list-none m-0 p-0">
+                {service.includes.map((item) => (
+                  <li class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    <span class="text-sm text-text-secondary leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {service.tiers && (
+                <div class="mt-6 pt-6 border-t border-border">
+                  <div class="grid grid-cols-2 gap-3">
+                    {service.tiers.map((tier) => (
+                      <div class="bg-bg-surface-2 rounded-lg p-3">
+                        <p class="text-xs text-text-tertiary font-medium">{tier.name}</p>
+                        <p class="text-sm font-mono font-semibold text-accent-primary">{tier.price}</p>
+                        <p class="text-xs text-text-tertiary mt-0.5">{tier.hours}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+        </div>
+      </Container>
+    </Section>
+  ))}
+
+  <!-- Cloud Migration Spotlight -->
+  <Section background="surface-1" padding="lg" class="relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-accent-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-accent-violet/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <Container class="relative">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <Badge variant="warning" class="mb-6">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            Time-Sensitive
+          </Badge>
+
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-6">
+            The P21 Cloud Migration<br />
+            <span class="text-accent-primary">Deadline Is Real</span>
+          </h2>
+
+          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed mb-8">
+            Epicor is ending on-premises P21. This isn't a rumor -- it's a published timeline. Every distributor running P21 on-prem needs a migration plan, and the window to prepare is narrowing.
+          </p>
+
+          <!-- Timeline -->
+          <div class="space-y-6">
+            <div class="flex gap-4">
+              <div class="shrink-0 w-16 text-right">
+                <span class="text-sm font-mono font-bold text-accent-warning">May 2026</span>
+              </div>
+              <div class="grow border-l-2 border-accent-warning/30 pl-4 pb-6">
+                <h4 class="font-semibold text-text-primary mb-1">Classic UI Retirement</h4>
+                <p class="text-sm text-text-secondary">Kinetic 2026.1 discontinues the Classic UI. Browser-based interface becomes mandatory.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="shrink-0 w-16 text-right">
+                <span class="text-sm font-mono font-bold text-accent-warning">May 2028</span>
+              </div>
+              <div class="grow border-l-2 border-accent-warning/30 pl-4 pb-6">
+                <h4 class="font-semibold text-text-primary mb-1">Final On-Prem Release</h4>
+                <p class="text-sm text-text-secondary">P21 2028.1 is the last on-premises feature release. No new functionality after this.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="shrink-0 w-16 text-right">
+                <span class="text-sm font-mono font-bold text-accent-error">Jun 2029</span>
+              </div>
+              <div class="grow border-l-2 border-accent-error/30 pl-4">
+                <h4 class="font-semibold text-text-primary mb-1">Active Support Ends</h4>
+                <p class="text-sm text-text-secondary">On-premises P21 loses active support. All customers must be on cloud.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Migration Deliverables Card -->
+        <Card hover={false} padding="lg">
+          <h3 class="text-xl font-semibold text-text-primary mb-6">What I Deliver for Migration</h3>
+
+          <div class="space-y-5">
+            {[
+              { num: "1", title: "Customization Audit", desc: "Complete inventory of every business rule, report, and integration with cloud compatibility assessment." },
+              { num: "2", title: "Migration Roadmap", desc: "Detailed timeline with milestones, risk assessment, and resource requirements specific to your environment." },
+              { num: "3", title: "Remediation & Testing", desc: "Fix incompatible business rules, rebuild reports for cloud, and validate data integrity before go-live." },
+              { num: "4", title: "Training & Go-Live", desc: "Role-based training for your team on the Kinetic UI, plus hands-on support through the transition." },
+            ].map((step) => (
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 flex items-center justify-center rounded-lg bg-accent-primary/10 shrink-0">
+                  <span class="text-sm font-mono font-bold text-accent-primary">{step.num}</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-text-primary text-sm">{step.title}</h4>
+                  <p class="text-sm text-text-secondary mt-1 leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-border">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-sm text-text-tertiary">Migration projects start at</span>
+              <span class="text-2xl font-mono font-bold text-accent-primary">$5,000</span>
+            </div>
+            <Button href="/contact" variant="primary" size="md" arrow class="w-full">
+              Get a Migration Assessment
+            </Button>
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Retainer Tiers -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="text-center mb-16">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Ongoing Support Plans</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Predictable monthly support with guaranteed response times. Pick the plan that fits your needs -- upgrade or adjust anytime.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        {retainerTiers.map((tier) => (
+          <div
+            class:list={[
+              "relative bg-bg-surface-1 rounded-xl p-8 border transition-all duration-normal",
+              tier.highlight
+                ? "border-accent-primary shadow-glow scale-[1.02]"
+                : "border-border hover:border-accent-primary/50",
+            ]}
+          >
+            {tier.highlight && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                <Badge variant="primary">Most Popular</Badge>
+              </div>
+            )}
+
+            <div class="text-center mb-8">
+              <h3 class="text-lg font-semibold text-text-primary mb-2">{tier.name}</h3>
+              <div class="flex items-baseline justify-center gap-1">
+                <span class="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary">{tier.price}</span>
+                <span class="text-text-secondary">{tier.period}</span>
+              </div>
+              <p class="text-sm text-text-tertiary mt-2">{tier.hours} included</p>
+            </div>
+
+            <div class="space-y-3 mb-8">
+              {tier.features.map((feature) => (
+                <div class="flex items-center gap-3">
+                  {feature.included ? (
+                    <svg class="w-5 h-5 text-accent-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  ) : (
+                    <svg class="w-5 h-5 text-text-disabled shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  )}
+                  <span class:list={[
+                    "text-sm",
+                    feature.included ? "text-text-secondary" : "text-text-disabled",
+                  ]}>
+                    {feature.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              href="/contact"
+              variant={tier.highlight ? "primary" : "outline"}
+              size="md"
+              class="w-full"
+            >
+              Get Started
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-sm text-text-tertiary mt-8">
+        All plans include 5-25% hourly discount vs. standard rates. Need something custom? <a href="/contact" class="text-accent-primary hover:underline no-underline">Let's talk.</a>
+      </p>
+    </Container>
+  </Section>
+
+  <!-- Process Section -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-16">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">{services.process.heading}</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          A straightforward process built on transparency and results. No surprises, no scope creep, no disappearing acts.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {services.process.steps.map((step, index) => (
+          <div class="relative">
+            {index < services.process.steps.length - 1 && (
+              <div class="hidden lg:block absolute top-8 left-full w-6 border-t-2 border-dashed border-border z-10"></div>
+            )}
+            <Card hover={false}>
+              <span class="text-3xl font-mono font-bold text-accent-primary/30 block mb-3">{step.number}</span>
+              <h3 class="text-lg font-semibold text-text-primary mb-2">{step.title}</h3>
+              <p class="text-sm text-text-secondary leading-relaxed">{step.description}</p>
+            </Card>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Bottom CTA -->
+  <Section background="gradient" padding="lg">
+    <Container class="text-center">
+      <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+        {services.bottomCta.heading}
+      </h2>
+      <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-xl mx-auto mb-10">
+        {services.bottomCta.subheadline}
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href={services.bottomCta.cta.href} variant="primary" size="lg" arrow glow>
+          {services.bottomCta.cta.label}
+        </Button>
+        <span class="text-text-secondary text-sm">
+          or email <a href={`mailto:${brand.email}`} class="text-accent-primary hover:underline no-underline">{brand.email}</a>
+        </span>
+      </div>
+    </Container>
+  </Section>
+
+</BaseLayout>
+
+<style>
+  .anchor-active {
+    background-color: var(--color-accent-primary);
+    color: white;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  function initServices() {
+    // Active anchor nav highlighting on scroll
+    const anchors = document.querySelectorAll('.anchor-link');
+    const sections = document.querySelectorAll('section[id]');
+
+    if (anchors.length > 0 && sections.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              anchors.forEach((a) => {
+                const link = a as HTMLAnchorElement;
+                if (link.getAttribute('href') === `#${id}`) {
+                  link.classList.add('anchor-active');
+                } else {
+                  link.classList.remove('anchor-active');
+                }
+              });
+            }
+          });
+        },
+        { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
+      );
+      sections.forEach((section) => observer.observe(section));
+    }
+  }
+
+  initServices();
+  document.addEventListener('astro:after-swap', initServices);
+</script>

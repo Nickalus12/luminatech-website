@@ -1,7 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BlogLayout from '../../layouts/BlogLayout.astro';
-import { getReadingTime } from '../../utils/reading-time';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -13,8 +12,6 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-
-const readingTime = getReadingTime(post.body ?? '');
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const relatedPosts = allPosts
@@ -30,21 +27,22 @@ const relatedPosts = allPosts
   pubDate={post.data.pubDate}
   updatedDate={post.data.updatedDate}
   author={post.data.author}
+  category={post.data.category}
   tags={post.data.tags}
+  readTime={post.data.readTime}
   image={post.data.image}
-  readingTime={readingTime}
 >
   <Content />
 
   <Fragment slot="related">
     {relatedPosts.length > 0 && (
-      <section>
+      <section class="mt-12 pt-10 border-t border-border">
         <h2 class="text-[length:var(--font-size-h3)] font-bold mb-6">Related Articles</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           {relatedPosts.map((related) => (
             <a
               href={`/blog/${related.id}/`}
-              class="block bg-bg-surface-1 rounded-xl border border-border p-5 hover:border-accent-primary hover:-translate-y-1 transition-all duration-300"
+              class="block bg-bg-surface-1 rounded-xl border border-border p-5 hover:border-accent-primary hover:-translate-y-1 transition-all duration-300 no-underline"
             >
               <span class="text-xs font-medium uppercase tracking-wider text-accent-primary">
                 {related.data.tags[0]}

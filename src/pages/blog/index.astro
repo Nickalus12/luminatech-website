@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import SEO from '../../components/SEO.astro';
-import '../../styles/global.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -24,21 +24,12 @@ const paginatedPosts = filteredPosts.slice(
 );
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate" type="application/rss+xml" title="Lumina ERP Blog" href="/rss.xml" />
-    <SEO
-      title="Blog"
-      description="Expert insights on Prophet 21, cloud migration, business rules, SQL reporting, and ERP best practices for wholesale distributors."
-    />
-  </head>
-  <body class="bg-bg-base text-text-primary font-sans">
-    <slot name="header" />
-
-    <main id="content" class="max-w-[1280px] mx-auto px-6 py-12">
+<BaseLayout
+  title="Blog"
+  description="Expert insights on Prophet 21, cloud migration, business rules, SQL reporting, and ERP best practices for wholesale distributors."
+>
+  <section class="py-12 md:py-20">
+    <Container>
       <header class="mb-12">
         <h1 class="text-[length:var(--font-size-h2)] font-bold mb-3">Blog</h1>
         <p class="text-text-secondary text-[length:var(--font-size-body-lg)] max-w-2xl">
@@ -51,7 +42,7 @@ const paginatedPosts = filteredPosts.slice(
         <a
           href="/blog"
           class:list={[
-            'text-sm px-4 py-1.5 rounded-full border transition-colors duration-200',
+            'text-sm px-4 py-1.5 rounded-full border transition-colors duration-fast no-underline',
             !activeTag
               ? 'bg-accent-primary text-white border-accent-primary'
               : 'bg-bg-surface-1 text-text-secondary border-border hover:border-accent-primary hover:text-text-primary',
@@ -63,7 +54,7 @@ const paginatedPosts = filteredPosts.slice(
           <a
             href={`/blog?tag=${encodeURIComponent(tag)}`}
             class:list={[
-              'text-sm px-4 py-1.5 rounded-full border transition-colors duration-200',
+              'text-sm px-4 py-1.5 rounded-full border transition-colors duration-fast no-underline',
               activeTag === tag
                 ? 'bg-accent-primary text-white border-accent-primary'
                 : 'bg-bg-surface-1 text-text-secondary border-border hover:border-accent-primary hover:text-text-primary',
@@ -77,50 +68,49 @@ const paginatedPosts = filteredPosts.slice(
       <!-- Posts Grid -->
       {paginatedPosts.length > 0 ? (
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {paginatedPosts.map((post) => {
-            const readingTime = Math.max(1, Math.ceil(post.body!.split(/\s+/).length / 230));
-            return (
-              <a
-                href={`/blog/${post.id}/`}
-                class="group block bg-bg-surface-1 rounded-xl border border-border p-6 hover:border-accent-primary hover:-translate-y-1 transition-all duration-300 shadow-card hover:shadow-card-hover"
-              >
-                <div class="flex items-center gap-3 mb-3">
-                  <span class="text-xs font-medium uppercase tracking-wider text-accent-primary">
-                    {post.data.tags[0]}
-                  </span>
-                  <span class="text-text-disabled text-xs">|</span>
-                  <span class="text-xs text-text-tertiary font-mono">{readingTime} min</span>
-                </div>
+          {paginatedPosts.map((post) => (
+            <a
+              href={`/blog/${post.id}/`}
+              class="group block bg-bg-surface-1 rounded-xl border border-border p-6 hover:border-accent-primary hover:-translate-y-1 transition-all duration-normal shadow-card hover:shadow-card-hover no-underline"
+            >
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-medium uppercase tracking-wider text-accent-primary">
+                  {post.data.tags[0]}
+                </span>
+                <span class="text-text-disabled text-xs">|</span>
+                <span class="text-xs text-text-tertiary font-mono">
+                  {post.data.readTime ?? '3 min'}
+                </span>
+              </div>
 
-                <h2 class="text-[length:var(--font-size-h4)] font-semibold leading-snug mb-3 text-text-primary group-hover:text-accent-primary transition-colors duration-200">
-                  {post.data.title}
-                </h2>
+              <h2 class="text-[length:var(--font-size-h4)] font-semibold leading-snug mb-3 text-text-primary group-hover:text-accent-primary transition-colors duration-fast">
+                {post.data.title}
+              </h2>
 
-                <p class="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-2">
-                  {post.data.description}
-                </p>
+              <p class="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-2">
+                {post.data.description}
+              </p>
 
-                <div class="flex items-center justify-between">
-                  <time
-                    datetime={post.data.pubDate.toISOString()}
-                    class="text-xs text-text-tertiary"
-                  >
-                    {post.data.pubDate.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </time>
-                  <span class="text-sm text-accent-primary font-medium group-hover:translate-x-1 transition-transform duration-200 inline-flex items-center gap-1">
-                    Read Article
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </span>
-                </div>
-              </a>
-            );
-          })}
+              <div class="flex items-center justify-between">
+                <time
+                  datetime={post.data.pubDate.toISOString()}
+                  class="text-xs text-text-tertiary"
+                >
+                  {post.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+                <span class="text-sm text-accent-primary font-medium group-hover:translate-x-1 transition-transform duration-fast inline-flex items-center gap-1">
+                  Read Article
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          ))}
         </div>
       ) : (
         <p class="text-text-secondary text-center py-16">No posts found for this tag.</p>
@@ -132,7 +122,7 @@ const paginatedPosts = filteredPosts.slice(
           {currentPage > 1 && (
             <a
               href={`/blog?${activeTag ? `tag=${encodeURIComponent(activeTag)}&` : ''}page=${currentPage - 1}`}
-              class="px-4 py-2 rounded-lg bg-bg-surface-1 border border-border text-text-secondary hover:border-accent-primary hover:text-text-primary transition-colors duration-200 text-sm"
+              class="px-4 py-2 rounded-lg bg-bg-surface-1 border border-border text-text-secondary hover:border-accent-primary hover:text-text-primary transition-colors duration-fast text-sm no-underline"
             >
               Previous
             </a>
@@ -142,7 +132,7 @@ const paginatedPosts = filteredPosts.slice(
             <a
               href={`/blog?${activeTag ? `tag=${encodeURIComponent(activeTag)}&` : ''}page=${page}`}
               class:list={[
-                'w-10 h-10 rounded-lg flex items-center justify-center text-sm transition-colors duration-200',
+                'w-10 h-10 rounded-lg flex items-center justify-center text-sm transition-colors duration-fast no-underline',
                 page === currentPage
                   ? 'bg-accent-primary text-white'
                   : 'bg-bg-surface-1 border border-border text-text-secondary hover:border-accent-primary hover:text-text-primary',
@@ -156,15 +146,13 @@ const paginatedPosts = filteredPosts.slice(
           {currentPage < totalPages && (
             <a
               href={`/blog?${activeTag ? `tag=${encodeURIComponent(activeTag)}&` : ''}page=${currentPage + 1}`}
-              class="px-4 py-2 rounded-lg bg-bg-surface-1 border border-border text-text-secondary hover:border-accent-primary hover:text-text-primary transition-colors duration-200 text-sm"
+              class="px-4 py-2 rounded-lg bg-bg-surface-1 border border-border text-text-secondary hover:border-accent-primary hover:text-text-primary transition-colors duration-fast text-sm no-underline"
             >
               Next
             </a>
           )}
         </nav>
       )}
-    </main>
-
-    <slot name="footer" />
-  </body>
-</html>
+    </Container>
+  </section>
+</BaseLayout>

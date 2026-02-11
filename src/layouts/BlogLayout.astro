@@ -1,20 +1,34 @@
 ---
-import SEO from '../components/SEO.astro';
-import SchemaMarkup from '../components/SchemaMarkup.astro';
-import '../styles/global.css';
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
 
 interface Props {
   title: string;
   description: string;
   pubDate: Date;
   updatedDate?: Date;
-  author: string;
-  tags: string[];
+  author?: string;
+  category?: string;
+  tags?: string[];
+  readTime?: string;
+  readingTime?: number;
   image?: string;
-  readingTime: number;
 }
 
-const { title, description, pubDate, updatedDate, author, tags, image, readingTime } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author = 'Nick Brewer',
+  category,
+  tags = [],
+  readTime,
+  readingTime,
+  image,
+} = Astro.props;
+
+const displayReadTime = readTime ?? (readingTime ? `${readingTime} min read` : undefined);
 
 const formattedDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -22,82 +36,81 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
   day: 'numeric',
 });
 
-const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
+const formattedUpdated = updatedDate?.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+const postUrl = Astro.url.pathname;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate" type="application/rss+xml" title="Lumina ERP Blog" href="/rss.xml" />
-    <SEO
-      title={title}
-      description={description}
-      article={true}
-      publishDate={pubDate.toISOString()}
-      image={image}
-    />
-    <SchemaMarkup
-      type="blog-post"
-      post={{
-        title,
-        description,
-        publishDate: pubDate.toISOString(),
-        image,
-        url: Astro.url.pathname,
-      }}
-    />
-  </head>
-  <body class="bg-bg-base text-text-primary font-sans">
-    <slot name="header" />
-
-    <main id="content" class="max-w-[800px] mx-auto px-6 py-12">
-      <article>
-        <header class="mb-10">
-          <div class="flex flex-wrap items-center gap-3 mb-4">
-            {tags.map((tag) => (
-              <a
-                href={`/blog?tag=${encodeURIComponent(tag)}`}
-                class="text-xs font-medium uppercase tracking-wider px-3 py-1 rounded-full bg-bg-surface-2 text-accent-primary border border-border hover:border-accent-primary transition-colors duration-200"
-              >
-                {tag}
-              </a>
-            ))}
-          </div>
-
-          <h1 class="text-[length:var(--font-size-h2)] font-bold leading-[1.2] mb-4 text-text-primary">
-            {title}
-          </h1>
-
-          <div class="flex flex-wrap items-center gap-4 text-text-tertiary text-sm">
-            <span>{author}</span>
-            <span class="w-1 h-1 rounded-full bg-text-disabled" />
-            <time datetime={pubDate.toISOString()}>{formattedDate}</time>
-            <span class="w-1 h-1 rounded-full bg-text-disabled" />
-            <span class="font-mono text-text-secondary">{readingTime} min read</span>
-          </div>
-
-          {updatedDate && (
-            <p class="mt-2 text-xs text-text-tertiary italic">
-              Updated {formattedUpdatedDate}
-            </p>
-          )}
-        </header>
-
-        <div class="prose">
-          <slot />
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  article={true}
+  publishDate={pubDate.toISOString()}
+  schemaType="blog-post"
+  schemaPost={{
+    title,
+    description,
+    publishDate: pubDate.toISOString(),
+    image,
+    url: postUrl,
+  }}
+>
+  <article class="py-12 md:py-20">
+    <Container narrow>
+      <!-- Article header -->
+      <header class="mb-10 md:mb-14">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          {tags.map((tag) => (
+            <a
+              href={`/blog?tag=${encodeURIComponent(tag)}`}
+              class="text-xs font-medium uppercase tracking-wider px-3 py-1 rounded-full bg-bg-surface-2 text-accent-primary border border-border hover:border-accent-primary transition-colors duration-fast no-underline"
+            >
+              {tag}
+            </a>
+          ))}
         </div>
-      </article>
 
-      <hr class="border-border my-12" />
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-5">
+          {title}
+        </h1>
 
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed">
+          {description}
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4 text-text-tertiary text-sm mt-5">
+          <span>{author}</span>
+          <span class="w-1 h-1 rounded-full bg-text-disabled" aria-hidden="true" />
+          <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+          {displayReadTime && (
+            <>
+              <span class="w-1 h-1 rounded-full bg-text-disabled" aria-hidden="true" />
+              <span class="font-mono text-text-secondary">{displayReadTime}</span>
+            </>
+          )}
+        </div>
+
+        {updatedDate && (
+          <p class="mt-2 text-xs text-text-tertiary italic">
+            Updated {formattedUpdated}
+          </p>
+        )}
+      </header>
+
+      <!-- Article body -->
+      <div class="prose">
+        <slot />
+      </div>
+
+      <!-- Related posts slot -->
       <slot name="related" />
 
+      <!-- Inline CTA -->
       <div class="mt-12 p-8 rounded-lg bg-bg-surface-1 border border-border text-center">
         <h3 class="text-[length:var(--font-size-h4)] font-semibold mb-2">Need help with your P21?</h3>
         <p class="text-text-secondary mb-6">
@@ -105,134 +118,193 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
         </p>
         <a
           href="/contact"
-          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white font-semibold rounded-lg transition-all duration-200 shadow-glow hover:shadow-glow-lg"
+          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white font-semibold rounded-lg transition-all duration-fast shadow-glow hover:shadow-glow-lg no-underline"
         >
           Schedule a Free Consultation
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
           </svg>
         </a>
       </div>
-    </main>
 
-    <slot name="footer" />
+      <!-- Author bio -->
+      <footer class="mt-16 pt-10 border-t border-border">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-full bg-bg-surface-2 flex items-center justify-center text-accent-primary font-bold text-lg shrink-0">
+            NB
+          </div>
+          <div>
+            <p class="text-text-primary font-semibold mb-1">{author}</p>
+            <p class="text-text-secondary text-sm leading-relaxed">
+              ERP consultant and P21 specialist with 10+ years of hands-on experience.
+              I help wholesale distributors get more from their ERP investment.
+            </p>
+            <a
+              href="/about"
+              class="inline-flex items-center gap-1.5 mt-3 text-accent-primary text-sm font-medium hover:underline no-underline"
+            >
+              More about Nick
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </Container>
+  </article>
+</BaseLayout>
 
-    <style is:global>
-      .prose {
-        max-width: none;
-        color: var(--color-text-primary);
-        line-height: 1.75;
-      }
-      .prose h2 {
-        font-size: var(--font-size-h3);
-        font-weight: 700;
-        margin-top: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--color-text-primary);
-      }
-      .prose h3 {
-        font-size: var(--font-size-h4);
-        font-weight: 600;
-        margin-top: 2rem;
-        margin-bottom: 0.75rem;
-        color: var(--color-text-primary);
-      }
-      .prose p {
-        margin-bottom: 1.25rem;
-        color: var(--color-text-secondary);
-      }
-      .prose a {
-        color: var(--color-accent-primary);
-        text-decoration: none;
-        border-bottom: 1px solid transparent;
-        transition: border-color 0.2s;
-      }
-      .prose a:hover {
-        border-bottom-color: var(--color-accent-primary);
-      }
-      .prose strong {
-        color: var(--color-text-primary);
-        font-weight: 600;
-      }
-      .prose ul, .prose ol {
-        margin-bottom: 1.25rem;
-        padding-left: 1.5rem;
-      }
-      .prose li {
-        color: var(--color-text-secondary);
-        margin-bottom: 0.5rem;
-      }
-      .prose li::marker {
-        color: var(--color-accent-primary);
-      }
-      .prose blockquote {
-        border-left: 3px solid var(--color-accent-primary);
-        padding-left: 1rem;
-        margin: 1.5rem 0;
-        color: var(--color-text-secondary);
-        font-style: italic;
-      }
-      .prose code {
-        font-family: var(--font-mono);
-        font-size: var(--font-size-code);
-        background: var(--color-bg-surface-2);
-        padding: 0.15rem 0.4rem;
-        border-radius: var(--radius-sm);
-        color: var(--color-accent-primary);
-      }
-      .prose pre {
-        background: var(--color-bg-surface-1) !important;
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-        overflow-x: auto;
-        margin: 1.5rem 0;
-      }
-      .prose pre code {
-        background: none;
-        padding: 0;
-        color: var(--color-text-primary);
-      }
-      .prose hr {
-        border-color: var(--color-border);
-        margin: 2rem 0;
-      }
-      .prose table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1.5rem 0;
-      }
-      .prose th {
-        text-align: left;
-        padding: 0.75rem 1rem;
-        border-bottom: 2px solid var(--color-border);
-        color: var(--color-text-primary);
-        font-weight: 600;
-      }
-      .prose td {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--color-border);
-        color: var(--color-text-secondary);
-      }
-      /* MDX callout component styling */
-      .callout {
-        border-radius: var(--radius-lg);
-        padding: 1rem 1.25rem;
-        margin: 1.5rem 0;
-        border-left: 3px solid;
-      }
-      .callout-tip {
-        background: rgba(16, 185, 129, 0.08);
-        border-color: var(--color-accent-success);
-      }
-      .callout-warning {
-        background: rgba(245, 158, 11, 0.08);
-        border-color: var(--color-accent-warning);
-      }
-      .callout-info {
-        background: rgba(59, 130, 246, 0.08);
-        border-color: var(--color-accent-primary);
-      }
-    </style>
-  </body>
-</html>
+<style is:global>
+  .prose {
+    max-width: 65ch;
+    color: var(--color-text-primary);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: var(--font-size-h3);
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose h3 {
+    font-size: var(--font-size-h4);
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose h4 {
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .prose a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--duration-fast);
+  }
+
+  .prose a:hover {
+    border-bottom-color: var(--color-accent-primary);
+  }
+
+  .prose strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .prose li::marker {
+    color: var(--color-accent-primary);
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-accent-primary);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-code);
+    background: var(--color-bg-surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-accent-primary);
+  }
+
+  .prose pre {
+    background: var(--color-bg-surface-1) !important;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .prose pre code {
+    background: none;
+    padding: 0;
+    color: var(--color-text-primary);
+  }
+
+  .prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    margin: 1.5rem 0;
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .prose th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .prose td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  /* MDX callout component styling */
+  .callout {
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-left: 3px solid;
+  }
+
+  .callout-tip {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: var(--color-accent-success);
+  }
+
+  .callout-warning {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: var(--color-accent-warning);
+  }
+
+  .callout-info {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: var(--color-accent-primary);
+  }
+</style>

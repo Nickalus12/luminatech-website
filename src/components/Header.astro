@@ -1,0 +1,221 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'Case Studies', href: '/case-studies' },
+  { label: 'About', href: '/about' },
+  { label: 'Blog', href: '/blog' },
+];
+
+function isActive(href: string): boolean {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
+---
+
+<header
+  id="site-header"
+  class="fixed top-0 left-0 right-0 z-50 h-16 md:h-16 transition-transform duration-normal ease-out"
+>
+  <div class="absolute inset-0 bg-bg-base/85 backdrop-blur-xl border-b border-border/50"></div>
+  <nav class="relative w-full max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 text-text-primary no-underline shrink-0">
+      <span class="text-xl font-bold tracking-tight">LUMINA ERP</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <ul class="hidden md:flex items-center gap-1 list-none m-0 p-0">
+      {navLinks.map(({ label, href }) => (
+        <li>
+          <a
+            href={href}
+            class:list={[
+              'relative px-3 py-2 text-[15px] font-medium rounded-md transition-colors duration-fast no-underline',
+              isActive(href)
+                ? 'text-accent-primary'
+                : 'text-text-secondary hover:text-text-primary',
+            ]}
+            aria-current={isActive(href) ? 'page' : undefined}
+          >
+            {label}
+            {isActive(href) && (
+              <span class="absolute bottom-0 left-3 right-3 h-0.5 bg-accent-primary rounded-full" />
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="hidden md:block">
+      <a
+        href="/contact"
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-primary text-white text-sm font-semibold rounded-md hover:bg-accent-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all duration-fast no-underline"
+      >
+        Get Started
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button
+      id="menu-toggle"
+      class="md:hidden relative w-10 h-10 flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors rounded-md"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="4" x2="20" y1="6" y2="6" />
+        <line x1="4" x2="20" y1="12" y2="12" />
+        <line x1="4" x2="20" y1="18" y2="18" />
+      </svg>
+      <svg id="menu-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  </nav>
+</header>
+
+<!-- Mobile menu overlay -->
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-40 bg-bg-base/95 backdrop-blur-xl hidden flex-col pt-20 pb-8 px-6"
+  aria-hidden="true"
+>
+  <nav class="flex flex-col gap-2">
+    {navLinks.map(({ label, href }) => (
+      <a
+        href={href}
+        class:list={[
+          'px-4 py-3 text-lg font-medium rounded-lg transition-colors duration-fast no-underline',
+          isActive(href)
+            ? 'text-accent-primary bg-accent-primary/10'
+            : 'text-text-secondary hover:text-text-primary hover:bg-bg-surface-2',
+        ]}
+        aria-current={isActive(href) ? 'page' : undefined}
+      >
+        {label}
+      </a>
+    ))}
+  </nav>
+  <div class="mt-auto pt-6">
+    <a
+      href="/contact"
+      class="flex items-center justify-center gap-2 w-full px-6 py-3.5 bg-accent-primary text-white text-base font-semibold rounded-md hover:bg-accent-primary-hover transition-colors duration-fast no-underline"
+    >
+      Get Started
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+<script>
+  function initHeader() {
+    const header = document.getElementById('site-header');
+    const toggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('menu-icon-open');
+    const iconClose = document.getElementById('menu-icon-close');
+
+    if (!header || !toggle || !menu || !iconOpen || !iconClose) return;
+
+    // Auto-hide header on scroll
+    let lastScrollY = 0;
+    let ticking = false;
+
+    function updateHeader() {
+      const scrollY = window.scrollY;
+      const isMenuOpen = menu.classList.contains('flex');
+
+      if (!isMenuOpen) {
+        if (scrollY > lastScrollY && scrollY > 80) {
+          header.style.transform = 'translateY(-100%)';
+        } else {
+          header.style.transform = 'translateY(0)';
+        }
+      }
+
+      lastScrollY = scrollY;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateHeader);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Mobile menu toggle
+    function openMenu() {
+      menu.classList.remove('hidden');
+      menu.classList.add('flex');
+      menu.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      iconOpen.classList.add('hidden');
+      iconClose.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      // Focus first link in menu
+      const firstLink = menu.querySelector('a');
+      if (firstLink) (firstLink as HTMLElement).focus();
+    }
+
+    function closeMenu() {
+      menu.classList.add('hidden');
+      menu.classList.remove('flex');
+      menu.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      iconClose.classList.add('hidden');
+      iconOpen.classList.remove('hidden');
+      document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', () => {
+      const isOpen = menu.classList.contains('flex');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('flex')) {
+        closeMenu();
+        toggle.focus();
+      }
+    });
+
+    // Focus trap within mobile menu
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !menu.classList.contains('flex')) return;
+      const focusable = [toggle, ...menu.querySelectorAll('a')] as HTMLElement[];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // Close on link click
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+  }
+
+  // Run on initial load and after Astro page transitions
+  initHeader();
+  document.addEventListener('astro:after-swap', initHeader);
+</script>

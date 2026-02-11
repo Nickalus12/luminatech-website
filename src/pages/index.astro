@@ -1,32 +1,511 @@
 ---
-import Base from '../layouts/Base.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import GlowText from '../components/ui/GlowText.astro';
+import Counter from '../components/ui/Counter.astro';
+import Badge from '../components/ui/Badge.astro';
+import { homepage } from '../content/copy';
 ---
 
-<Base title="Home">
-  <section class="min-h-[80vh] flex items-center justify-center px-6">
-    <div class="max-w-[1280px] mx-auto text-center">
-      <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6">
-        Stop Losing Revenue to<br />Broken P21 Workflows
-      </h1>
-      <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
-        Expert Prophet 21 consulting for wholesale distributors.
-        From business rules to cloud migration, I illuminate the path to ERP excellence.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a
-          href="/contact"
-          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary text-white font-semibold rounded-lg shadow-[var(--shadow-glow)] hover:bg-accent-primary-hover hover:scale-[1.02] transition-all duration-200"
-        >
-          Schedule a Free Consultation
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-        <a
-          href="/case-studies"
-          class="inline-flex items-center gap-2 px-7 py-3.5 border border-accent-primary text-accent-primary font-semibold rounded-lg hover:bg-accent-primary/10 transition-all duration-200"
-        >
-          View Case Studies
-        </a>
-      </div>
+<BaseLayout
+  title="Home"
+  description="Expert Prophet 21 consulting for wholesale distributors. Business rules, cloud migration, integrations, and ongoing support from a working P21 practitioner."
+  schemaType="home"
+>
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       HERO SECTION
+       Split layout: text 60% left, visual 40% right
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="lg" class="relative overflow-hidden">
+    <!-- Subtle gradient backdrop -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4"></div>
+      <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-violet/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4"></div>
     </div>
-  </section>
-</Base>
+
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">
+        <!-- Text content (60%) -->
+        <div class="lg:col-span-3 relative z-10">
+          <Badge variant="primary" class="mb-6 animate-fade-in">
+            Prophet 21 Consulting
+          </Badge>
+
+          <h1
+            class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6 animate-slide-up"
+            style="white-space: pre-line;"
+          >
+            {homepage.hero.headline}
+          </h1>
+
+          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed max-w-xl mb-8 animate-slide-up" style="animation-delay: 100ms;">
+            {homepage.hero.subheadline}
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 animate-slide-up" style="animation-delay: 200ms;">
+            <Button href={homepage.hero.primaryCta.href} variant="primary" size="lg" arrow glow>
+              {homepage.hero.primaryCta.label}
+            </Button>
+            <Button href={homepage.hero.secondaryCta.href} variant="outline" size="lg" arrow>
+              {homepage.hero.secondaryCta.label}
+            </Button>
+          </div>
+        </div>
+
+        <!-- Dashboard visual (40%) -->
+        <div class="lg:col-span-2 relative z-10 animate-fade-in" style="animation-delay: 300ms;">
+          <div class="relative animate-float">
+            <img
+              src="/hero-visual.svg"
+              alt="Stylized P21 dashboard showing revenue metrics, order volume charts, and top products"
+              width="560"
+              height="420"
+              class="w-full h-auto rounded-lg"
+              loading="eager"
+            />
+            <!-- Glow behind the dashboard -->
+            <div class="absolute inset-0 -z-10 bg-accent-primary/10 rounded-lg blur-2xl scale-95" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       TRUST BAR
+       Metric bar since no client logos yet
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="bg-bg-surface-1 border-y border-border/50 py-8">
+    <Container>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12 md:gap-16">
+        {homepage.trustBar.metrics.map((metric) => (
+          <div class="flex items-center gap-3 text-center sm:text-left">
+            <span class="font-mono text-2xl font-bold text-accent-primary">{metric.value}</span>
+            <span class="text-text-secondary text-sm">{metric.label}</span>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       PROBLEM SECTION
+       Pain points P21 distributors face
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 md:mb-16 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Sound Familiar?
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Every distributor running P21 hits the same walls. Here's what I hear most.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="scroll-reveal flex gap-4 p-6 rounded-lg border border-border/50 bg-bg-surface-1/50">
+          <div class="shrink-0 w-10 h-10 rounded-lg bg-accent-error/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1">Manual Processes Eating Your Day</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Orders re-keyed from emails. Inventory checked in spreadsheets. Reports exported and reformatted by hand. Your P21 can automate all of this.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal flex gap-4 p-6 rounded-lg border border-border/50 bg-bg-surface-1/50" style="animation-delay: 100ms;">
+          <div class="shrink-0 w-10 h-10 rounded-lg bg-accent-error/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16 12 11 15 14 21 8"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1">Reporting That Doesn't Report</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Standard P21 reports don't match how your business actually works. You need data your team can act on, not another 50-page PDF nobody reads.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal flex gap-4 p-6 rounded-lg border border-border/50 bg-bg-surface-1/50" style="animation-delay: 200ms;">
+          <div class="shrink-0 w-10 h-10 rounded-lg bg-accent-warning/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1">Cloud Migration Anxiety</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Epicor is sunsetting on-prem P21. Final release May 2028, support ends June 2029. If you haven't started planning, you're already behind.</p>
+          </div>
+        </div>
+
+        <div class="scroll-reveal flex gap-4 p-6 rounded-lg border border-border/50 bg-bg-surface-1/50" style="animation-delay: 300ms;">
+          <div class="shrink-0 w-10 h-10 rounded-lg bg-accent-error/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="8" height="8" x="2" y="2" rx="1"/><rect width="8" height="8" x="14" y="2" rx="1"/><rect width="8" height="8" x="2" y="14" rx="1"/><rect width="8" height="8" x="14" y="14" rx="1"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1">Disconnected Systems</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Your ecommerce, CRM, and warehouse systems don't talk to P21. Every disconnected system is a data entry error waiting to happen.</p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       SERVICES PREVIEW
+       4-card grid with links to /services
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 md:mb-16 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          {homepage.servicesPreview.heading}
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          {homepage.servicesPreview.subheading}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {homepage.servicesPreview.cards.map((card, i) => (
+          <Card hover padding="md" class="scroll-reveal flex flex-col" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="w-12 h-12 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-5">
+              {card.icon === 'advisory' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+              )}
+              {card.icon === 'development' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                </svg>
+              )}
+              {card.icon === 'cloud' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                </svg>
+              )}
+              {card.icon === 'managed' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>
+                </svg>
+              )}
+            </div>
+            <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-3">{card.title}</h3>
+            <p class="text-text-secondary text-sm leading-relaxed mb-5 flex-1">{card.description}</p>
+            <a
+              href={card.link.href}
+              class="inline-flex items-center gap-1.5 text-accent-primary text-sm font-medium hover:text-accent-primary-hover transition-colors duration-fast group"
+            >
+              {card.link.label}
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-fast group-hover:translate-x-1" aria-hidden="true">
+                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+              </svg>
+            </a>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       WHY LUMINA SECTION
+       Differentiators: practitioner-consultant, modern tech, right-sized pricing
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="scroll-reveal">
+          <Badge variant="primary" class="mb-4">Why Lumina ERP</Badge>
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-6">
+            Your P21 Expert, Not Another Consulting Firm
+          </h2>
+          <p class="text-text-secondary leading-relaxed mb-8">
+            Every other P21 consultant is external -- they implement and leave. I'm the first to offer the perspective of someone who uses P21 daily in a real distribution operation. When I advise you, I speak from the warehouse floor, not from a slide deck.
+          </p>
+
+          <div class="space-y-5">
+            <div class="flex gap-4">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-accent-success/10 flex items-center justify-center mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-text-primary font-semibold mb-1">Practitioner, Not Just Consultant</h4>
+                <p class="text-text-secondary text-sm leading-relaxed">I use P21 every day at a real wholesale distributor. I know the workarounds, gotchas, and shortcuts that only come from daily hands-on experience.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-accent-success/10 flex items-center justify-center mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-text-primary font-semibold mb-1">Modern Tech Stack</h4>
+                <p class="text-text-secondary text-sm leading-relaxed">C#, SQL, Python, REST APIs, and AI automation. I write code that integrates, automates, and scales -- not just configure screens.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-accent-success/10 flex items-center justify-center mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-text-primary font-semibold mb-1">Right-Sized Pricing</h4>
+                <p class="text-text-secondary text-sm leading-relaxed">Big firms charge $250-$400/hr and send junior staff. I start at $135/hr, and you work directly with me -- no hand-offs, no surprises.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="shrink-0 w-8 h-8 rounded-full bg-accent-success/10 flex items-center justify-center mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-text-primary font-semibold mb-1">Direct Expert Access</h4>
+                <p class="text-text-secondary text-sm leading-relaxed">No account managers, no ticket systems. You text me, email me, or call me. When your P21 is down, you need answers fast -- not a support queue.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison card -->
+        <div class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="bg-bg-surface-1 rounded-xl border border-border p-6 md:p-8">
+            <h3 class="text-lg font-semibold text-text-primary mb-6 text-center">How Lumina ERP Compares</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="text-left text-text-tertiary font-medium pb-3 pr-4"></th>
+                  <th class="text-center text-text-tertiary font-medium pb-3 px-2">Big Firms</th>
+                  <th class="text-center text-accent-primary font-semibold pb-3 pl-2">Lumina ERP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-text-secondary py-2 pr-4">Hourly Rate</td>
+                  <td class="text-center text-text-tertiary py-2 px-2">$250-$400</td>
+                  <td class="text-center text-accent-primary font-medium py-2 pl-2">$135-$175</td>
+                </tr>
+                <tr>
+                  <td class="text-text-secondary py-2 pr-4">Who Does the Work</td>
+                  <td class="text-center text-text-tertiary py-2 px-2">Junior Staff</td>
+                  <td class="text-center text-accent-primary font-medium py-2 pl-2">Me, Directly</td>
+                </tr>
+                <tr>
+                  <td class="text-text-secondary py-2 pr-4">Daily P21 User</td>
+                  <td class="text-center py-2 px-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                    <span class="sr-only">No</span>
+                  </td>
+                  <td class="text-center py-2 pl-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="inline" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span class="sr-only">Yes</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-text-secondary py-2 pr-4">Min Engagement</td>
+                  <td class="text-center text-text-tertiary py-2 px-2">$50K+</td>
+                  <td class="text-center text-accent-primary font-medium py-2 pl-2">$500</td>
+                </tr>
+                <tr>
+                  <td class="text-text-secondary py-2 pr-4">Response Time</td>
+                  <td class="text-center text-text-tertiary py-2 px-2">Ticket Queue</td>
+                  <td class="text-center text-accent-primary font-medium py-2 pl-2">Same Day</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       METRICS SECTION
+       Animated counters with Geist Mono
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary">
+          {homepage.metrics.heading}
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+        {homepage.metrics.items.map((metric) => (
+          <Counter
+            value={metric.value}
+            suffix={metric.suffix}
+            label={metric.label}
+            class="scroll-reveal"
+          />
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       TESTIMONIALS SECTION
+       Three testimonial cards
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          What Clients Say
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <!-- Testimonial 1 -->
+        <Card hover={false} padding="lg" class="scroll-reveal relative">
+          <div class="absolute top-4 left-6 text-6xl font-serif text-bg-surface-3 leading-none select-none" aria-hidden="true">&ldquo;</div>
+          <div class="relative pt-6">
+            <blockquote class="text-text-primary leading-relaxed mb-6 italic">
+              {homepage.testimonial.quote}
+            </blockquote>
+            <div class="flex items-center gap-3 pt-4 border-t border-border">
+              <div class="w-10 h-10 rounded-full bg-accent-primary/15 flex items-center justify-center">
+                <span class="text-accent-primary font-semibold text-sm">IT</span>
+              </div>
+              <div>
+                <p class="text-text-primary text-sm font-medium">{homepage.testimonial.name}</p>
+                <p class="text-text-tertiary text-sm">{homepage.testimonial.company}</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Testimonial 2 -->
+        <Card hover={false} padding="lg" class="scroll-reveal relative" style="animation-delay: 100ms;">
+          <div class="absolute top-4 left-6 text-6xl font-serif text-bg-surface-3 leading-none select-none" aria-hidden="true">&ldquo;</div>
+          <div class="relative pt-6">
+            <blockquote class="text-text-primary leading-relaxed mb-6 italic">
+              {homepage.featuredCaseStudy.quote}
+            </blockquote>
+            <div class="flex items-center gap-3 pt-4 border-t border-border">
+              <div class="w-10 h-10 rounded-full bg-accent-success/15 flex items-center justify-center">
+                <span class="text-accent-success font-semibold text-sm">OM</span>
+              </div>
+              <div>
+                <p class="text-text-primary text-sm font-medium">Operations Manager</p>
+                <p class="text-text-tertiary text-sm">Regional HVAC Distributor</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <!-- Testimonial 3 -->
+        <Card hover={false} padding="lg" class="scroll-reveal relative" style="animation-delay: 200ms;">
+          <div class="absolute top-4 left-6 text-6xl font-serif text-bg-surface-3 leading-none select-none" aria-hidden="true">&ldquo;</div>
+          <div class="relative pt-6">
+            <blockquote class="text-text-primary leading-relaxed mb-6 italic">
+              We were dreading the cloud migration until Nick walked us through the plan. He audited every customization, flagged the three that wouldn't survive, and gave us a realistic timeline. First consultant who didn't try to upsell us on things we didn't need.
+            </blockquote>
+            <div class="flex items-center gap-3 pt-4 border-t border-border">
+              <div class="w-10 h-10 rounded-full bg-accent-warning/15 flex items-center justify-center">
+                <span class="text-accent-warning font-semibold text-sm">CFO</span>
+              </div>
+              <div>
+                <p class="text-text-primary text-sm font-medium">CFO</p>
+                <p class="text-text-tertiary text-sm">Industrial Supply Distributor</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       BOTTOM CTA SECTION
+       Strong closing CTA with gradient background
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="gradient" padding="lg">
+    <Container>
+      <div class="max-w-2xl mx-auto text-center scroll-reveal">
+        <GlowText as="h2" gradient class="text-[length:var(--font-size-h2)] font-bold mb-6">
+          {homepage.bottomCta.heading}
+        </GlowText>
+        <p class="text-text-secondary text-[length:var(--font-size-body-lg)] leading-relaxed mb-8">
+          {homepage.bottomCta.subheading}
+        </p>
+        <Button href={homepage.bottomCta.cta.href} variant="primary" size="lg" arrow glow>
+          {homepage.bottomCta.cta.label}
+        </Button>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SCROLL REVEAL ANIMATION
+     Intersection Observer for fade-in + slide-up on scroll
+═══════════════════════════════════════════════════════════════════════════ -->
+<style>
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initScrollReveal() {
+    const elements = document.querySelectorAll('.scroll-reveal');
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      elements.forEach((el) => el.classList.add('visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            const delay = el.style.animationDelay || '0ms';
+            const ms = parseInt(delay, 10) || 0;
+            setTimeout(() => el.classList.add('visible'), ms);
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+  }
+
+  initScrollReveal();
+  document.addEventListener('astro:page-load', initScrollReveal);
+</script>

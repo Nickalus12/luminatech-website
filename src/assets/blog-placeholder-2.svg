@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12121A"/>
+      <stop offset="100%" stop-color="#1A1A24"/>
+    </linearGradient>
+    <linearGradient id="accent2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#bg2)"/>
+  <!-- Abstract code/data blocks -->
+  <rect x="150" y="80" width="200" height="12" rx="6" fill="#3B82F6" opacity="0.3"/>
+  <rect x="150" y="104" width="160" height="12" rx="6" fill="#3B82F6" opacity="0.2"/>
+  <rect x="150" y="128" width="240" height="12" rx="6" fill="#3B82F6" opacity="0.25"/>
+  <rect x="150" y="152" width="180" height="12" rx="6" fill="#3B82F6" opacity="0.15"/>
+  <!-- Arrow flow -->
+  <line x1="400" y1="100" x2="400" y2="300" stroke="#2A2A36" stroke-width="2" stroke-dasharray="6 4"/>
+  <polyline points="390,280 400,300 410,280" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Result blocks -->
+  <rect x="450" y="220" width="200" height="12" rx="6" fill="#10B981" opacity="0.3"/>
+  <rect x="450" y="244" width="160" height="12" rx="6" fill="#10B981" opacity="0.2"/>
+  <rect x="450" y="268" width="240" height="12" rx="6" fill="#10B981" opacity="0.25"/>
+  <rect x="450" y="292" width="180" height="12" rx="6" fill="#10B981" opacity="0.15"/>
+  <!-- Geometric accents -->
+  <circle cx="100" cy="340" r="40" fill="url(#accent2)"/>
+  <circle cx="700" cy="60" r="50" fill="url(#accent2)"/>
+  <rect x="620" y="300" width="80" height="80" rx="12" fill="url(#accent2)" transform="rotate(15 660 340)"/>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" fill="none">
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dashboard container -->
+  <rect x="20" y="20" width="520" height="380" rx="12" fill="#12121A" stroke="#2A2A36" stroke-width="1"/>
+
+  <!-- Title bar -->
+  <rect x="20" y="20" width="520" height="40" rx="12" fill="#1A1A24"/>
+  <rect x="20" y="48" width="520" height="12" fill="#1A1A24"/>
+  <circle cx="44" cy="40" r="5" fill="#F87171" opacity="0.7"/>
+  <circle cx="62" cy="40" r="5" fill="#F59E0B" opacity="0.7"/>
+  <circle cx="80" cy="40" r="5" fill="#10B981" opacity="0.7"/>
+  <text x="270" y="44" font-family="Inter, sans-serif" font-size="12" fill="#6B6B7B" text-anchor="middle">P21 Dashboard</text>
+
+  <!-- Metrics row -->
+  <rect x="40" y="80" width="150" height="70" rx="8" fill="#1A1A24" stroke="#2A2A36" stroke-width="1"/>
+  <text x="55" y="102" font-family="Inter, sans-serif" font-size="10" fill="#6B6B7B">Revenue</text>
+  <text x="55" y="128" font-family="monospace" font-size="22" fill="#10B981" font-weight="700">$2.4M</text>
+
+  <rect x="205" y="80" width="150" height="70" rx="8" fill="#1A1A24" stroke="#2A2A36" stroke-width="1"/>
+  <text x="220" y="102" font-family="Inter, sans-serif" font-size="10" fill="#6B6B7B">Orders Today</text>
+  <text x="220" y="128" font-family="monospace" font-size="22" fill="#3B82F6" font-weight="700">147</text>
+
+  <rect x="370" y="80" width="150" height="70" rx="8" fill="#1A1A24" stroke="#2A2A36" stroke-width="1"/>
+  <text x="385" y="102" font-family="Inter, sans-serif" font-size="10" fill="#6B6B7B">Fill Rate</text>
+  <text x="385" y="128" font-family="monospace" font-size="22" fill="#10B981" font-weight="700">96.8%</text>
+
+  <!-- Chart area -->
+  <rect x="40" y="170" width="320" height="200" rx="8" fill="#1A1A24" stroke="#2A2A36" stroke-width="1"/>
+  <text x="55" y="195" font-family="Inter, sans-serif" font-size="11" fill="#A0A0B0">Order Volume</text>
+
+  <!-- Bar chart -->
+  <rect x="70" y="310" width="24" height="40" rx="3" fill="url(#barGrad)" opacity="0.5"/>
+  <rect x="108" y="280" width="24" height="70" rx="3" fill="url(#barGrad)" opacity="0.6"/>
+  <rect x="146" y="260" width="24" height="90" rx="3" fill="url(#barGrad)" opacity="0.7"/>
+  <rect x="184" y="240" width="24" height="110" rx="3" fill="url(#barGrad)" opacity="0.8"/>
+  <rect x="222" y="230" width="24" height="120" rx="3" fill="url(#barGrad)" opacity="0.9"/>
+  <rect x="260" y="215" width="24" height="135" rx="3" fill="url(#barGrad)"/>
+  <rect x="298" y="225" width="24" height="125" rx="3" fill="url(#barGrad)" opacity="0.85"/>
+
+  <!-- Trend line -->
+  <polyline points="82,305 120,272 158,252 196,232 234,222 272,208 310,218" stroke="url(#lineGrad)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Side panel -->
+  <rect x="380" y="170" width="140" height="200" rx="8" fill="#1A1A24" stroke="#2A2A36" stroke-width="1"/>
+  <text x="395" y="195" font-family="Inter, sans-serif" font-size="11" fill="#A0A0B0">Top Products</text>
+
+  <!-- Product list items -->
+  <rect x="395" y="210" width="110" height="8" rx="4" fill="#3B82F6" opacity="0.8"/>
+  <rect x="395" y="228" width="90" height="8" rx="4" fill="#3B82F6" opacity="0.6"/>
+  <rect x="395" y="246" width="75" height="8" rx="4" fill="#3B82F6" opacity="0.45"/>
+  <rect x="395" y="264" width="60" height="8" rx="4" fill="#3B82F6" opacity="0.3"/>
+  <rect x="395" y="282" width="45" height="8" rx="4" fill="#3B82F6" opacity="0.2"/>
+
+  <!-- Subtle glow overlay -->
+  <ellipse cx="280" cy="210" rx="200" ry="120" fill="url(#heroGrad)"/>
+</svg>

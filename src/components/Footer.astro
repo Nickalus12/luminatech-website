@@ -1,0 +1,120 @@
+---
+const currentYear = new Date().getFullYear();
+
+const serviceLinks = [
+  { label: 'Advisory & Strategy', href: '/services#advisory' },
+  { label: 'Custom Development', href: '/services#development' },
+  { label: 'Cloud Migration', href: '/services#migration' },
+  { label: 'Reporting & Analytics', href: '/services#reporting' },
+  { label: 'Integrations', href: '/services#integration' },
+  { label: 'Managed Support', href: '/services#support' },
+];
+
+const resourceLinks = [
+  { label: 'Blog', href: '/blog' },
+  { label: 'Case Studies', href: '/case-studies' },
+];
+
+const connectLinks = [
+  { label: 'Nickalus@LuminaResume.com', href: 'mailto:Nickalus@LuminaResume.com' },
+  { label: 'LinkedIn', href: '#', external: true },
+  { label: 'GitHub', href: '#', external: true },
+];
+---
+
+<footer class="bg-bg-base border-t border-border">
+  <div class="w-full max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-20">
+    <nav aria-label="Footer navigation" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+
+        <a href="/" class="inline-block text-text-primary no-underline mb-4">
+          <span class="text-xl font-bold tracking-tight">LUMINA ERP</span>
+        </a>
+        <p class="text-text-secondary text-sm leading-relaxed max-w-xs">
+          Illuminate your ERP potential. Expert Prophet 21 consulting for wholesale distributors.
+        </p>
+        <p class="text-text-tertiary text-sm mt-4">
+          Based in Humble, TX<br />Serving distributors nationwide
+        </p>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <h3 class="text-text-primary text-sm font-semibold uppercase tracking-wider mb-4">Services</h3>
+        <ul class="list-none m-0 p-0 flex flex-col gap-2.5">
+          {serviceLinks.map(({ label, href }) => (
+            <li>
+              <a
+                href={href}
+                class="text-text-secondary text-sm hover:text-text-primary transition-colors duration-fast no-underline"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div>
+        <h3 class="text-text-primary text-sm font-semibold uppercase tracking-wider mb-4">Resources</h3>
+        <ul class="list-none m-0 p-0 flex flex-col gap-2.5">
+          {resourceLinks.map(({ label, href }) => (
+            <li>
+              <a
+                href={href}
+                class="text-text-secondary text-sm hover:text-text-primary transition-colors duration-fast no-underline"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Connect -->
+      <div>
+        <h3 class="text-text-primary text-sm font-semibold uppercase tracking-wider mb-4">Connect</h3>
+        <ul class="list-none m-0 p-0 flex flex-col gap-2.5">
+          {connectLinks.map(({ label, href, external }) => (
+            <li>
+              <a
+                href={href}
+                class="text-text-secondary text-sm hover:text-text-primary transition-colors duration-fast no-underline inline-flex items-center gap-1.5"
+                {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {label}
+                {external && (
+                  <>
+                    <span class="sr-only">(opens in new tab)</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50" aria-hidden="true">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" x2="21" y1="14" y2="3" />
+                    </svg>
+                  </>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Bottom bar -->
+    <div class="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-text-tertiary text-sm">
+        &copy; {currentYear} Lumina ERP. All rights reserved.
+      </p>
+      <div class="flex items-center gap-6">
+        <a href="/privacy" class="text-text-tertiary text-sm hover:text-text-secondary transition-colors duration-fast no-underline">
+          Privacy Policy
+        </a>
+        <a href="/terms" class="text-text-tertiary text-sm hover:text-text-secondary transition-colors duration-fast no-underline">
+          Terms of Service
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
