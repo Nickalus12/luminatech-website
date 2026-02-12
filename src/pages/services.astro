@@ -20,7 +20,7 @@ const iconPaths: Record<string, string> = {
 
 const retainerTiers = [
   {
-    name: "Essentials",
+    name: "Basic",
     price: "$625",
     period: "/mo",
     hours: "5 hrs",
@@ -29,44 +29,61 @@ const retainerTiers = [
       { text: "5 hours of support", included: true },
       { text: "Email support", included: true },
       { text: "48-hour response time", included: true },
-      { text: "Quarterly system review", included: true },
+      { text: "Quarterly check-in", included: true },
       { text: "Minor fixes & troubleshooting", included: true },
-      { text: "Priority support", included: false },
-      { text: "Custom development", included: false },
+      { text: "Priority response", included: false },
+      { text: "Proactive monitoring", included: false },
       { text: "Dedicated availability", included: false },
     ],
   },
   {
-    name: "Professional",
-    price: "$1,500",
+    name: "Standard",
+    price: "$1,100",
     period: "/mo",
-    hours: "12 hrs",
+    hours: "10 hrs",
     highlight: true,
     features: [
-      { text: "12 hours of support", included: true },
+      { text: "10 hours of support", included: true },
       { text: "Email & phone support", included: true },
       { text: "24-hour response time", included: true },
       { text: "Monthly system review", included: true },
       { text: "Business rules maintenance", included: true },
-      { text: "Priority support", included: true },
-      { text: "Custom development included", included: true },
+      { text: "Priority response", included: true },
+      { text: "Proactive monitoring", included: false },
       { text: "Dedicated availability", included: false },
     ],
   },
   {
-    name: "Enterprise",
-    price: "$4,500",
+    name: "Premium",
+    price: "$2,000",
     period: "/mo",
-    hours: "30 hrs",
+    hours: "20 hrs",
     highlight: false,
     features: [
-      { text: "30 hours of support", included: true },
+      { text: "20 hours of support", included: true },
       { text: "Email, phone & video support", included: true },
-      { text: "4-hour response time", included: true },
-      { text: "Weekly system review", included: true },
+      { text: "Same-day response", included: true },
+      { text: "Weekly touchpoint", included: true },
       { text: "Business rules maintenance", included: true },
-      { text: "Priority support", included: true },
-      { text: "Custom development included", included: true },
+      { text: "Priority response", included: true },
+      { text: "Proactive monitoring", included: true },
+      { text: "Dedicated availability", included: false },
+    ],
+  },
+  {
+    name: "Dedicated",
+    price: "$3,600",
+    period: "/mo",
+    hours: "40 hrs",
+    highlight: false,
+    features: [
+      { text: "40 hours of support", included: true },
+      { text: "Email, phone & video support", included: true },
+      { text: "Same-day response", included: true },
+      { text: "Weekly touchpoint", included: true },
+      { text: "Business rules maintenance", included: true },
+      { text: "Priority response", included: true },
+      { text: "Proactive monitoring", included: true },
       { text: "Dedicated availability", included: true },
     ],
   },
@@ -294,7 +311,7 @@ const retainerTiers = [
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         {retainerTiers.map((tier) => (
           <div
             class:list={[
