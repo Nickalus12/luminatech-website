@@ -1,0 +1,198 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import Badge from '../../components/ui/Badge.astro';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('caseStudies');
+  return studies.map((study) => ({
+    params: { slug: study.data.slug },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+const { Content } = await render(study);
+
+const metricEntries = Object.entries(study.data.metrics);
+
+const formattedDate = study.data.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={study.data.title}
+  description={study.data.summary}
+  article={true}
+>
+  <article class="py-12 md:py-20">
+    <Container narrow>
+      <!-- Back link -->
+      <a
+        href="/case-studies/"
+        class="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-accent-primary transition-colors duration-fast mb-8 no-underline"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5" /><path d="m12 19-7-7 7-7" />
+        </svg>
+        All Case Studies
+      </a>
+
+      <!-- Header -->
+      <header class="mb-10">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <Badge variant="primary">{study.data.industry}</Badge>
+          {study.data.services.map((service) => (
+            <Badge>{service}</Badge>
+          ))}
+        </div>
+
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
+          {study.data.title}
+        </h1>
+
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed">
+          {study.data.summary}
+        </p>
+
+        <time datetime={study.data.date.toISOString()} class="block text-sm text-text-tertiary mt-4">
+          {formattedDate}
+        </time>
+      </header>
+
+      <!-- Metrics highlight -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 p-6 rounded-xl bg-bg-surface-1 border border-border">
+        {metricEntries.map(([key, metric]) => (
+          <div class="text-center p-4">
+            <div class="text-accent-primary font-bold text-2xl md:text-3xl mb-1">{metric.improvement}</div>
+            <div class="text-text-secondary text-sm font-medium capitalize mb-2">
+              {key.replace(/([A-Z])/g, ' $1').trim()}
+            </div>
+            <div class="text-text-tertiary text-xs">
+              {metric.before} &rarr; {metric.after}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Article body -->
+      <div class="prose">
+        <Content />
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-12 p-8 rounded-lg bg-bg-surface-1 border border-border text-center">
+        <h3 class="text-[length:var(--font-size-h4)] font-semibold mb-2">Ready to see results like these?</h3>
+        <p class="text-text-secondary mb-6">
+          Every distributor's P21 setup is different. Let's talk about what's possible for yours.
+        </p>
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white font-semibold rounded-lg transition-all duration-fast shadow-glow hover:shadow-glow-lg no-underline"
+        >
+          Schedule a Free Consultation
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </Container>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .prose {
+    max-width: 65ch;
+    color: var(--color-text-primary);
+    line-height: 1.75;
+  }
+
+  .prose h2 {
+    font-size: var(--font-size-h3);
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose h3 {
+    font-size: var(--font-size-h4);
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose p {
+    margin-bottom: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .prose a {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--duration-fast);
+  }
+
+  .prose a:hover {
+    border-bottom-color: var(--color-accent-primary);
+  }
+
+  .prose strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .prose ul, .prose ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .prose li::marker {
+    color: var(--color-accent-primary);
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-accent-primary);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+  }
+
+  .prose th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .prose td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+  }
+</style>
