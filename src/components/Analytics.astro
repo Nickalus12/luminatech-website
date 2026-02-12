@@ -1,10 +1,21 @@
 ---
-// Analytics placeholder
-// Uncomment ONE of the options below when ready to enable analytics.
+// Analytics and third-party scripts
+// Cloudflare Web Analytics: Enable in Cloudflare dashboard > Web Analytics to get your token
+// Tawk.to: Live chat widget
 ---
 
-<!-- Option 1: Cloudflare Web Analytics (recommended for Cloudflare Pages) -->
+<!-- Cloudflare Web Analytics (enable in CF dashboard, replace token) -->
 <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CF_ANALYTICS_TOKEN"}'></script> -->
 
-<!-- Option 2: Plausible Analytics (privacy-focused, no cookies) -->
-<!-- <script defer data-domain="luminatech.xyz" src="https://plausible.io/js/script.js"></script> -->
+<!-- Tawk.to Live Chat -->
+<script type="text/javascript" is:inline>
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/698e083af6e6d41c36a25add/1jh9d099o';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
