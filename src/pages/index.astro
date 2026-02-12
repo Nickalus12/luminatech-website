@@ -75,6 +75,24 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
+       MIGRATION URGENCY BANNER
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="bg-accent-warning/5 border-y border-accent-warning/20">
+    <Container>
+      <div class="flex items-center justify-center gap-3 py-3 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <p class="text-text-secondary">
+          <span class="text-accent-warning font-semibold">On-prem P21 support ends June 2029.</span>
+          <span class="hidden sm:inline"> Is your migration plan ready?</span>
+          <a href="/services#migration" class="text-accent-primary hover:underline ml-1 font-medium">Start planning</a>
+        </p>
+      </div>
+    </Container>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
        TRUST BAR
        Metric bar since no client logos yet
   ═══════════════════════════════════════════════════════════════════════════ -->
@@ -448,6 +466,7 @@ import { homepage } from '../content/copy';
         <Button href={homepage.bottomCta.cta.href} variant="primary" size="lg" arrow glow>
           {homepage.bottomCta.cta.label}
         </Button>
+        <p class="text-text-tertiary text-sm mt-4">Free 30-minute call. No contracts. No obligations.</p>
       </div>
     </Container>
   </Section>

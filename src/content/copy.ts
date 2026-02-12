@@ -25,7 +25,7 @@ export const nav = {
     { label: "About", href: "/about" },
     { label: "Blog", href: "/blog" },
   ],
-  cta: { label: "Get Started", href: "/contact" },
+  cta: { label: "Free Consultation", href: "/contact" },
 } as const;
 
 // ─── Homepage ─────────────────────────────────────────────────────────────────

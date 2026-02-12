@@ -170,27 +170,6 @@ export default function ContactForm() {
         )}
       </div>
 
-      {/* Email */}
-      <div>
-        <label htmlFor="contact-email" className={labelClass}>
-          Email <span className="text-accent-error">*</span>
-        </label>
-        <input
-          id="contact-email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@company.com"
-          value={formData.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          className={`${inputBase} ${errors.email ? inputError : ''}`}
-          aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? 'email-error' : undefined}
-        />
-        {errors.email && (
-          <p id="email-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.email}</p>
-        )}
-      </div>
-
       {/* Company */}
       <div>
         <label htmlFor="contact-company" className={labelClass}>
@@ -209,6 +188,27 @@ export default function ContactForm() {
         />
         {errors.company && (
           <p id="company-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.company}</p>
+        )}
+      </div>
+
+      {/* Email */}
+      <div>
+        <label htmlFor="contact-email" className={labelClass}>
+          Email <span className="text-accent-error">*</span>
+        </label>
+        <input
+          id="contact-email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@company.com"
+          value={formData.email}
+          onChange={(e) => handleChange('email', e.target.value)}
+          className={`${inputBase} ${errors.email ? inputError : ''}`}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? 'email-error' : undefined}
+        />
+        {errors.email && (
+          <p id="email-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.email}</p>
         )}
       </div>
 
@@ -254,8 +254,8 @@ export default function ContactForm() {
       {status === 'error' && (
         <div role="alert" className="bg-accent-error/10 border border-accent-error/30 rounded-lg p-4 text-sm text-accent-error animate-[fade-in_0.3s_ease-out]">
           Something went wrong. Please try again or email me directly at{' '}
-          <a href="mailto:Nickalus@LuminaResume.com" className="underline">
-            Nickalus@LuminaResume.com
+          <a href="mailto:ERP@LuminaResume.com" className="underline">
+            ERP@LuminaResume.com
           </a>
         </div>
       )}
@@ -276,13 +276,16 @@ export default function ContactForm() {
           </>
         ) : (
           <>
-            Send Message
+            Get My Free Assessment
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
             </svg>
           </>
         )}
       </button>
+      <p className="text-center text-xs text-text-tertiary mt-3">
+        Free 30-minute call. No contracts. No obligations.
+      </p>
     </form>
   );
 }
