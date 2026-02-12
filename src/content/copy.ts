@@ -468,7 +468,7 @@ export const contact = {
       "You'll get honest feedback, even if the answer is 'you don't need a consultant for this'",
     ],
     directContact: {
-      email: "Nickalus@LuminaResume.com",
+      email: "Support@LuminaResume.com",
       location: "Humble, TX (Houston Metro)",
       availability: "Mon-Fri evenings & weekends",
     },

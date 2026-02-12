@@ -254,8 +254,8 @@ export default function ContactForm() {
       {status === 'error' && (
         <div role="alert" className="bg-accent-error/10 border border-accent-error/30 rounded-lg p-4 text-sm text-accent-error animate-[fade-in_0.3s_ease-out]">
           Something went wrong. Please try again or email me directly at{' '}
-          <a href="mailto:ERP@LuminaResume.com" className="underline">
-            ERP@LuminaResume.com
+          <a href="mailto:Support@LuminaResume.com" className="underline">
+            Support@LuminaResume.com
           </a>
         </div>
       )}
