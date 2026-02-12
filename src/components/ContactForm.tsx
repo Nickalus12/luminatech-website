@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { submitToHubSpot } from '../lib/hubspot';
 
 interface FormData {
   name: string;
@@ -88,20 +89,28 @@ export default function ContactForm() {
 
     setStatus('submitting');
 
-    try {
-      const res = await fetch('https://formspree.io/f/mojnjggl', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          company: formData.company,
-          email: formData.email,
-          helpType: formData.helpType,
-          message: formData.message,
-        }),
-      });
+    const contactData = {
+      name: formData.name,
+      company: formData.company,
+      email: formData.email,
+      helpType: formData.helpType,
+      message: formData.message,
+    };
 
-      if (res.ok) {
+    try {
+      const [hubspotOk, formspreeRes] = await Promise.allSettled([
+        submitToHubSpot(contactData),
+        fetch('https://formspree.io/f/mojnjggl', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(contactData),
+        }),
+      ]);
+
+      const hubspotSuccess = hubspotOk.status === 'fulfilled' && hubspotOk.value;
+      const formspreeSuccess = formspreeRes.status === 'fulfilled' && formspreeRes.value.ok;
+
+      if (hubspotSuccess || formspreeSuccess) {
         setSubmittedName(formData.name.split(' ')[0]);
         setStatus('success');
         setFormData({ name: '', company: '', email: '', helpType: '', message: '', _honeypot: '' });

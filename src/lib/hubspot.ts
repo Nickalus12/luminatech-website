@@ -7,9 +7,7 @@
  */
 
 export const HUBSPOT_PORTAL_ID = '245170452';
-// TODO: Replace with your actual form GUID after creating the form in HubSpot
-// Get form GUID from: https://app.hubspot.com/contacts/245170452/forms
-export const HUBSPOT_FORM_GUID = 'YOUR_FORM_GUID_HERE';
+export const HUBSPOT_FORM_GUID = '98783590-40a0-4b73-b4f7-cc76d3fe2206';
 
 /**
  * Get the HubSpot tracking cookie (hubspotutk)
