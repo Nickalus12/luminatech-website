@@ -1,5 +1,1 @@
-# Trailing slash normalization (Astro handles this, but belt-and-suspenders)
-# /services/ /services 301
-
-# Future redirects go here
-# /old-path /new-path 301
+/schedule /contact#schedule 302
