@@ -126,7 +126,7 @@ export default function ContactForm() {
           Thanks, {submittedName}!
         </h3>
         <p className="text-text-secondary">
-          I'll be in touch within 24 hours.
+          We'll be in touch within 24 hours.
         </p>
       </div>
     );
@@ -215,7 +215,7 @@ export default function ContactForm() {
       {/* Service Interest */}
       <div>
         <label htmlFor="contact-help" className={labelClass}>
-          How Can I Help? <span className="text-accent-error">*</span>
+          How Can We Help? <span className="text-accent-error">*</span>
         </label>
         <select
           id="contact-help"
@@ -238,12 +238,12 @@ export default function ContactForm() {
       {/* Message */}
       <div>
         <label htmlFor="contact-message" className={labelClass}>
-          Tell Me More <span className="text-text-tertiary">(optional)</span>
+          Tell Us More <span className="text-text-tertiary">(optional)</span>
         </label>
         <textarea
           id="contact-message"
           rows={4}
-          placeholder="What's going on with your P21? The more context, the better I can help."
+          placeholder="What's going on with your P21? The more context, the better we can help."
           value={formData.message}
           onChange={(e) => handleChange('message', e.target.value)}
           className={`${inputBase} resize-y min-h-[100px]`}
@@ -253,7 +253,7 @@ export default function ContactForm() {
       {/* Error message */}
       {status === 'error' && (
         <div role="alert" className="bg-accent-error/10 border border-accent-error/30 rounded-lg p-4 text-sm text-accent-error animate-[fade-in_0.3s_ease-out]">
-          Something went wrong. Please try again or email me directly at{' '}
+          Something went wrong. Please try again or email us directly at{' '}
           <a href="mailto:Support@LuminaResume.com" className="underline">
             Support@LuminaResume.com
           </a>

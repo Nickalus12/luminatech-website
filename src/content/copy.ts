@@ -13,7 +13,7 @@ export const brand = {
   founder: "Nick Brewer",
   copyright: `\u00A9 ${new Date().getFullYear()} Lumina ERP. All rights reserved.`,
   footerDescription:
-    "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, I illuminate the path to ERP excellence.",
+    "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
 } as const;
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ export const homepage = {
   hero: {
     headline: "Stop Losing Revenue to\nBroken P21 Workflows",
     subheadline:
-      "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, I illuminate the path to ERP excellence.",
+      "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
     primaryCta: { label: "Schedule a Free Consultation", href: "/contact" },
     secondaryCta: { label: "View Case Studies", href: "/case-studies" },
   },
@@ -55,15 +55,15 @@ export const homepage = {
     ],
   },
   servicesPreview: {
-    heading: "How I Help",
+    heading: "How We Help",
     subheading:
-      "Whether you need a quick fix or a full migration plan, I bring hands-on P21 expertise to every engagement.",
+      "Whether you need a quick fix or a full migration plan, we bring hands-on P21 expertise to every engagement.",
     cards: [
       {
         icon: "advisory",
         title: "Strategy & Advisory",
         description:
-          "P21 health checks, migration planning, and configuration audits. I find what's slowing your system down and build a roadmap to fix it.",
+          "P21 health checks, migration planning, and configuration audits. We find what's slowing your system down and build a roadmap to fix it.",
         link: { label: "Learn More", href: "/services#advisory" },
       },
       {
@@ -77,7 +77,7 @@ export const homepage = {
         icon: "cloud",
         title: "Cloud Migration",
         description:
-          "On-prem P21 ends in 2028. I audit your customizations, plan the timeline, and guide you through every step of the cloud transition.",
+          "On-prem P21 ends in 2028. We audit your customizations, plan the timeline, and guide you through every step of the cloud transition.",
         link: { label: "Learn More", href: "/services#migration" },
       },
       {
@@ -112,7 +112,7 @@ export const homepage = {
   bottomCta: {
     heading: "Ready to Illuminate Your P21?",
     subheading:
-      "Schedule a free 30-minute consultation. I'll review your setup and tell you exactly where the opportunities are -- no sales pitch, just straight talk.",
+      "Schedule a free 30-minute consultation. We'll review your setup and tell you exactly where the opportunities are -- no sales pitch, just straight talk.",
     cta: { label: "Schedule a Free Consultation", href: "/contact" },
   },
 } as const;
@@ -123,7 +123,7 @@ export const services = {
   hero: {
     headline: "Services",
     subheadline:
-      "Hands-on Prophet 21 consulting from someone who uses the system every day. No junior staff, no hand-offs -- you work directly with me.",
+      "Hands-on Prophet 21 consulting from practitioners who use the system every day. No junior staff, no hand-offs -- you work directly with our lead consultant.",
   },
   anchors: [
     { label: "Advisory", href: "#advisory" },
@@ -139,7 +139,7 @@ export const services = {
       icon: "advisory",
       title: "Strategy & Advisory",
       description:
-        "Your P21 system is only as good as its configuration. I dig into your setup, find the bottlenecks, and build a prioritized plan to fix them. No vague recommendations -- you get a written report with specific actions and expected outcomes.",
+        "Your P21 system is only as good as its configuration. We dig into your setup, find the bottlenecks, and build a prioritized plan to fix them. No vague recommendations -- you get a written report with specific actions and expected outcomes.",
       includes: [
         "Comprehensive P21 health check (configuration, performance, security)",
         "Written report with prioritized recommendations",
@@ -156,7 +156,7 @@ export const services = {
       icon: "development",
       title: "Custom Development",
       description:
-        "DynaChange visual rules, compiled C# .NET business rules, and custom workflows built by someone who writes them in a production P21 environment daily. I know which approaches survive upgrades and which ones create technical debt.",
+        "DynaChange visual rules, compiled C# .NET business rules, and custom workflows built by practitioners who write them in a production P21 environment daily. We know which approaches survive upgrades and which ones create technical debt.",
       includes: [
         "DynaChange visual business rules",
         "C# .NET compiled business rules",
@@ -173,7 +173,7 @@ export const services = {
       icon: "cloud",
       title: "Cloud Migration",
       description:
-        "Epicor is sunsetting on-prem P21. The final feature release hits May 2028, and active support ends June 2029. I help you audit your customizations, plan the timeline, test compatibility, and make the move without disrupting operations.",
+        "Epicor is sunsetting on-prem P21. The final feature release hits May 2028, and active support ends June 2029. We help you audit your customizations, plan the timeline, test compatibility, and make the move without disrupting operations.",
       includes: [
         "Full customization audit and compatibility assessment",
         "Migration timeline and risk analysis",
@@ -190,7 +190,7 @@ export const services = {
       icon: "reporting",
       title: "Reporting & Analytics",
       description:
-        "If you're exporting to Excel to get the numbers you need, your reporting setup is broken. I build SSRS reports, SQL queries, and Power BI dashboards that pull real-time data directly from P21 -- no more stale spreadsheets.",
+        "If you're exporting to Excel to get the numbers you need, your reporting setup is broken. We build SSRS reports, SQL queries, and Power BI dashboards that pull real-time data directly from P21 -- no more stale spreadsheets.",
       includes: [
         "Custom SSRS report development",
         "SQL query optimization and creation",
@@ -207,7 +207,7 @@ export const services = {
       icon: "integration",
       title: "Integration Development",
       description:
-        "P21 doesn't exist in a vacuum. I build integrations with ecommerce platforms, CRMs, warehouse management systems, EDI providers, and custom APIs. Clean data flow in, clean data flow out.",
+        "P21 doesn't exist in a vacuum. We build integrations with ecommerce platforms, CRMs, warehouse management systems, EDI providers, and custom APIs. Clean data flow in, clean data flow out.",
       includes: [
         "Ecommerce platform integration (Shopify, Magento, BigCommerce)",
         "CRM connectivity (Salesforce, HubSpot)",
@@ -224,7 +224,7 @@ export const services = {
       icon: "managed",
       title: "Managed Support",
       description:
-        "A dedicated P21 expert on retainer. Stop paying emergency rates when something breaks. My retainer clients get guaranteed hours, priority response, and proactive monitoring -- like having a P21 admin on speed dial.",
+        "A dedicated P21 expert on retainer. Stop paying emergency rates when something breaks. Our retainer clients get guaranteed hours, priority response, and proactive monitoring -- like having a P21 admin on speed dial.",
       includes: [
         "Guaranteed monthly hours at discounted rates",
         "Priority response times",
@@ -286,26 +286,26 @@ export const services = {
         number: "02",
         title: "Blueprint",
         description:
-          "I scope the work, define deliverables, and give you a fixed quote. You know exactly what you're getting and what it costs before we start.",
+          "We scope the work, define deliverables, and give you a fixed quote. You know exactly what you're getting and what it costs before we start.",
       },
       {
         number: "03",
         title: "Execute",
         description:
-          "I do the work. You get regular updates and can see progress as it happens. No surprises, no scope creep without your approval.",
+          "We do the work. You get regular updates and can see progress as it happens. No surprises, no scope creep without your approval.",
       },
       {
         number: "04",
         title: "Optimize",
         description:
-          "After delivery, I stick around to make sure everything works in production. Then I document what was done so your team can maintain it.",
+          "After delivery, we stick around to make sure everything works in production. Then we document what was done so your team can maintain it.",
       },
     ],
   },
   bottomCta: {
     heading: "Not Sure Where to Start?",
     subheading:
-      "Book a free 30-minute discovery call. I'll listen to your challenges and tell you what I'd recommend -- even if the answer is 'you don't need a consultant for this.'",
+      "Book a free 30-minute discovery call. We'll listen to your challenges and tell you what we'd recommend -- even if the answer is 'you don't need a consultant for this.'",
     cta: { label: "Book a Discovery Call", href: "/contact" },
   },
 } as const;
@@ -421,7 +421,7 @@ export const contact = {
   hero: {
     headline: "Let's Talk P21",
     subheadline:
-      "Whether you have a specific project in mind or just want to explore your options, I'm happy to chat. No commitment, no pressure.",
+      "Whether you have a specific project in mind or just want to explore your options, we're happy to chat. No commitment, no pressure.",
   },
   form: {
     fields: {
@@ -437,7 +437,7 @@ export const contact = {
         required: true,
       },
       helpType: {
-        label: "How Can I Help?",
+        label: "How Can We Help?",
         options: [
           "P21 Health Check / Audit",
           "Custom Business Rules",
@@ -450,20 +450,20 @@ export const contact = {
         required: true,
       },
       message: {
-        label: "Tell Me More",
+        label: "Tell Us More",
         placeholder:
-          "What's going on with your P21? The more context, the better I can help.",
+          "What's going on with your P21? The more context, the better we can help.",
         required: false,
       },
     },
     submitLabel: "Send Message",
     successMessage:
-      "Thanks, {name}! I'll be in touch within 24 hours.",
+      "Thanks, {name}! We'll be in touch within 24 hours.",
   },
   sidebar: {
     heading: "What to Expect",
     items: [
-      "I respond to every inquiry within 24 hours",
+      "We respond to every inquiry within 24 hours",
       "Discovery calls are free -- 30 minutes, no strings",
       "You'll get honest feedback, even if the answer is 'you don't need a consultant for this'",
     ],
@@ -486,12 +486,12 @@ export const contact = {
       {
         question: "What does a free consultation look like?",
         answer:
-          "A 30-minute video call where I ask about your P21 setup, your pain points, and what you're trying to accomplish. I'll give you honest feedback on where I see opportunities -- and whether I'm the right person to help.",
+          "A 30-minute video call where we ask about your P21 setup, your pain points, and what you're trying to accomplish. We'll give you honest feedback on where we see opportunities -- and whether we're the right fit to help.",
       },
       {
         question: "Do you work on-site or remote?",
         answer:
-          "Both. Most engagements are remote, which keeps costs down for you. For intensive work sessions or go-live support, I'm available on-site in the Houston/Gulf Coast area and can travel nationwide.",
+          "Both. Most engagements are remote, which keeps costs down for you. For intensive work sessions or go-live support, we're available on-site in the Houston/Gulf Coast area and can travel nationwide.",
       },
       {
         question: "How do you price your services?",
@@ -501,12 +501,12 @@ export const contact = {
       {
         question: "What if I'm not sure what I need?",
         answer:
-          "That's what the discovery call is for. I'll ask the right questions to figure out where your biggest opportunities are. A P21 Health Check ($2,500-$5,000) is also a great starting point -- it gives us both a clear picture of your system's state.",
+          "That's what the discovery call is for. We'll ask the right questions to figure out where your biggest opportunities are. A P21 Health Check ($2,500-$5,000) is also a great starting point -- it gives us all a clear picture of your system's state.",
       },
       {
         question: "Can you help with the Kinetic UI transition?",
         answer:
-          "Yes. Epicor is discontinuing the Classic UI in Kinetic 2026.1 (May 2026). I help with compatibility testing, user retraining, and making sure your customizations work in the new browser-based interface.",
+          "Yes. Epicor is discontinuing the Classic UI in Kinetic 2026.1 (May 2026). We help with compatibility testing, user retraining, and making sure your customizations work in the new browser-based interface.",
       },
     ],
   },

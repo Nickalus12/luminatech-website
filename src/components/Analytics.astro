@@ -1,16 +1,33 @@
 ---
 // Analytics and third-party scripts
 // HubSpot: CRM tracking, forms, and analytics (Hub ID: 245170452)
-// Tawk.to: Live chat widget
+// Tawk.to: Live chat widget with custom launcher
 // Cloudflare Web Analytics: Enable in CF dashboard for Core Web Vitals
+import ChatWidget from './ChatWidget.astro';
 ---
 
 <!-- HubSpot Tracking Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/245170452.js" is:inline></script>
 
-<!-- Tawk.to Live Chat -->
+<!-- Tawk.to Live Chat with Custom Launcher -->
+<!--
+  Dashboard Settings (https://dashboard.tawk.to):
+  1. Widget Behavior > Visibility > Hide widget on load: ENABLED
+  2. Widget Appearance > Colors: Match site theme
+     - Primary: #3B82F6 (accent-primary)
+     - Background: #12121A (bg-surface-1)
+     - Text: #E8E8ED (text-primary)
+-->
 <script type="text/javascript" is:inline>
+// Initialize Tawk_API before loading the widget script
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+
+// Custom styling: high z-index to appear above custom launcher
+Tawk_API.customStyle = {
+  zIndex: 1000
+};
+
+// Load Tawk.to widget script
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
@@ -20,6 +37,9 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
+
+<!-- Custom Chat Widget Launcher -->
+<ChatWidget />
 
 <!-- Cloudflare Web Analytics (enable in CF dashboard, replace token) -->
 <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CF_ANALYTICS_TOKEN"}'></script> -->
