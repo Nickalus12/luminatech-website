@@ -698,7 +698,7 @@ export const footer = {
         },
         {
           label: "LinkedIn",
-          href: "https://www.linkedin.com/in/nickalus-brewer",
+          href: "https://www.linkedin.com/company/lumina-erp/",
           external: true,
         },
         {
