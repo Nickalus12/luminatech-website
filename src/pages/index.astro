@@ -7,6 +7,9 @@ import Button from '../components/ui/Button.astro';
 import GlowText from '../components/ui/GlowText.astro';
 import Counter from '../components/ui/Counter.astro';
 import Badge from '../components/ui/Badge.astro';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
+import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
+import MetricsGrid from '../components/ui/MetricsGrid';
 import { homepage } from '../content/copy';
 ---
 
@@ -364,15 +367,37 @@ import { homepage } from '../content/copy';
         </h2>
       </div>
 
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-        {homepage.metrics.items.map((metric) => (
-          <Counter
-            value={metric.value}
-            suffix={metric.suffix}
-            label={metric.label}
-            class="scroll-reveal"
-          />
-        ))}
+      <MetricsGrid
+        client:visible
+        metrics={homepage.metrics.items.map(m => ({
+          value: String(m.value),
+          label: m.label,
+          suffix: m.suffix || '',
+        }))}
+      />
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       BEFORE / AFTER SHOWCASE
+       Interactive slider demonstrating real impact
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          See the Difference
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Drag the slider to compare before and after P21 automation
+        </p>
+      </div>
+      <div class="max-w-2xl mx-auto scroll-reveal">
+        <BeforeAfterSlider
+          client:visible
+          before={{ label: "Before", value: "45 min/order", description: "Manual processing with re-keying and lookups" }}
+          after={{ label: "After", value: "18 min/order", description: "Automated with P21 business rules" }}
+        />
       </div>
     </Container>
   </Section>

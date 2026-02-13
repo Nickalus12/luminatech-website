@@ -5,6 +5,7 @@ import Container from '../components/ui/Container.astro';
 import Card from '../components/ui/Card.astro';
 import Button from '../components/ui/Button.astro';
 import Badge from '../components/ui/Badge.astro';
+import InteractiveROICalculator from '../components/ui/InteractiveROICalculator';
 import { services, brand } from '../content/copy';
 
 const description = "Comprehensive Prophet 21 consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support for wholesale distributors.";
@@ -992,6 +993,24 @@ const serviceEnhancements: Record<string, {
             </Card>
           </div>
         ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Interactive ROI Calculator -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-10 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Calculate Your Savings</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          What Could P21 Automation Save You?
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Adjust the sliders to estimate your potential return on investment.
+        </p>
+      </div>
+      <div class="max-w-4xl mx-auto scroll-reveal">
+        <InteractiveROICalculator client:visible />
       </div>
     </Container>
   </Section>
