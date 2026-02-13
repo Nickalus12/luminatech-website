@@ -3,6 +3,65 @@ import { useEffect, useRef, useState } from 'react';
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
 
+// Major US distribution hubs — destinations for animated arcs
+const DESTINATION_CITIES: [number, number][] = [
+  [-122.33, 47.61],  // Seattle, WA
+  [-87.63, 41.88],   // Chicago, IL
+  [-74.01, 40.71],   // New York, NY
+  [-80.19, 25.76],   // Miami, FL
+  [-104.99, 39.74],  // Denver, CO
+  [-112.07, 33.45],  // Phoenix, AZ
+  [-84.39, 33.75],   // Atlanta, GA
+];
+
+// Center of the continental US (slightly south to keep Humble TX visible)
+const US_CENTER: [number, number] = [-96.5, 38.5];
+
+/**
+ * Generate a quadratic bezier arc between two lng/lat points.
+ * The arc curves northward (upward on the map) for visual consistency.
+ */
+function generateArc(
+  origin: [number, number],
+  destination: [number, number],
+  numPoints = 50
+): [number, number][] {
+  const [lng1, lat1] = origin;
+  const [lng2, lat2] = destination;
+
+  // Midpoint
+  const midLng = (lng1 + lng2) / 2;
+  const midLat = (lat1 + lat2) / 2;
+
+  // Distance between points (approximate, for scaling the curve height)
+  const dx = lng2 - lng1;
+  const dy = lat2 - lat1;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  // Perpendicular offset (always curve northward/upward)
+  // Perpendicular to the line: (-dy, dx) normalized
+  const perpLen = Math.sqrt(dy * dy + dx * dx);
+  const perpX = -dy / perpLen;
+  const perpY = dx / perpLen;
+
+  // Scale: 15% of distance, always push upward (positive lat direction)
+  const curvature = dist * 0.15;
+  // Choose direction that pushes the control point northward
+  const controlLng = midLng + perpX * curvature * (perpY >= 0 ? 1 : -1);
+  const controlLat = midLat + Math.abs(perpY) * curvature + curvature * 0.3;
+
+  const points: [number, number][] = [];
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    const inv = 1 - t;
+    // Quadratic bezier: B(t) = (1-t)^2 * P0 + 2*(1-t)*t * Pc + t^2 * P1
+    const lng = inv * inv * lng1 + 2 * inv * t * controlLng + t * t * lng2;
+    const lat = inv * inv * lat1 + 2 * inv * t * controlLat + t * t * lat2;
+    points.push([lng, lat]);
+  }
+  return points;
+}
+
 interface MapSectionProps {
   compact?: boolean;
 }
@@ -10,12 +69,12 @@ interface MapSectionProps {
 export default function MapSection({ compact = false }: MapSectionProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const animationRef = useRef<number | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
-  const mapHeight = compact ? '200px' : '380px';
-  const mapMinHeight = compact ? '160px' : '280px';
-  const mapZoom = compact ? 10 : 9;
+  const mapHeight = compact ? '220px' : '380px';
+  const mapMinHeight = compact ? '180px' : '280px';
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -52,8 +111,8 @@ export default function MapSection({ compact = false }: MapSectionProps) {
         const map = new mapboxgl.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/dark-v11',
-          center: HUMBLE_TX,
-          zoom: mapZoom,
+          center: compact ? US_CENTER : HUMBLE_TX,
+          zoom: compact ? 3.2 : 9,
           interactive: !compact,
           attributionControl: false,
           pitchWithRotate: false,
@@ -75,7 +134,7 @@ export default function MapSection({ compact = false }: MapSectionProps) {
         map.on('load', () => {
           setLoaded(true);
 
-          // Create custom marker element
+          // Create custom marker element for Humble TX
           const markerEl = document.createElement('div');
           markerEl.className = 'lumina-map-marker';
           markerEl.innerHTML = `
@@ -86,7 +145,7 @@ export default function MapSection({ compact = false }: MapSectionProps) {
           const marker = new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
             .setLngLat(HUMBLE_TX);
 
-          // Only add popup in full mode — compact mode has contact info in the card
+          // Only add popup in full mode
           if (!compact) {
             marker.setPopup(
               new mapboxgl.Popup({
@@ -106,32 +165,156 @@ export default function MapSection({ compact = false }: MapSectionProps) {
 
           marker.addTo(map);
 
-          // Add the nationwide service ring (subtle)
-          if (!prefersReducedMotion) {
-            map.addSource('service-area', {
+          // --- Animated arcs (compact mode) ---
+          if (compact) {
+            // Generate arc GeoJSON features
+            const arcFeatures = DESTINATION_CITIES.map((dest) => ({
+              type: 'Feature' as const,
+              properties: {},
+              geometry: {
+                type: 'LineString' as const,
+                coordinates: generateArc(HUMBLE_TX, dest),
+              },
+            }));
+
+            // Destination endpoint dots
+            const endpointFeatures = DESTINATION_CITIES.map((dest) => ({
+              type: 'Feature' as const,
+              properties: {},
+              geometry: {
+                type: 'Point' as const,
+                coordinates: dest,
+              },
+            }));
+
+            // Add arc lines source
+            map.addSource('arcs', {
               type: 'geojson',
-              data: {
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: HUMBLE_TX,
-                },
-                properties: {},
+              data: { type: 'FeatureCollection', features: arcFeatures },
+            });
+
+            // Add endpoint dots source
+            map.addSource('endpoints', {
+              type: 'geojson',
+              data: { type: 'FeatureCollection', features: endpointFeatures },
+            });
+
+            // Background arc lines (faint, always visible)
+            map.addLayer({
+              id: 'arcs-bg',
+              type: 'line',
+              source: 'arcs',
+              layout: {
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
+              paint: {
+                'line-color': '#3B82F6',
+                'line-width': 1.5,
+                'line-opacity': 0.12,
               },
             });
 
+            // Animated arc lines (dashed, ant-path effect)
             map.addLayer({
-              id: 'service-ring',
-              type: 'circle',
-              source: 'service-area',
+              id: 'arcs-animated',
+              type: 'line',
+              source: 'arcs',
+              layout: {
+                'line-cap': 'round',
+                'line-join': 'round',
+              },
               paint: {
-                'circle-radius': compact ? 45 : 60,
-                'circle-color': 'transparent',
-                'circle-stroke-width': 1.5,
-                'circle-stroke-color': '#3B82F6',
-                'circle-stroke-opacity': 0.25,
+                'line-color': '#3B82F6',
+                'line-width': 1.5,
+                'line-opacity': 0.45,
+                'line-dasharray': [0, 4, 3],
               },
             });
+
+            // Destination endpoint dots
+            map.addLayer({
+              id: 'endpoint-dots',
+              type: 'circle',
+              source: 'endpoints',
+              paint: {
+                'circle-radius': 3,
+                'circle-color': '#3B82F6',
+                'circle-opacity': 0.6,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#3B82F6',
+                'circle-stroke-opacity': 0.2,
+              },
+            });
+
+            // Animate the dash array (ant-path effect)
+            if (!prefersReducedMotion) {
+              const dashSequence = [
+                [0, 4, 3],
+                [0.5, 4, 2.5],
+                [1, 4, 2],
+                [1.5, 4, 1.5],
+                [2, 4, 1],
+                [2.5, 4, 0.5],
+                [3, 4, 0],
+                [0, 0.5, 3, 3.5],
+                [0, 1, 3, 3],
+                [0, 1.5, 3, 2.5],
+                [0, 2, 3, 2],
+                [0, 2.5, 3, 1.5],
+                [0, 3, 3, 1],
+                [0, 3.5, 3, 0.5],
+              ];
+              let step = 0;
+              let lastTime = 0;
+              const interval = 50; // ms between frames
+
+              function animateDash(timestamp: number) {
+                if (timestamp - lastTime >= interval) {
+                  lastTime = timestamp;
+                  if (map.getLayer('arcs-animated')) {
+                    map.setPaintProperty(
+                      'arcs-animated',
+                      'line-dasharray',
+                      dashSequence[step],
+                      { duration: 0 }
+                    );
+                  }
+                  step = (step + 1) % dashSequence.length;
+                }
+                animationRef.current = requestAnimationFrame(animateDash);
+              }
+
+              animationRef.current = requestAnimationFrame(animateDash);
+            }
+          } else {
+            // Full mode: service ring (original behavior)
+            if (!prefersReducedMotion) {
+              map.addSource('service-area', {
+                type: 'geojson',
+                data: {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: HUMBLE_TX,
+                  },
+                  properties: {},
+                },
+              });
+
+              map.addLayer({
+                id: 'service-ring',
+                type: 'circle',
+                source: 'service-area',
+                paint: {
+                  'circle-radius': 60,
+                  'circle-color': 'transparent',
+                  'circle-stroke-width': 1.5,
+                  'circle-stroke-color': '#3B82F6',
+                  'circle-stroke-opacity': 0.25,
+                },
+              });
+            }
           }
         });
       })
@@ -140,6 +323,10 @@ export default function MapSection({ compact = false }: MapSectionProps) {
       });
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
