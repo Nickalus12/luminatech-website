@@ -1,8 +1,13 @@
 /**
  * Form Submission Utilities
  *
- * Primary: Formspree (https://formspree.io/f/mojnjggl)
- * Future: Odoo CRM API (lumina-erp.odoo.com) via Cloudflare Worker proxy
+ * Primary: Odoo CRM via Cloudflare Worker proxy
+ * Worker: https://odoo-worker.nbrewer.workers.dev
+ * Odoo instance: lumina-erp.odoo.com
+ *
+ * Endpoints:
+ * - POST /api/contact   -> Create CRM lead (crm.lead)
+ * - POST /api/subscribe -> Add to mailing list (mailing.contact)
  *
  * Google Cloud Project APIs enabled:
  * - Google Calendar API (appointment scheduling)
@@ -19,27 +24,42 @@ export interface ContactFormData {
   email: string;
   helpType?: string;
   message?: string;
-  resourceRequested?: string;
-  resourceType?: string;
-  leadSource?: string;
 }
 
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mojnjggl';
+export interface SubscribeFormData {
+  name?: string;
+  email: string;
+  company?: string;
+}
 
-/**
- * Submit form data to Formspree
- */
-export async function submitToFormspree(data: ContactFormData): Promise<boolean> {
+const WORKER_BASE = 'https://odoo-worker.nbrewer.workers.dev';
+
+export async function submitContactForm(data: ContactFormData): Promise<boolean> {
   try {
-    const response = await fetch(FORMSPREE_ENDPOINT, {
+    const response = await fetch(`${WORKER_BASE}/api/contact`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return response.ok;
+    const result = await response.json();
+    return result.success === true;
   } catch (error) {
-    console.error('Form submission error:', error);
+    console.error('Contact form submission error:', error);
     return false;
   }
 }
 
+export async function submitSubscribeForm(data: SubscribeFormData): Promise<boolean> {
+  try {
+    const response = await fetch(`${WORKER_BASE}/api/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    return result.success === true;
+  } catch (error) {
+    console.error('Subscribe form submission error:', error);
+    return false;
+  }
+}

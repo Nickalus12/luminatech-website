@@ -82,23 +82,21 @@ export default function EmailCaptureForm({
 
     setStatus('submitting');
 
-    const leadData = {
-      name: formData.name,
-      company: formData.company,
-      email: formData.email,
-      resourceRequested: resourceTitle,
-      resourceType: resourceType,
-      leadSource: 'Knowledge Hub - Email Gate',
-    };
-
     try {
-      const response = await fetch('https://formspree.io/f/mojnjggl', {
+      const response = await fetch('https://odoo-worker.nbrewer.workers.dev/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(leadData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          company: formData.company,
+          email: formData.email,
+          helpType: resourceType,
+          message: `Resource requested: ${resourceTitle} (${resourceType})`,
+        }),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      if (result.success) {
         setSubmittedName(formData.name.split(' ')[0]);
         setStatus('success');
         setFormData({ name: '', company: '', email: '', _honeypot: '' });

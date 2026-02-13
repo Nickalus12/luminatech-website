@@ -16,7 +16,7 @@ interface FormErrors {
   helpType?: string;
 }
 
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mojnjggl';
+const API_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/contact';
 
 const helpOptions = [
   'P21 Health Check / Audit',
@@ -140,9 +140,9 @@ export default function ContactForm() {
     setStatus('submitting');
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
+      const response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           company: formData.company,
@@ -152,7 +152,8 @@ export default function ContactForm() {
         }),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      if (result.success) {
         setSubmittedName(formData.name.split(' ')[0]);
         setShowToast(true);
         setStatus('success');
