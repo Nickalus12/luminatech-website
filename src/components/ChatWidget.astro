@@ -229,21 +229,23 @@
 
     // Handle launcher click
     launcher.addEventListener('click', () => {
-      console.log('Chat launcher clicked', { hasTawkAPI: !!window.Tawk_API, hasToggle: !!window.Tawk_API?.toggle });
-
-      if (window.Tawk_API?.toggle) {
-        window.Tawk_API.toggle();
-        // Update state manually if widget doesn't trigger events
-        isWidgetOpen = !isWidgetOpen;
-        launcher.classList.toggle('widget-open', isWidgetOpen);
-      } else if (window.Tawk_API?.maximize) {
-        // Fallback to maximize if toggle isn't available
-        window.Tawk_API.maximize();
+      if (isWidgetOpen) {
+        // Close: minimize then hide the default widget again
+        window.Tawk_API?.minimize?.();
+        setTimeout(() => window.Tawk_API?.hideWidget?.(), 300);
+        isWidgetOpen = false;
+        launcher.classList.remove('widget-open');
+      } else if (window.Tawk_API?.showWidget) {
+        // Open: must showWidget first (hideWidget makes it unavailable),
+        // then maximize to open the chat window
+        window.Tawk_API.showWidget();
+        window.Tawk_API.maximize?.();
         isWidgetOpen = true;
         launcher.classList.add('widget-open');
       } else {
-        console.error('Tawk.to API not loaded yet. Please wait a moment and try again.');
-        alert('Chat is loading... Please wait a moment and try again.');
+        // Tawk.to hasn't loaded yet
+        launcher.style.opacity = '0.5';
+        setTimeout(() => { launcher.style.opacity = ''; }, 1500);
       }
     });
 
@@ -256,10 +258,11 @@
     });
   }
 
-  // Initialize when DOM is ready
+  // Initialize when DOM is ready + after Astro view transitions
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initChatWidget);
   } else {
     initChatWidget();
   }
+  document.addEventListener('astro:after-swap', initChatWidget);
 </script>

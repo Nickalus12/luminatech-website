@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react';
-import { submitToHubSpot } from '../lib/hubspot';
 
 interface FormData {
   name: string;
@@ -93,19 +92,13 @@ export default function EmailCaptureForm({
     };
 
     try {
-      const [hubspotOk, formspreeRes] = await Promise.allSettled([
-        submitToHubSpot(leadData),
-        fetch('https://formspree.io/f/mojnjggl', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify(leadData),
-        }),
-      ]);
+      const response = await fetch('https://formspree.io/f/mojnjggl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(leadData),
+      });
 
-      const hubspotSuccess = hubspotOk.status === 'fulfilled' && hubspotOk.value;
-      const formspreeSuccess = formspreeRes.status === 'fulfilled' && formspreeRes.value.ok;
-
-      if (hubspotSuccess || formspreeSuccess) {
+      if (response.ok) {
         setSubmittedName(formData.name.split(' ')[0]);
         setStatus('success');
         setFormData({ name: '', company: '', email: '', _honeypot: '' });
