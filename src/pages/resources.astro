@@ -1,0 +1,2100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import Badge from '../components/ui/Badge.astro';
+
+const description = "Essential Prophet 21 resources, quick reference guides, code snippets, common gotchas, and performance tips for P21 developers and administrators.";
+
+const quickRefs = [
+  {
+    title: "Core Database Tables",
+    items: [
+      { name: "oe_hdr / oe_line", desc: "Sales order headers and line items", key: "order_no" },
+      { name: "inv_mast", desc: "Inventory master data", key: "inv_mast_uid" },
+      { name: "customer", desc: "Customer master records", key: "customer_id" },
+      { name: "vendor", desc: "Vendor/supplier records", key: "vendor_id" },
+      { name: "p21_view_*", desc: "Pre-built views for reporting", key: "varies" },
+      { name: "shipto", desc: "Customer ship-to addresses", key: "shipto_id" },
+      { name: "contacts", desc: "Customer/vendor contacts", key: "contact_id" },
+      { name: "inv_loc", desc: "Inventory location data", key: "inv_mast_uid + location_id" },
+    ]
+  },
+  {
+    title: "Common Join Patterns",
+    items: [
+      { name: "Order → Customer", desc: "JOIN customer ON oe_hdr.customer_id = customer.customer_id", key: "customer_id" },
+      { name: "Order → Inventory", desc: "JOIN inv_mast ON oe_line.inv_mast_uid = inv_mast.inv_mast_uid", key: "inv_mast_uid" },
+      { name: "Customer → ShipTo", desc: "JOIN shipto ON customer.customer_id = shipto.customer_id", key: "customer_id" },
+      { name: "Inventory → Location", desc: "JOIN inv_loc ON inv_mast.inv_mast_uid = inv_loc.inv_mast_uid", key: "inv_mast_uid" },
+    ]
+  },
+  {
+    title: "Critical Field Gotchas",
+    items: [
+      { name: "approved vs approved_flag", desc: "Use approved_flag (Y/N) not approved (datetime)", key: "⚠️" },
+      { name: "customer_id vs customer_no", desc: "customer_id is numeric key, customer_no is display value", key: "⚠️" },
+      { name: "delete_flag", desc: "Always check delete_flag = 'N' in WHERE clauses", key: "⚠️" },
+      { name: "Dates in P21", desc: "Use CONVERT() or CAST() for date comparisons", key: "⚠️" },
+      { name: "UIDs vs IDs", desc: "_uid fields are internal keys, _id/_no are business keys", key: "⚠️" },
+    ]
+  }
+];
+
+const codeSnippets = [
+  {
+    category: "SQL Queries",
+    examples: [
+      {
+        title: "Get Active Orders by Customer",
+        lang: "sql",
+        code: `SELECT
+  oh.order_no,
+  oh.order_date,
+  c.customer_no,
+  c.customer_name,
+  oh.total_amount
+FROM oe_hdr oh
+INNER JOIN customer c ON oh.customer_id = c.customer_id
+WHERE oh.delete_flag = 'N'
+  AND oh.approved_flag = 'Y'
+  AND oh.completed = 'N'
+ORDER BY oh.order_date DESC`,
+        notes: "Always filter delete_flag and use approved_flag not approved"
+      },
+      {
+        title: "Inventory with Location Quantities",
+        lang: "sql",
+        code: `SELECT
+  i.item_id,
+  i.item_desc,
+  il.location_id,
+  il.qty_on_hand,
+  il.qty_allocated,
+  (il.qty_on_hand - il.qty_allocated) AS qty_available
+FROM inv_mast i
+INNER JOIN inv_loc il ON i.inv_mast_uid = il.inv_mast_uid
+WHERE i.delete_flag = 'N'
+  AND il.qty_on_hand > 0
+ORDER BY i.item_id, il.location_id`,
+        notes: "Calculate available qty as on_hand - allocated"
+      },
+      {
+        title: "Customer Sales Summary (YTD)",
+        lang: "sql",
+        code: `SELECT
+  c.customer_no,
+  c.customer_name,
+  COUNT(DISTINCT oh.order_no) AS order_count,
+  SUM(oh.total_amount) AS ytd_sales,
+  AVG(oh.total_amount) AS avg_order_value
+FROM customer c
+INNER JOIN oe_hdr oh ON c.customer_id = oh.customer_id
+WHERE oh.delete_flag = 'N'
+  AND oh.order_date >= DATEADD(year, DATEDIFF(year, 0, GETDATE()), 0)
+  AND oh.completed = 'Y'
+GROUP BY c.customer_no, c.customer_name
+HAVING SUM(oh.total_amount) > 0
+ORDER BY ytd_sales DESC`,
+        notes: "Use DATEADD for date range calculations"
+      }
+    ]
+  },
+  {
+    category: "DynaChange Business Rules",
+    examples: [
+      {
+        title: "Order Header Validation",
+        lang: "csharp",
+        code: `// Validate required fields on order save
+if (string.IsNullOrWhiteSpace(customer_id))
+{
+    SetError("Customer is required");
+    return false;
+}
+
+if (order_date > DateTime.Now.AddDays(30))
+{
+    SetWarning("Order date is more than 30 days in future");
+}
+
+return true;`,
+        notes: "Use SetError() to block save, SetWarning() to alert only"
+      },
+      {
+        title: "Auto-populate Field from Lookup",
+        lang: "csharp",
+        code: `// Auto-populate credit limit from customer record
+var sql = "SELECT credit_limit FROM customer WHERE customer_id = @customer_id";
+var creditLimit = ExecuteScalar<decimal>(sql, new { customer_id });
+
+if (creditLimit.HasValue)
+{
+    SetFieldValue("credit_limit_override", creditLimit.Value);
+}`,
+        notes: "Use ExecuteScalar for single value queries"
+      },
+      {
+        title: "Conditional Field Visibility",
+        lang: "csharp",
+        code: `// Hide/show fields based on order type
+var orderType = GetFieldValue<string>("order_type");
+
+if (orderType == "STOCK")
+{
+    SetFieldVisible("drop_ship_vendor", false);
+    SetFieldRequired("warehouse_id", true);
+}
+else if (orderType == "DROP")
+{
+    SetFieldVisible("drop_ship_vendor", true);
+    SetFieldRequired("drop_ship_vendor", true);
+    SetFieldRequired("warehouse_id", false);
+}`,
+        notes: "Combine visibility and required field logic"
+      }
+    ]
+  },
+  {
+    category: "P21 API Calls",
+    examples: [
+      {
+        title: "Create Sales Order via API",
+        lang: "json",
+        code: `POST /api/v1/SalesOrder
+{
+  "customer_no": "CUST001",
+  "order_date": "2026-02-12",
+  "ship_to_id": "MAIN",
+  "payment_terms": "NET30",
+  "lines": [
+    {
+      "item_id": "ITEM-001",
+      "quantity_ordered": 10,
+      "unit_price": 25.50,
+      "location_id": "MAIN"
+    }
+  ]
+}`,
+        notes: "Use customer_no and item_id, not internal UIDs"
+      },
+      {
+        title: "Update Inventory Quantity",
+        lang: "json",
+        code: `PUT /api/v1/Inventory/{inv_mast_uid}/Location/{location_id}
+{
+  "qty_on_hand": 100,
+  "qty_allocated": 15,
+  "last_cost": 12.50,
+  "updated_by": "API_USER"
+}`,
+        notes: "Requires inv_mast_uid and location_id in URL"
+      }
+    ]
+  }
+];
+
+const performanceTips = [
+  {
+    icon: "⚡",
+    title: "Use Parameterized Queries",
+    desc: "Always use parameters (@param) instead of string concatenation to prevent SQL injection and enable query plan caching.",
+    example: "WHERE customer_id = @customer_id"
+  },
+  {
+    icon: "📊",
+    title: "Batch Operations for Large Datasets",
+    desc: "Process records in batches of 100-500 instead of one-by-one or all-at-once. Use OFFSET/FETCH for pagination.",
+    example: "OFFSET @start ROWS FETCH NEXT 500 ROWS ONLY"
+  },
+  {
+    icon: "🔍",
+    title: "Filter Early with WHERE Clauses",
+    desc: "Always include delete_flag = 'N' and other filters in WHERE, not in application code after retrieval.",
+    example: "WHERE delete_flag = 'N' AND approved_flag = 'Y'"
+  },
+  {
+    icon: "🎯",
+    title: "Use p21_view_* Tables for Reporting",
+    desc: "P21 provides pre-optimized views (p21_view_*) for common reporting needs. Use them instead of complex joins.",
+    example: "SELECT * FROM p21_view_oe_pick_ticket"
+  },
+  {
+    icon: "💾",
+    title: "Index Foreign Keys and Common Filters",
+    desc: "Ensure indexes exist on customer_id, inv_mast_uid, order_no, and other frequently queried fields.",
+    example: "CREATE INDEX idx_customer ON oe_hdr(customer_id)"
+  },
+  {
+    icon: "⏱️",
+    title: "Avoid SELECT * in Production",
+    desc: "Specify only the columns you need to reduce network traffic and memory usage.",
+    example: "SELECT order_no, customer_id, total_amount"
+  }
+];
+
+const commonGotchas = [
+  {
+    severity: "critical",
+    title: "approved vs approved_flag",
+    problem: "The 'approved' field is a datetime, but 'approved_flag' is Y/N. Most logic should check approved_flag = 'Y'.",
+    solution: "WHERE approved_flag = 'Y' -- not WHERE approved IS NOT NULL",
+    impact: "Incorrect results if checking wrong field"
+  },
+  {
+    severity: "critical",
+    title: "delete_flag Must Be Checked",
+    problem: "P21 soft-deletes records by setting delete_flag = 'Y'. Queries that don't filter this will include deleted records.",
+    solution: "Always add: WHERE delete_flag = 'N'",
+    impact: "Deleted records appear in reports and calculations"
+  },
+  {
+    severity: "warning",
+    title: "customer_id vs customer_no",
+    problem: "customer_id is the internal numeric key. customer_no is the user-facing customer number (string).",
+    solution: "Join tables using customer_id, display customer_no to users",
+    impact: "Incorrect joins or user confusion"
+  },
+  {
+    severity: "warning",
+    title: "UIDs Are Not Sequential",
+    problem: "Fields ending in _uid (inv_mast_uid, etc.) are GUIDs or internal keys, not sequential IDs.",
+    solution: "Never assume UID order or use for sorting. Use business keys like item_id or order_no for display.",
+    impact: "Unpredictable sort order or broken logic"
+  },
+  {
+    severity: "info",
+    title: "Date Comparisons Need CONVERT",
+    problem: "P21 datetime fields include time component. Direct date comparisons may miss records.",
+    solution: "Use CONVERT(date, field) = '2026-02-12' or date ranges with >= and <",
+    impact: "Missing records in date-filtered queries"
+  },
+  {
+    severity: "info",
+    title: "Crystal Reports vs Report Studio",
+    problem: "P21 supports both Crystal Reports (.rpt) and Report Studio (.rdl). They have different capabilities and syntax.",
+    solution: "Report Studio is newer and recommended for new reports. Use SSRS syntax (T-SQL).",
+    impact: "Report development complexity"
+  },
+  {
+    severity: "warning",
+    title: "API Rate Limits Exist",
+    problem: "P21 API has rate limits (typically 100 req/min). Exceeding causes throttling or blocks.",
+    solution: "Implement retry logic with exponential backoff. Batch requests where possible.",
+    impact: "API calls fail or timeout"
+  },
+  {
+    severity: "critical",
+    title: "Price vs Unit Price Fields",
+    problem: "Multiple price fields exist: unit_price, extended_price, price, etc. Each has different meaning.",
+    solution: "unit_price = price per unit. extended_price = unit_price * qty. Always verify which to use.",
+    impact: "Incorrect pricing calculations"
+  }
+];
+
+const n8nWorkflows = [
+  {
+    title: "Order Sync: P21 → Shopify",
+    desc: "Bi-directional order synchronization with error handling and retry logic",
+    complexity: "intermediate",
+    nodes: 12,
+    triggers: ["Webhook", "Schedule"],
+    actions: ["HTTP Request", "Transform", "Error Handler"],
+    code: `// N8N Workflow Pattern: P21 Order to Shopify
+// Trigger: Webhook or Schedule (every 5 min)
+
+// 1. Get P21 Orders (HTTP Request Node)
+const p21Orders = await $http.request({
+  url: 'https://p21.company.com/api/v1/SalesOrder',
+  auth: { type: 'bearer', token: '{{$credentials.p21_token}}' },
+  qs: {
+    filter: 'date_created >= @sync_date',
+    approved_flag: 'Y',
+    delete_flag: 'N'
+  }
+});
+
+// 2. Transform to Shopify Format (Code Node)
+const shopifyOrders = p21Orders.map(order => ({
+  order: {
+    email: order.email_address,
+    line_items: order.lines.map(line => ({
+      variant_id: line.shopify_variant_id,
+      quantity: line.quantity_ordered,
+      price: line.unit_price
+    })),
+    financial_status: 'paid',
+    tags: \`P21-\${order.order_no}\`
+  }
+}));
+
+// 3. Create in Shopify (HTTP Request Node)
+// 4. Update P21 with Shopify Order ID (HTTP Request Node)
+// 5. Error Handler: Log to database, send Slack alert`,
+    notes: "Use batch processing for >100 orders. Store sync_date in n8n workflow data."
+  },
+  {
+    title: "Inventory Level Monitor",
+    desc: "Real-time inventory alerts when stock falls below reorder points",
+    complexity: "beginner",
+    nodes: 8,
+    triggers: ["Schedule"],
+    actions: ["SQL", "IF Conditional", "Email"],
+    code: `// N8N Workflow: Low Stock Alerts
+// Trigger: Every 15 minutes
+
+// 1. Query P21 Database (SQL Node)
+SELECT
+  i.item_id,
+  i.item_desc,
+  il.location_id,
+  il.qty_on_hand,
+  il.qty_allocated,
+  (il.qty_on_hand - il.qty_allocated) AS available_qty,
+  i.reorder_point,
+  v.vendor_name,
+  i.last_cost
+FROM inv_mast i
+INNER JOIN inv_loc il ON i.inv_mast_uid = il.inv_mast_uid
+LEFT JOIN vendor v ON i.primary_vendor_id = v.vendor_id
+WHERE i.delete_flag = 'N'
+  AND (il.qty_on_hand - il.qty_allocated) <= i.reorder_point
+  AND i.reorder_point > 0
+ORDER BY available_qty ASC
+
+// 2. IF Node: Check if results exist
+// 3. Format Email (Code Node)
+const html = \`
+<h2>Low Stock Alert - \${items.length} Items</h2>
+<table>
+  <tr><th>Item</th><th>Available</th><th>Reorder Point</th><th>Vendor</th></tr>
+  \${items.map(i => \`
+    <tr>
+      <td>\${i.item_id} - \${i.item_desc}</td>
+      <td>\${i.available_qty}</td>
+      <td>\${i.reorder_point}</td>
+      <td>\${i.vendor_name}</td>
+    </tr>
+  \`).join('')}
+</table>
+\`;
+
+// 4. Send Email (Email Node)
+// 5. Optional: Create Purchase Orders automatically`,
+    notes: "Add slack notification for critical items (qty = 0). Store alert history."
+  },
+  {
+    title: "Customer Price Update Automation",
+    desc: "Bulk customer pricing updates from Excel/CSV with validation",
+    complexity: "advanced",
+    nodes: 16,
+    triggers: ["File Upload", "Webhook"],
+    actions: ["Parse CSV", "Validate", "Batch Update", "Audit Log"],
+    code: `// N8N Workflow: Bulk Price Updates
+// Trigger: File uploaded to SFTP or webhook
+
+// 1. Read CSV File (Read Binary File Node)
+// 2. Parse CSV (Spreadsheet Node)
+
+// 3. Validate Data (Code Node)
+const validated = [];
+const errors = [];
+
+for (const row of csvData) {
+  // Validate customer exists
+  const customer = await $http.get(\`/api/v1/Customer?customer_no=\${row.customer_no}\`);
+  if (!customer) {
+    errors.push({ row: row.line, error: 'Customer not found' });
+    continue;
+  }
+
+  // Validate item exists
+  const item = await $http.get(\`/api/v1/Inventory?item_id=\${row.item_id}\`);
+  if (!item) {
+    errors.push({ row: row.line, error: 'Item not found' });
+    continue;
+  }
+
+  // Validate price is positive
+  if (parseFloat(row.price) <= 0) {
+    errors.push({ row: row.line, error: 'Invalid price' });
+    continue;
+  }
+
+  validated.push({
+    customer_id: customer.customer_id,
+    inv_mast_uid: item.inv_mast_uid,
+    price: parseFloat(row.price),
+    effective_date: row.effective_date
+  });
+}
+
+// 4. Batch Update (Loop + HTTP Request)
+// Process in batches of 50
+const batchSize = 50;
+for (let i = 0; i < validated.length; i += batchSize) {
+  const batch = validated.slice(i, i + batchSize);
+  await $http.post('/api/v1/CustomerPrice/Batch', { prices: batch });
+}
+
+// 5. Log Results (Database Node)
+// 6. Email Report (Email Node)`,
+    notes: "Always validate before updating. Keep audit trail of all price changes."
+  }
+];
+
+const apiGuide = {
+  authentication: {
+    method: "OAuth 2.0 / API Key",
+    steps: [
+      "Obtain API credentials from P21 Admin Console",
+      "Request access token: POST /api/oauth/token",
+      "Include token in Authorization header: Bearer {token}",
+      "Tokens expire after 60 minutes - implement refresh logic"
+    ],
+    example: `// Authentication Flow
+const getToken = async () => {
+  const response = await fetch('https://p21.company.com/api/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: 'YOUR_CLIENT_ID',
+      client_secret: 'YOUR_CLIENT_SECRET',
+      scope: 'read write'
+    })
+  });
+
+  const { access_token, expires_in } = await response.json();
+
+  // Store token with expiry
+  return {
+    token: access_token,
+    expiresAt: Date.now() + (expires_in * 1000)
+  };
+};
+
+// Use token in requests
+const headers = {
+  'Authorization': \`Bearer \${token}\`,
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+};`
+  },
+  endpoints: [
+    {
+      resource: "Sales Orders",
+      method: "GET",
+      endpoint: "/api/v1/SalesOrder",
+      params: ["order_no", "customer_id", "date_from", "date_to", "approved_flag"],
+      example: `GET /api/v1/SalesOrder?customer_id=12345&approved_flag=Y&date_from=2026-01-01
+Authorization: Bearer {token}
+
+Response:
+{
+  "data": [
+    {
+      "order_no": "SO-123456",
+      "customer_id": 12345,
+      "order_date": "2026-02-12T10:30:00Z",
+      "total_amount": 1250.00,
+      "approved_flag": "Y",
+      "lines": [...]
+    }
+  ],
+  "total_count": 1,
+  "page": 1,
+  "page_size": 100
+}`
+    },
+    {
+      resource: "Sales Orders",
+      method: "POST",
+      endpoint: "/api/v1/SalesOrder",
+      params: ["customer_no", "ship_to_id", "order_date", "lines"],
+      example: `POST /api/v1/SalesOrder
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "customer_no": "CUST001",
+  "ship_to_id": "MAIN",
+  "order_date": "2026-02-12",
+  "payment_terms": "NET30",
+  "salesperson_id": "SP01",
+  "lines": [
+    {
+      "item_id": "ITEM-001",
+      "quantity_ordered": 10,
+      "unit_price": 25.50,
+      "location_id": "MAIN",
+      "line_comment": "Rush order"
+    }
+  ],
+  "header_comment": "Customer requested expedited shipping"
+}
+
+Response 201:
+{
+  "order_no": "SO-123457",
+  "order_id": 98765,
+  "message": "Order created successfully"
+}`
+    },
+    {
+      resource: "Inventory",
+      method: "GET",
+      endpoint: "/api/v1/Inventory",
+      params: ["item_id", "location_id", "include_qty", "active_only"],
+      example: `GET /api/v1/Inventory?item_id=ITEM-001&include_qty=true
+Authorization: Bearer {token}
+
+Response:
+{
+  "inv_mast_uid": "ABC123",
+  "item_id": "ITEM-001",
+  "item_desc": "Widget Assembly Kit",
+  "product_group": "WIDGETS",
+  "uom": "EA",
+  "last_cost": 18.50,
+  "list_price": 35.00,
+  "locations": [
+    {
+      "location_id": "MAIN",
+      "qty_on_hand": 250,
+      "qty_allocated": 45,
+      "qty_available": 205,
+      "bin_location": "A-12-3"
+    }
+  ]
+}`
+    },
+    {
+      resource: "Inventory",
+      method: "PUT",
+      endpoint: "/api/v1/Inventory/{inv_mast_uid}",
+      params: ["list_price", "last_cost", "item_desc"],
+      example: `PUT /api/v1/Inventory/ABC123
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "list_price": 37.50,
+  "last_cost": 19.25,
+  "item_desc": "Widget Assembly Kit - Updated",
+  "updated_by": "API_USER"
+}
+
+Response 200:
+{
+  "message": "Inventory updated successfully",
+  "inv_mast_uid": "ABC123"
+}`
+    },
+    {
+      resource: "Customers",
+      method: "GET",
+      endpoint: "/api/v1/Customer",
+      params: ["customer_no", "customer_name", "active_only"],
+      example: `GET /api/v1/Customer?customer_name=*Acme*&active_only=true
+Authorization: Bearer {token}
+
+Response:
+{
+  "data": [
+    {
+      "customer_id": 12345,
+      "customer_no": "CUST001",
+      "customer_name": "Acme Corporation",
+      "credit_limit": 50000.00,
+      "current_balance": 12500.00,
+      "payment_terms": "NET30",
+      "ship_tos": [...]
+    }
+  ]
+}`
+    }
+  ],
+  rateLimits: {
+    default: "100 requests/minute",
+    burst: "500 requests/5 minutes",
+    handling: `// Rate Limit Handling with Exponential Backoff
+class P21API {
+  constructor(baseUrl, token) {
+    this.baseUrl = baseUrl;
+    this.token = token;
+    this.retryDelays = [1000, 2000, 5000]; // ms
+  }
+
+  async request(endpoint, options = {}, retryCount = 0) {
+    try {
+      const response = await fetch(\`\${this.baseUrl}\${endpoint}\`, {
+        ...options,
+        headers: {
+          'Authorization': \`Bearer \${this.token}\`,
+          'Content-Type': 'application/json',
+          ...options.headers
+        }
+      });
+
+      // Handle rate limiting
+      if (response.status === 429) {
+        if (retryCount < this.retryDelays.length) {
+          const delay = this.retryDelays[retryCount];
+          console.log(\`Rate limited. Retrying in \${delay}ms...\`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return this.request(endpoint, options, retryCount + 1);
+        }
+        throw new Error('Rate limit exceeded - max retries reached');
+      }
+
+      if (!response.ok) {
+        throw new Error(\`API Error: \${response.status} \${response.statusText}\`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('API request failed:', error);
+      throw error;
+    }
+  }
+}`
+  },
+  bestPractices: [
+    "Always use pagination for large datasets (page_size max: 500)",
+    "Filter at the API level, not in application code",
+    "Use batch endpoints for bulk operations (50-100 records per batch)",
+    "Implement exponential backoff for retries",
+    "Cache frequently accessed reference data (customers, items)",
+    "Use webhooks for real-time updates instead of polling",
+    "Always validate data before sending to API",
+    "Log all API calls for debugging and audit purposes"
+  ]
+};
+
+const performanceBenchmarks = [
+  {
+    operation: "Single Order Creation",
+    baseline: "250-400ms",
+    optimized: "150-200ms",
+    optimization: "Use batch endpoint for multiple orders, pre-validate customer/item IDs",
+    dataPoints: [
+      { scenario: "Simple order (1-3 lines)", time: "180ms", notes: "Direct API call" },
+      { scenario: "Complex order (10+ lines)", time: "650ms", notes: "Multiple line validations" },
+      { scenario: "Order with custom pricing", time: "420ms", notes: "Price calculation overhead" }
+    ]
+  },
+  {
+    operation: "Batch Order Creation (100 orders)",
+    baseline: "45-60 seconds",
+    optimized: "8-12 seconds",
+    optimization: "Use /api/v1/SalesOrder/Batch endpoint with chunks of 50",
+    dataPoints: [
+      { scenario: "Sequential API calls", time: "52s", notes: "1 order per request" },
+      { scenario: "Batch of 25", time: "18s", notes: "4 batch requests" },
+      { scenario: "Batch of 50 (optimal)", time: "10s", notes: "2 batch requests" },
+      { scenario: "Batch of 100", time: "14s", notes: "Slower due to DB locks" }
+    ]
+  },
+  {
+    operation: "Inventory Query (10k items)",
+    baseline: "5-8 seconds",
+    optimized: "1-2 seconds",
+    optimization: "Use indexed filters, limit columns, paginate results",
+    dataPoints: [
+      { scenario: "SELECT * (no filters)", time: "7.2s", notes: "Returns all columns" },
+      { scenario: "SELECT specific columns", time: "3.8s", notes: "Reduced data transfer" },
+      { scenario: "With location_id filter", time: "1.4s", notes: "Indexed field" },
+      { scenario: "With pagination (500/page)", time: "0.8s", notes: "Optimal chunk size" }
+    ]
+  },
+  {
+    operation: "Complex Sales Report (YTD)",
+    baseline: "15-25 seconds",
+    optimized: "3-5 seconds",
+    optimization: "Use p21_view_* tables, add covering indexes, cache results",
+    dataPoints: [
+      { scenario: "Multi-table JOINs", time: "18s", notes: "6 table joins" },
+      { scenario: "Using p21_view_sales_summary", time: "4.2s", notes: "Pre-aggregated data" },
+      { scenario: "With date range index", time: "3.1s", notes: "Indexed order_date" },
+      { scenario: "Cached (Redis)", time: "0.2s", notes: "15-minute TTL" }
+    ]
+  },
+  {
+    operation: "Customer Price Updates (1000 items)",
+    baseline: "120-180 seconds",
+    optimized: "15-25 seconds",
+    optimization: "Batch updates, use stored procedure, disable triggers temporarily",
+    dataPoints: [
+      { scenario: "Individual UPDATE statements", time: "145s", notes: "1000 separate queries" },
+      { scenario: "Batch of 100 (SQL)", time: "35s", notes: "10 batch statements" },
+      { scenario: "Stored procedure", time: "18s", notes: "Optimized bulk operation" },
+      { scenario: "Bulk INSERT with temp table", time: "12s", notes: "Fastest method" }
+    ]
+  }
+];
+
+const troubleshootingFlowcharts = [
+  {
+    category: "API Integration Issues",
+    scenarios: [
+      {
+        symptom: "401 Unauthorized Error",
+        checks: [
+          "Is access token expired? → Request new token",
+          "Is token included in Authorization header? → Add 'Bearer {token}'",
+          "Are API credentials correct? → Verify client_id/secret",
+          "Is user account active in P21? → Check P21 admin console"
+        ],
+        solution: "Implement token refresh logic with expiry tracking",
+        prevention: "Store token expiry, refresh 5 minutes before expiration"
+      },
+      {
+        symptom: "429 Rate Limit Exceeded",
+        checks: [
+          "Are requests batched? → Combine multiple calls",
+          "Is retry logic implemented? → Add exponential backoff",
+          "Are you polling too frequently? → Use webhooks or increase interval",
+          "Is pagination being used? → Reduce page_size to 100-500"
+        ],
+        solution: "Implement request queue with rate limiting",
+        prevention: "Monitor API usage, implement client-side rate limiter"
+      },
+      {
+        symptom: "Slow API Response (>5 seconds)",
+        checks: [
+          "Is query filtering at API level? → Add query parameters",
+          "Are you requesting too many records? → Use pagination",
+          "Are you selecting all columns? → Specify only needed fields",
+          "Is P21 database under heavy load? → Check during off-peak hours"
+        ],
+        solution: "Optimize query with filters, pagination, and field selection",
+        prevention: "Always paginate, cache frequent queries, use batch endpoints"
+      },
+      {
+        symptom: "Order Creation Fails with 400 Bad Request",
+        checks: [
+          "Is customer_no valid? → Verify customer exists",
+          "Are all required fields included? → Check API docs",
+          "Is item_id valid and active? → Query inventory first",
+          "Are prices/quantities positive numbers? → Validate input data",
+          "Is location_id valid for the item? → Check inv_loc table"
+        ],
+        solution: "Add comprehensive input validation before API call",
+        prevention: "Pre-validate all foreign keys and business rules"
+      }
+    ]
+  },
+  {
+    category: "Database Performance Issues",
+    scenarios: [
+      {
+        symptom: "Query Timeout (>30 seconds)",
+        checks: [
+          "Is delete_flag being filtered? → Add WHERE delete_flag = 'N'",
+          "Are joins using indexed fields? → Check execution plan",
+          "Is query using SELECT *? → Specify only needed columns",
+          "Are there missing indexes? → Check for table scans in execution plan"
+        ],
+        solution: "Add covering index on frequently queried fields",
+        prevention: "Always review execution plans, index foreign keys"
+      },
+      {
+        symptom: "Deadlock Errors During Batch Updates",
+        checks: [
+          "Are updates happening in consistent order? → Sort by primary key",
+          "Is batch size too large? → Reduce to 50-100 records",
+          "Are multiple processes updating same tables? → Implement queue",
+          "Is transaction isolation level too high? → Use READ COMMITTED"
+        ],
+        solution: "Implement ordered updates and reduce batch size",
+        prevention: "Process updates in primary key order, use smaller batches"
+      },
+      {
+        symptom: "Incorrect Results in Reports",
+        checks: [
+          "Is delete_flag = 'N' in WHERE clause? → Filter soft-deleted records",
+          "Are you using approved vs approved_flag? → Use approved_flag = 'Y'",
+          "Are date comparisons including time? → Use CONVERT(date, field)",
+          "Are UIDs vs IDs being used correctly? → Verify join fields"
+        ],
+        solution: "Always filter delete_flag, use correct field types",
+        prevention: "Create reusable WHERE clause templates"
+      }
+    ]
+  },
+  {
+    category: "DynaChange Business Rules",
+    scenarios: [
+      {
+        symptom: "Business Rule Not Triggering",
+        checks: [
+          "Is rule enabled in P21 admin? → Check rule status",
+          "Is rule assigned to correct form? → Verify form association",
+          "Is event type correct (Before/After Save)? → Check event trigger",
+          "Are conditions met for execution? → Add debug logging"
+        ],
+        solution: "Enable rule, verify form/event association",
+        prevention: "Test rules in PLAY environment first"
+      },
+      {
+        symptom: "SetError() Not Blocking Save",
+        checks: [
+          "Is rule on 'Before Save' event? → Change to BeforeSave",
+          "Is return false after SetError? → Add return statement",
+          "Is error being caught and suppressed? → Check try/catch blocks",
+          "Is rule execution order correct? → Verify rule priority"
+        ],
+        solution: "Use BeforeSave event with return false",
+        prevention: "Always return false after SetError()"
+      },
+      {
+        symptom: "Performance Degradation with Business Rules",
+        checks: [
+          "Are database queries in the rule? → Minimize DB calls",
+          "Is rule executing on every keystroke? → Change to OnExit event",
+          "Are there nested loops? → Optimize algorithm",
+          "Is external API being called? → Cache or async"
+        ],
+        solution: "Optimize queries, reduce DB roundtrips, cache results",
+        prevention: "Profile rule execution time, set <500ms target"
+      }
+    ]
+  }
+];
+
+const versionGotchas = [
+  {
+    version: "P21 v2.6.x",
+    changes: [
+      "New Transaction API endpoints for batch operations",
+      "API rate limits enforced (previously unlimited)",
+      "OAuth 2.0 required (API keys deprecated)",
+      "p21_view_* tables renamed with _v26 suffix in some deployments"
+    ],
+    breaking: [
+      "API key authentication removed - must migrate to OAuth",
+      "Batch endpoints now return 400 if batch size > 500",
+      "Some DynaChange APIs changed namespace from P21.API to P21.Core.API"
+    ],
+    migration: "Update authentication to OAuth 2.0, implement rate limiting, update API namespace references"
+  },
+  {
+    version: "P21 v2.5.x",
+    changes: [
+      "Report Studio replaces Crystal Reports as default",
+      "New REST API endpoints (previously SOAP only)",
+      "Inventory allocation logic changed for multi-location",
+      "Performance improvements in order entry"
+    ],
+    breaking: [
+      "SOAP API endpoints deprecated (still functional but not recommended)",
+      "Crystal Reports require compatibility mode",
+      "Custom allocation rules may need adjustment"
+    ],
+    migration: "Migrate SOAP to REST API, test allocation logic in PLAY, convert reports to Report Studio (.rdl)"
+  },
+  {
+    version: "P21 v2.4.x and Earlier",
+    changes: [
+      "Limited API functionality (SOAP only)",
+      "No native OAuth support",
+      "Manual SQL queries required for many operations",
+      "No webhook support"
+    ],
+    breaking: [
+      "REST API not available - upgrade required for modern integrations",
+      "No rate limiting but slower performance",
+      "Limited batch operation support"
+    ],
+    migration: "Plan upgrade to v2.5+ for REST API, OAuth, and webhooks. Consider P21 Cloud for automatic updates."
+  }
+];
+
+const advancedSQLPatterns = [
+  {
+    pattern: "Recursive CTE for BOM (Bill of Materials)",
+    useCase: "Calculate multi-level BOM with quantities and costs",
+    complexity: "advanced",
+    code: `-- Recursive BOM with Extended Costs
+WITH BOM_Recursive AS (
+  -- Anchor: Top-level item
+  SELECT
+    b.parent_item_id,
+    b.component_item_id,
+    b.quantity_required,
+    i.last_cost,
+    b.quantity_required * i.last_cost AS extended_cost,
+    1 AS level,
+    CAST(b.component_item_id AS VARCHAR(MAX)) AS path
+  FROM bom b
+  INNER JOIN inv_mast i ON b.component_item_id = i.item_id
+  WHERE b.parent_item_id = @top_level_item
+    AND b.delete_flag = 'N'
+
+  UNION ALL
+
+  -- Recursive: Sub-components
+  SELECT
+    b.parent_item_id,
+    b.component_item_id,
+    b.quantity_required * r.quantity_required, -- Multiply quantities up the chain
+    i.last_cost,
+    b.quantity_required * r.quantity_required * i.last_cost AS extended_cost,
+    r.level + 1,
+    r.path + ' > ' + b.component_item_id
+  FROM bom b
+  INNER JOIN BOM_Recursive r ON b.parent_item_id = r.component_item_id
+  INNER JOIN inv_mast i ON b.component_item_id = i.item_id
+  WHERE b.delete_flag = 'N'
+    AND r.level < 10 -- Prevent infinite loops
+)
+SELECT
+  level,
+  REPLICATE('  ', level - 1) + component_item_id AS indented_item,
+  quantity_required,
+  last_cost,
+  extended_cost,
+  path
+FROM BOM_Recursive
+ORDER BY path, level`,
+    notes: "Add level limit to prevent circular references. Use for cost rollup and manufacturing."
+  },
+  {
+    pattern: "Running Totals with Window Functions",
+    useCase: "Calculate customer running balance and credit utilization",
+    complexity: "intermediate",
+    code: `-- Customer Running Balance with Credit Utilization
+SELECT
+  c.customer_no,
+  c.customer_name,
+  c.credit_limit,
+  oh.order_no,
+  oh.order_date,
+  oh.total_amount,
+  -- Running total of orders
+  SUM(oh.total_amount) OVER (
+    PARTITION BY c.customer_id
+    ORDER BY oh.order_date, oh.order_no
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS running_total,
+  -- Credit utilization percentage
+  (SUM(oh.total_amount) OVER (
+    PARTITION BY c.customer_id
+    ORDER BY oh.order_date, oh.order_no
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) / NULLIF(c.credit_limit, 0)) * 100 AS credit_utilization_pct,
+  -- Flag when approaching credit limit
+  CASE
+    WHEN (SUM(oh.total_amount) OVER (
+      PARTITION BY c.customer_id
+      ORDER BY oh.order_date, oh.order_no
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) / NULLIF(c.credit_limit, 0)) >= 0.9
+    THEN 'CREDIT HOLD RISK'
+    WHEN (SUM(oh.total_amount) OVER (
+      PARTITION BY c.customer_id
+      ORDER BY oh.order_date, oh.order_no
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) / NULLIF(c.credit_limit, 0)) >= 0.75
+    THEN 'APPROACHING LIMIT'
+    ELSE 'OK'
+  END AS credit_status
+FROM customer c
+INNER JOIN oe_hdr oh ON c.customer_id = oh.customer_id
+WHERE oh.delete_flag = 'N'
+  AND oh.completed = 'N'
+  AND c.credit_limit > 0
+ORDER BY c.customer_no, oh.order_date`,
+    notes: "Window functions are more efficient than subqueries for running totals. Use for credit monitoring."
+  },
+  {
+    pattern: "Pivot Table for Sales by Month",
+    useCase: "Transform row data into columnar format for reporting",
+    complexity: "intermediate",
+    code: `-- Sales by Customer and Month (Pivot)
+SELECT
+  customer_no,
+  customer_name,
+  [01] AS Jan, [02] AS Feb, [03] AS Mar,
+  [04] AS Apr, [05] AS May, [06] AS Jun,
+  [07] AS Jul, [08] AS Aug, [09] AS Sep,
+  [10] AS Oct, [11] AS Nov, [12] AS Dec,
+  ([01] + [02] + [03] + [04] + [05] + [06] +
+   [07] + [08] + [09] + [10] + [11] + [12]) AS YTD_Total
+FROM (
+  SELECT
+    c.customer_no,
+    c.customer_name,
+    FORMAT(oh.order_date, 'MM') AS order_month,
+    oh.total_amount
+  FROM customer c
+  INNER JOIN oe_hdr oh ON c.customer_id = oh.customer_id
+  WHERE oh.delete_flag = 'N'
+    AND oh.order_date >= DATEFROMPARTS(YEAR(GETDATE()), 1, 1)
+    AND oh.completed = 'Y'
+) AS SourceData
+PIVOT (
+  SUM(total_amount)
+  FOR order_month IN (
+    [01], [02], [03], [04], [05], [06],
+    [07], [08], [09], [10], [11], [12]
+  )
+) AS PivotTable
+ORDER BY YTD_Total DESC`,
+    notes: "PIVOT is efficient for month-over-month comparisons. Use UNPIVOT to reverse transformation."
+  },
+  {
+    pattern: "Dynamic Search with Optional Filters",
+    useCase: "Build flexible search queries without SQL injection risk",
+    complexity: "intermediate",
+    code: `-- Dynamic Customer Search (Parameterized)
+DECLARE @customer_no VARCHAR(50) = NULL
+DECLARE @customer_name VARCHAR(100) = NULL
+DECLARE @city VARCHAR(50) = NULL
+DECLARE @min_credit_limit DECIMAL(18,2) = NULL
+DECLARE @include_inactive BIT = 0
+
+SELECT
+  customer_no,
+  customer_name,
+  city,
+  state,
+  credit_limit,
+  current_balance,
+  CASE WHEN delete_flag = 'Y' THEN 'Inactive' ELSE 'Active' END AS status
+FROM customer
+WHERE delete_flag = CASE WHEN @include_inactive = 1 THEN delete_flag ELSE 'N' END
+  AND (@customer_no IS NULL OR customer_no LIKE '%' + @customer_no + '%')
+  AND (@customer_name IS NULL OR customer_name LIKE '%' + @customer_name + '%')
+  AND (@city IS NULL OR city = @city)
+  AND (@min_credit_limit IS NULL OR credit_limit >= @min_credit_limit)
+ORDER BY customer_no`,
+    notes: "Parameters prevent SQL injection. NULL parameters are ignored in filter logic."
+  },
+  {
+    pattern: "Inventory Valuation with FIFO Costing",
+    useCase: "Calculate inventory value using First-In-First-Out method",
+    complexity: "advanced",
+    code: `-- FIFO Inventory Valuation
+WITH Receipts AS (
+  SELECT
+    inv_mast_uid,
+    receipt_date,
+    quantity_received,
+    unit_cost,
+    ROW_NUMBER() OVER (
+      PARTITION BY inv_mast_uid
+      ORDER BY receipt_date, receipt_no
+    ) AS receipt_sequence
+  FROM inventory_receipts
+  WHERE delete_flag = 'N'
+),
+RunningReceipts AS (
+  SELECT
+    inv_mast_uid,
+    receipt_date,
+    quantity_received,
+    unit_cost,
+    SUM(quantity_received) OVER (
+      PARTITION BY inv_mast_uid
+      ORDER BY receipt_sequence
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS cumulative_qty,
+    receipt_sequence
+  FROM Receipts
+),
+CurrentStock AS (
+  SELECT
+    inv_mast_uid,
+    SUM(qty_on_hand) AS total_on_hand
+  FROM inv_loc
+  WHERE delete_flag = 'N'
+  GROUP BY inv_mast_uid
+)
+SELECT
+  i.item_id,
+  i.item_desc,
+  cs.total_on_hand,
+  -- Calculate FIFO cost
+  SUM(
+    CASE
+      WHEN rr.cumulative_qty <= cs.total_on_hand THEN
+        rr.quantity_received * rr.unit_cost
+      WHEN rr.cumulative_qty - rr.quantity_received < cs.total_on_hand THEN
+        (cs.total_on_hand - (rr.cumulative_qty - rr.quantity_received)) * rr.unit_cost
+      ELSE 0
+    END
+  ) AS fifo_inventory_value,
+  -- Average FIFO cost per unit
+  SUM(
+    CASE
+      WHEN rr.cumulative_qty <= cs.total_on_hand THEN
+        rr.quantity_received * rr.unit_cost
+      WHEN rr.cumulative_qty - rr.quantity_received < cs.total_on_hand THEN
+        (cs.total_on_hand - (rr.cumulative_qty - rr.quantity_received)) * rr.unit_cost
+      ELSE 0
+    END
+  ) / NULLIF(cs.total_on_hand, 0) AS avg_fifo_cost
+FROM inv_mast i
+INNER JOIN CurrentStock cs ON i.inv_mast_uid = cs.inv_mast_uid
+LEFT JOIN RunningReceipts rr ON i.inv_mast_uid = rr.inv_mast_uid
+  AND rr.cumulative_qty - rr.quantity_received < cs.total_on_hand
+WHERE i.delete_flag = 'N'
+GROUP BY i.item_id, i.item_desc, cs.total_on_hand
+ORDER BY i.item_id`,
+    notes: "FIFO is complex but required for accurate inventory valuation. Consider materialized view for large datasets."
+  }
+];
+
+const downloadables = [
+  {
+    title: "P21 Database Schema Reference",
+    desc: "Complete table and field reference for Prophet 21 database with relationships and indexes.",
+    format: "PDF",
+    size: "2.4 MB",
+    status: "coming-soon"
+  },
+  {
+    title: "DynaChange Code Templates",
+    desc: "Production-ready code snippets for common business rule scenarios with best practices.",
+    format: "ZIP",
+    size: "156 KB",
+    status: "coming-soon"
+  },
+  {
+    title: "P21 Performance Tuning Checklist",
+    desc: "Step-by-step guide to optimize P21 queries, reports, and database performance.",
+    format: "PDF",
+    size: "890 KB",
+    status: "coming-soon"
+  }
+];
+---
+
+<BaseLayout
+  title="P21 Resources & Knowledge Hub"
+  description={description}
+  schemaType="resource-hub"
+>
+
+  <!-- Hero -->
+  <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center">
+        <Badge variant="primary" class="mb-6">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          Knowledge Hub
+        </Badge>
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
+          Prophet 21 Developer Resources
+        </h1>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          The definitive P21 technical resource. From quick references to advanced SQL patterns, N8N workflows, API integration guides, performance benchmarks, and troubleshooting flowcharts. Everything you need in one place.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Sticky Anchor Nav -->
+  <div class="sticky top-16 z-30 bg-bg-base/90 backdrop-blur-lg border-b border-border/50">
+    <Container>
+      <nav class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none" aria-label="Resource sections">
+        <a href="#quick-ref" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Quick Reference</a>
+        <a href="#code-snippets" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Code Snippets</a>
+        <a href="#n8n-workflows" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">N8N Workflows</a>
+        <a href="#api-guide" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">API Integration</a>
+        <a href="#advanced-sql" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Advanced SQL</a>
+        <a href="#gotchas" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Common Gotchas</a>
+        <a href="#performance" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Benchmarks</a>
+        <a href="#troubleshooting" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Troubleshooting</a>
+        <a href="#version-gotchas" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Version Notes</a>
+        <a href="#downloads" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Downloads</a>
+      </nav>
+    </Container>
+  </div>
+
+  <!-- Quick Reference Guides -->
+  <Section id="quick-ref" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Quick Reference Guides</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Essential database tables, join patterns, and field references you'll use every day.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {quickRefs.map((section) => (
+          <Card hover={false} padding="lg">
+            <h3 class="text-lg font-semibold text-text-primary mb-6 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-accent-primary"></span>
+              {section.title}
+            </h3>
+            <div class="space-y-4">
+              {section.items.map((item) => (
+                <div class="border-l-2 border-border pl-4">
+                  <code class="text-sm font-mono text-accent-primary font-semibold">{item.name}</code>
+                  <p class="text-sm text-text-secondary mt-1 leading-relaxed">{item.desc}</p>
+                  {item.key && (
+                    <p class="text-xs text-text-tertiary mt-1 font-mono">{item.key}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Code Snippets -->
+  <Section id="code-snippets" background="surface-1" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Real-World Code Snippets</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Copy-paste ready examples from production P21 implementations. SQL queries, DynaChange rules, and API calls.
+        </p>
+      </div>
+
+      <div class="space-y-12">
+        {codeSnippets.map((category) => (
+          <div>
+            <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              {category.category}
+            </h3>
+            <div class="grid grid-cols-1 gap-6">
+              {category.examples.map((example) => (
+                <Card hover={false} padding="none" class="overflow-hidden">
+                  <div class="bg-bg-surface-2 px-6 py-4 border-b border-border">
+                    <div class="flex items-center justify-between">
+                      <h4 class="font-semibold text-text-primary">{example.title}</h4>
+                      <Badge variant="secondary" class="uppercase text-xs">
+                        {example.lang}
+                      </Badge>
+                    </div>
+                    {example.notes && (
+                      <p class="text-sm text-text-secondary mt-2">{example.notes}</p>
+                    )}
+                  </div>
+                  <div class="relative">
+                    <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 overflow-x-auto text-sm leading-relaxed"><code>{example.code}</code></pre>
+                    <button
+                      class="copy-btn absolute top-4 right-4 px-3 py-1.5 bg-bg-surface-1/80 hover:bg-bg-surface-1 border border-border rounded text-xs font-medium text-text-secondary hover:text-text-primary transition-colors duration-fast"
+                      data-code={example.code}
+                      aria-label="Copy code"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- N8N Workflow Patterns -->
+  <Section id="n8n-workflows" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">N8N Workflow Patterns</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Production-tested N8N automation workflows for P21 integration. From order sync to inventory monitoring.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8">
+        {n8nWorkflows.map((workflow) => (
+          <Card hover={false} padding="none" class="overflow-hidden">
+            <div class="bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 px-6 py-5 border-b border-border">
+              <div class="flex items-start justify-between gap-4 mb-3">
+                <div class="grow">
+                  <h3 class="text-xl font-bold text-text-primary mb-2">{workflow.title}</h3>
+                  <p class="text-text-secondary">{workflow.desc}</p>
+                </div>
+                <Badge variant={
+                  workflow.complexity === 'beginner' ? 'success' :
+                  workflow.complexity === 'intermediate' ? 'warning' :
+                  'error'
+                } class="uppercase text-xs shrink-0">
+                  {workflow.complexity}
+                </Badge>
+              </div>
+
+              <div class="flex flex-wrap gap-4 text-sm text-text-tertiary">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 1v6m0 6v6m5.6-14.6l-4.2 4.2m0 6l-4.2 4.2M23 12h-6m-6 0H5m14.6 5.6l-4.2-4.2m0-6L11.2 3.4" />
+                  </svg>
+                  {workflow.nodes} nodes
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                  </svg>
+                  {workflow.triggers.join(', ')}
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                  </svg>
+                  {workflow.actions.join(', ')}
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6">
+              <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 rounded overflow-x-auto text-sm leading-relaxed mb-4"><code>{workflow.code}</code></pre>
+              {workflow.notes && (
+                <div class="flex items-start gap-3 bg-accent-info/10 border border-accent-info/30 rounded p-4">
+                  <svg class="w-5 h-5 text-accent-info shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  <p class="text-sm text-text-secondary">{workflow.notes}</p>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Transaction API Integration Guide -->
+  <Section id="api-guide" background="surface-1" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Transaction API Integration Guide</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Complete guide to P21's REST API including authentication, rate limiting, and best practices for production use.
+        </p>
+      </div>
+
+      <!-- Authentication -->
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+          <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+          </svg>
+          Authentication - OAuth 2.0
+        </h3>
+
+        <Card hover={false} padding="lg" class="mb-6">
+          <h4 class="font-semibold text-text-primary mb-4">Authentication Flow</h4>
+          <ol class="space-y-2 text-sm text-text-secondary mb-6">
+            {apiGuide.authentication.steps.map((step, idx) => (
+              <li class="flex items-start gap-3">
+                <Badge variant="secondary" class="shrink-0 w-6 h-6 flex items-center justify-center p-0">{idx + 1}</Badge>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 rounded overflow-x-auto text-sm leading-relaxed"><code>{apiGuide.authentication.example}</code></pre>
+        </Card>
+      </div>
+
+      <!-- Endpoints -->
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+          <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+          </svg>
+          Core API Endpoints
+        </h3>
+
+        <div class="grid grid-cols-1 gap-6">
+          {apiGuide.endpoints.map((endpoint) => (
+            <Card hover={false} padding="none" class="overflow-hidden">
+              <div class="bg-bg-surface-2 px-6 py-4 border-b border-border flex items-center justify-between">
+                <div class="grow">
+                  <h4 class="font-semibold text-text-primary mb-1">{endpoint.resource}</h4>
+                  <code class="text-sm font-mono text-accent-primary">{endpoint.method} {endpoint.endpoint}</code>
+                </div>
+                <Badge variant={
+                  endpoint.method === 'GET' ? 'info' :
+                  endpoint.method === 'POST' ? 'success' :
+                  endpoint.method === 'PUT' ? 'warning' :
+                  'error'
+                } class="uppercase text-xs">
+                  {endpoint.method}
+                </Badge>
+              </div>
+
+              <div class="p-6">
+                <div class="mb-4">
+                  <span class="text-xs font-semibold text-text-tertiary uppercase tracking-wider">Parameters</span>
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    {endpoint.params.map((param) => (
+                      <code class="text-xs bg-bg-surface-2 text-text-secondary px-2 py-1 rounded font-mono">{param}</code>
+                    ))}
+                  </div>
+                </div>
+
+                <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 rounded overflow-x-auto text-sm leading-relaxed"><code>{endpoint.example}</code></pre>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <!-- Rate Limiting -->
+      <div class="mb-12">
+        <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+          <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Rate Limiting & Best Practices
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Card hover={false} padding="lg">
+            <h4 class="font-semibold text-text-primary mb-3">Rate Limits</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-text-secondary">Default</span>
+                <Badge variant="info">{apiGuide.rateLimits.default}</Badge>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-text-secondary">Burst</span>
+                <Badge variant="warning">{apiGuide.rateLimits.burst}</Badge>
+              </div>
+            </div>
+          </Card>
+
+          <Card hover={false} padding="lg">
+            <h4 class="font-semibold text-text-primary mb-3">Best Practices</h4>
+            <ul class="space-y-2 text-sm text-text-secondary">
+              {apiGuide.bestPractices.slice(0, 3).map((practice) => (
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>{practice}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+
+        <Card hover={false} padding="none" class="overflow-hidden">
+          <div class="bg-bg-surface-2 px-6 py-4 border-b border-border">
+            <h4 class="font-semibold text-text-primary">Rate Limit Handler with Exponential Backoff</h4>
+          </div>
+          <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 overflow-x-auto text-sm leading-relaxed"><code>{apiGuide.rateLimits.handling}</code></pre>
+        </Card>
+      </div>
+
+      <!-- All Best Practices -->
+      <Card hover={false} padding="lg">
+        <h4 class="font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          API Integration Best Practices
+        </h4>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-text-secondary">
+          {apiGuide.bestPractices.map((practice) => (
+            <li class="flex items-start gap-2">
+              <svg class="w-4 h-4 text-accent-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 11 12 14 22 4" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+              </svg>
+              <span>{practice}</span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </Container>
+  </Section>
+
+  <!-- Advanced SQL Patterns -->
+  <Section id="advanced-sql" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Advanced SQL Patterns</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Complex SQL queries for P21 database including CTEs, window functions, pivots, and performance optimization.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8">
+        {advancedSQLPatterns.map((pattern) => (
+          <Card hover={false} padding="none" class="overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500/10 to-blue-500/10 px-6 py-5 border-b border-border">
+              <div class="flex items-start justify-between gap-4 mb-2">
+                <h3 class="text-xl font-bold text-text-primary">{pattern.pattern}</h3>
+                <Badge variant={
+                  pattern.complexity === 'beginner' ? 'success' :
+                  pattern.complexity === 'intermediate' ? 'info' :
+                  'error'
+                } class="uppercase text-xs shrink-0">
+                  {pattern.complexity}
+                </Badge>
+              </div>
+              <p class="text-text-secondary text-sm">{pattern.useCase}</p>
+            </div>
+
+            <div class="p-6">
+              <pre class="bg-[#1e1e1e] text-[#d4d4d4] p-6 rounded overflow-x-auto text-sm leading-relaxed mb-4"><code>{pattern.code}</code></pre>
+              {pattern.notes && (
+                <div class="flex items-start gap-3 bg-accent-warning/10 border border-accent-warning/30 rounded p-4">
+                  <svg class="w-5 h-5 text-accent-warning shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  <p class="text-sm text-text-secondary"><strong>Note:</strong> {pattern.notes}</p>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Common Gotchas -->
+  <Section id="gotchas" background="surface-1" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Common Gotchas & Pitfalls</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Critical issues discovered through production troubleshooting. Learn from mistakes before making them.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {commonGotchas.map((gotcha) => (
+          <Card hover={false} padding="lg" class:list={[
+            "border-l-4",
+            gotcha.severity === "critical" ? "border-l-accent-error" :
+            gotcha.severity === "warning" ? "border-l-accent-warning" :
+            "border-l-accent-info"
+          ]}>
+            <div class="flex items-start gap-3 mb-4">
+              {gotcha.severity === "critical" && (
+                <svg class="w-6 h-6 text-accent-error shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L4.082 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              )}
+              {gotcha.severity === "warning" && (
+                <svg class="w-6 h-6 text-accent-warning shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 9v2m0 4h.01M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
+                </svg>
+              )}
+              {gotcha.severity === "info" && (
+                <svg class="w-6 h-6 text-accent-info shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              <div class="grow">
+                <Badge
+                  variant={gotcha.severity === "critical" ? "error" : gotcha.severity === "warning" ? "warning" : "info"}
+                  class="mb-2 uppercase text-xs"
+                >
+                  {gotcha.severity}
+                </Badge>
+                <h3 class="text-lg font-semibold text-text-primary">{gotcha.title}</h3>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <span class="text-xs font-semibold text-text-tertiary uppercase tracking-wider">Problem</span>
+                <p class="text-sm text-text-secondary mt-1 leading-relaxed">{gotcha.problem}</p>
+              </div>
+              <div>
+                <span class="text-xs font-semibold text-text-tertiary uppercase tracking-wider">Solution</span>
+                <code class="block text-sm bg-bg-surface-2 text-accent-primary p-3 rounded mt-1 font-mono">{gotcha.solution}</code>
+              </div>
+              <div>
+                <span class="text-xs font-semibold text-text-tertiary uppercase tracking-wider">Impact</span>
+                <p class="text-sm text-text-secondary mt-1">{gotcha.impact}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Performance Benchmarks -->
+  <Section id="performance" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Performance Benchmarking Data</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Real-world performance data from P21 production environments. Baseline vs optimized timings with specific strategies.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8">
+        {performanceBenchmarks.map((benchmark) => (
+          <Card hover={false} padding="lg">
+            <div class="flex items-start justify-between gap-4 mb-6">
+              <div class="grow">
+                <h3 class="text-xl font-semibold text-text-primary mb-2">{benchmark.operation}</h3>
+                <p class="text-sm text-text-secondary">{benchmark.optimization}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-xs text-text-tertiary uppercase tracking-wider mb-1">Improvement</div>
+                <Badge variant="success" class="text-lg px-3 py-1">
+                  {Math.round(((parseFloat(benchmark.baseline.split('-')[0]) / parseFloat(benchmark.optimized.split('-')[0])) - 1) * 100)}%
+                </Badge>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+              <div class="bg-accent-error/10 border border-accent-error/30 rounded p-4">
+                <div class="text-xs text-text-tertiary uppercase tracking-wider mb-2">Baseline</div>
+                <div class="text-2xl font-bold text-accent-error">{benchmark.baseline}</div>
+              </div>
+              <div class="bg-accent-success/10 border border-accent-success/30 rounded p-4">
+                <div class="text-xs text-text-tertiary uppercase tracking-wider mb-2">Optimized</div>
+                <div class="text-2xl font-bold text-accent-success">{benchmark.optimized}</div>
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <h4 class="text-sm font-semibold text-text-primary uppercase tracking-wider">Detailed Breakdown</h4>
+              {benchmark.dataPoints.map((point) => (
+                <div class="flex items-start justify-between gap-4 bg-bg-surface-2 p-4 rounded">
+                  <div class="grow">
+                    <div class="font-medium text-text-primary mb-1">{point.scenario}</div>
+                    <div class="text-xs text-text-tertiary">{point.notes}</div>
+                  </div>
+                  <Badge variant="secondary" class="shrink-0 font-mono">{point.time}</Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Performance Optimization Tips -->
+  <Section id="performance-tips" background="surface-1" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Performance Optimization Tips</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Battle-tested strategies for batching, pagination, indexing, and query optimization in P21.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {performanceTips.map((tip) => (
+          <Card hover={false} padding="lg">
+            <div class="text-4xl mb-4">{tip.icon}</div>
+            <h3 class="text-lg font-semibold text-text-primary mb-3">{tip.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed mb-4">{tip.desc}</p>
+            <code class="block text-xs bg-bg-surface-2 text-accent-primary p-3 rounded font-mono">{tip.example}</code>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Troubleshooting Flowcharts -->
+  <Section id="troubleshooting" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Troubleshooting Flowcharts</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Step-by-step diagnostic flows for common P21 issues. Follow the checks to identify and resolve problems quickly.
+        </p>
+      </div>
+
+      <div class="space-y-8">
+        {troubleshootingFlowcharts.map((category) => (
+          <div>
+            <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+              {category.category}
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {category.scenarios.map((scenario) => (
+                <Card hover={false} padding="lg" class="border-l-4 border-l-accent-warning">
+                  <div class="mb-4">
+                    <Badge variant="error" class="mb-2">SYMPTOM</Badge>
+                    <h4 class="text-lg font-semibold text-text-primary">{scenario.symptom}</h4>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div>
+                      <div class="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Diagnostic Checks</div>
+                      <ul class="space-y-2">
+                        {scenario.checks.map((check) => (
+                          <li class="flex items-start gap-2 text-sm text-text-secondary">
+                            <svg class="w-4 h-4 text-accent-info shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <polyline points="9 11 12 14 22 4" />
+                              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                            </svg>
+                            <span>{check}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div class="bg-accent-success/10 border border-accent-success/30 rounded p-4">
+                      <div class="text-xs font-semibold text-accent-success uppercase tracking-wider mb-2">Solution</div>
+                      <p class="text-sm text-text-primary">{scenario.solution}</p>
+                    </div>
+
+                    <div class="bg-accent-info/10 border border-accent-info/30 rounded p-4">
+                      <div class="text-xs font-semibold text-accent-info uppercase tracking-wider mb-2">Prevention</div>
+                      <p class="text-sm text-text-primary">{scenario.prevention}</p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Version-Specific Gotchas -->
+  <Section id="version-gotchas" background="surface-1" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Version-Specific Gotchas</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Critical differences between P21 versions. Breaking changes, new features, and migration considerations.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6">
+        {versionGotchas.map((version) => (
+          <Card hover={false} padding="none" class="overflow-hidden">
+            <div class="bg-gradient-to-r from-accent-primary/20 to-accent-secondary/20 px-6 py-5 border-b border-border">
+              <div class="flex items-center justify-between gap-4">
+                <h3 class="text-xl font-bold text-text-primary">{version.version}</h3>
+                <Badge variant="primary" class="text-sm px-3 py-1">
+                  {version.breaking.length} Breaking Changes
+                </Badge>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+              <!-- New Features -->
+              <div>
+                <h4 class="text-sm font-semibold text-text-tertiary uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 5v14m7-7H5" />
+                  </svg>
+                  New Features & Changes
+                </h4>
+                <ul class="space-y-2">
+                  {version.changes.map((change) => (
+                    <li class="flex items-start gap-2 text-sm text-text-secondary">
+                      <svg class="w-4 h-4 text-accent-info shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span>{change}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Breaking Changes -->
+              <div class="bg-accent-error/10 border border-accent-error/30 rounded p-4">
+                <h4 class="text-sm font-semibold text-accent-error uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 9v2m0 4h.01M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
+                  </svg>
+                  Breaking Changes
+                </h4>
+                <ul class="space-y-2">
+                  {version.breaking.map((breaking) => (
+                    <li class="flex items-start gap-2 text-sm text-text-primary">
+                      <svg class="w-4 h-4 text-accent-error shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="15" y1="9" x2="9" y2="15" />
+                        <line x1="9" y1="9" x2="15" y2="15" />
+                      </svg>
+                      <span>{breaking}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Migration Guide -->
+              <div class="bg-accent-success/10 border border-accent-success/30 rounded p-4">
+                <h4 class="text-sm font-semibold text-accent-success uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                  </svg>
+                  Migration Path
+                </h4>
+                <p class="text-sm text-text-primary">{version.migration}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Downloadable Resources -->
+  <Section id="downloads" background="base" padding="lg">
+    <Container>
+      <div class="mb-12">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Downloadable Resources</h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
+          Comprehensive guides, templates, and checklists for P21 development and administration.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {downloadables.map((resource) => (
+          <Card hover={true} padding="lg">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-primary/10 shrink-0">
+                <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <Badge variant="secondary" class="mb-2 uppercase text-xs">
+                  {resource.format}
+                </Badge>
+                <span class="text-xs text-text-tertiary font-mono">{resource.size}</span>
+              </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-text-primary mb-3">{resource.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed mb-6">{resource.desc}</p>
+
+            {resource.status === "coming-soon" ? (
+              <Badge variant="warning" class="w-full text-center">
+                Coming Soon
+              </Badge>
+            ) : (
+              <Button href={resource.url} variant="outline" size="sm" class="w-full">
+                Download
+              </Button>
+            )}
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Bottom CTA -->
+  <Section background="gradient" padding="lg">
+    <Container class="text-center">
+      <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+        Need Help with Your P21 Implementation?
+      </h2>
+      <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-xl mx-auto mb-10">
+        From custom business rules to performance optimization, we've solved it before. Let's talk about your specific challenge.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href="/contact" variant="primary" size="lg" arrow glow>
+          Schedule a Consultation
+        </Button>
+        <Button href="/services" variant="outline" size="lg">
+          View Our Services
+        </Button>
+      </div>
+    </Container>
+  </Section>
+
+</BaseLayout>
+
+<style>
+  .anchor-active {
+    background-color: var(--color-accent-primary);
+    color: white;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  code {
+    word-break: break-word;
+  }
+
+  pre code {
+    word-break: normal;
+  }
+
+  /* Print-friendly styles */
+  @media print {
+    .sticky,
+    nav,
+    button,
+    .copy-btn {
+      display: none !important;
+    }
+
+    section {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    pre {
+      border: 1px solid #ccc;
+      page-break-inside: avoid;
+    }
+
+    h2, h3, h4 {
+      page-break-after: avoid;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    code {
+      background: #f5f5f5 !important;
+      color: #333 !important;
+      border: 1px solid #ddd;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    pre code {
+      background: #f5f5f5 !important;
+      color: #333 !important;
+    }
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Highlight search results */
+  .search-highlight {
+    background-color: rgba(var(--color-accent-warning-rgb), 0.3);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+</style>
+
+<script>
+  function initResources() {
+    // Active anchor nav highlighting on scroll
+    const anchors = document.querySelectorAll('.anchor-link');
+    const sections = document.querySelectorAll('section[id]');
+
+    if (anchors.length > 0 && sections.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              anchors.forEach((a) => {
+                const link = a as HTMLAnchorElement;
+                if (link.getAttribute('href') === `#${id}`) {
+                  link.classList.add('anchor-active');
+                } else {
+                  link.classList.remove('anchor-active');
+                }
+              });
+            }
+          });
+        },
+        { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
+      );
+      sections.forEach((section) => observer.observe(section));
+    }
+
+    // Copy code button functionality
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const button = btn as HTMLButtonElement;
+        const code = button.getAttribute('data-code');
+        if (code) {
+          try {
+            await navigator.clipboard.writeText(code);
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.classList.add('text-accent-success');
+            setTimeout(() => {
+              button.textContent = originalText;
+              button.classList.remove('text-accent-success');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy code:', err);
+          }
+        }
+      });
+    });
+
+    // Keyboard shortcut: Cmd/Ctrl + K to focus on search (if we add it later)
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector<HTMLInputElement>('#resource-search');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+    });
+
+    // Smooth scroll for anchor links
+    anchors.forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = anchor.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          const target = document.querySelector(href);
+          if (target) {
+            const offset = 100; // Account for sticky header
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+
+    // Print-friendly version
+    const printBtn = document.querySelector('#print-resources');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+  }
+
+  initResources();
+  document.addEventListener('astro:after-swap', initResources);
+</script>

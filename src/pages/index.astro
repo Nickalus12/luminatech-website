@@ -378,6 +378,69 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
+       FEATURED PROJECTS SECTION
+       Real P21 achievements with before/after metrics
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 md:mb-16 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          {homepage.featuredProjects.heading}
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          {homepage.featuredProjects.subheading}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {homepage.featuredProjects.projects.map((project, i) => (
+          <Card hover padding="lg" class="scroll-reveal flex flex-col" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="mb-4">
+              <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-3">{project.title}</h3>
+              <div class="space-y-3 mb-4">
+                <div>
+                  <p class="text-accent-error text-xs font-semibold uppercase tracking-wider mb-1">Challenge</p>
+                  <p class="text-text-secondary text-sm leading-relaxed">{project.challenge}</p>
+                </div>
+                <div>
+                  <p class="text-accent-success text-xs font-semibold uppercase tracking-wider mb-1">Solution</p>
+                  <p class="text-text-secondary text-sm leading-relaxed">{project.solution}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-auto">
+              <div class="bg-bg-surface-1 rounded-lg p-4 mb-4">
+                <p class="text-accent-primary text-xs font-semibold uppercase tracking-wider mb-3">Results</p>
+                <div class="space-y-2">
+                  {project.results.map((result) => (
+                    <div class="flex items-baseline justify-between gap-2">
+                      <span class="text-text-tertiary text-xs">{result.label}</span>
+                      <div class="flex-1 border-b border-border/30 border-dotted mb-1"></div>
+                      <div class="text-right">
+                        <span class="text-text-primary font-mono text-sm font-semibold">{result.value}</span>
+                        <span class="text-text-tertiary text-xs ml-1">{result.detail}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                {project.tech.map((tech) => (
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-accent-primary/10 text-accent-primary text-xs font-medium">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
        TESTIMONIALS SECTION
        Three testimonial cards
   ═══════════════════════════════════════════════════════════════════════════ -->

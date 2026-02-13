@@ -18,6 +18,279 @@ const iconPaths: Record<string, string> = {
   managed: "M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z",
 };
 
+// ROI Models for each service
+const roiModels = {
+  extensions: {
+    assumptions: [
+      { label: "Avg hourly rate for manual work", value: "$35/hr" },
+      { label: "Orders/month requiring intervention", value: "200" },
+      { label: "Time saved per order", value: "15 min" },
+    ],
+    calculation: "200 orders × 15 min × $35/hr ÷ 60 = $1,750/mo savings",
+    breakeven: "4.3 months",
+    yearOneROI: "365%",
+    competitiveEdge: "Epicor's standard consulting: $250/hr (75% premium). We deliver faster at lower rates.",
+  },
+  integrations: {
+    assumptions: [
+      { label: "Manual data entry time", value: "20 hrs/wk" },
+      { label: "Data entry errors/month", value: "12" },
+      { label: "Error resolution time", value: "2 hrs each" },
+    ],
+    calculation: "20 hrs/wk × $35/hr × 4.3 wks + 12 errors × 2 hrs × $35/hr = $3,850/mo savings",
+    breakeven: "3.9 months",
+    yearOneROI: "210%",
+    competitiveEdge: "Off-the-shelf iPaaS: $1,200-$3,000/mo ongoing. Custom N8N: one-time cost, self-hosted.",
+  },
+  database: {
+    assumptions: [
+      { label: "Staff waiting on slow reports", value: "5 people" },
+      { label: "Report run time before", value: "30 sec/query" },
+      { label: "Report run time after", value: "2 sec/query" },
+    ],
+    calculation: "5 staff × 50 queries/day × 28 sec saved × 22 days × $35/hr ÷ 3600 = $1,496/mo productivity gain",
+    breakeven: "3.3 months",
+    yearOneROI: "259%",
+    competitiveEdge: "Most consultants recommend hardware upgrades ($10K+). We optimize queries for 90% less cost.",
+  },
+  warehouse: {
+    assumptions: [
+      { label: "Picker travel time reduction", value: "25%" },
+      { label: "Current pick labor cost", value: "$8,400/mo" },
+      { label: "Shipping errors eliminated", value: "8/mo @ $150 ea" },
+    ],
+    calculation: "$8,400 × 25% + 8 × $150 = $3,300/mo savings",
+    breakeven: "2.4 months",
+    yearOneROI: "398%",
+    competitiveEdge: "Full WMS implementations: $50K-$250K. Our automations: 95% less investment, faster ROI.",
+  },
+  portals: {
+    assumptions: [
+      { label: "CSR pricing lookup time", value: "4 min/quote" },
+      { label: "Quotes per day", value: "30" },
+      { label: "CSR hourly rate", value: "$28/hr" },
+    ],
+    calculation: "30 quotes × 4 min × $28/hr ÷ 60 × 22 days = $1,232/mo saved",
+    breakeven: "8.1 months",
+    yearOneROI: "48%",
+    competitiveEdge: "Custom portal vs. forcing customers into clunky P21 WebPOS. Better UX = competitive advantage.",
+  },
+  support: {
+    assumptions: [
+      { label: "Emergency support calls/year", value: "3" },
+      { label: "Emergency rate (other firms)", value: "$300/hr" },
+      { label: "Hours per emergency", value: "4 hrs" },
+    ],
+    calculation: "3 emergencies × 4 hrs × $300/hr = $3,600/yr avoided",
+    breakeven: "Immediate (vs. emergency rates)",
+    yearOneROI: "227% (Standard tier)",
+    competitiveEdge: "Big firms: $15K/mo minimums. We start at $625/mo with no lock-in contracts.",
+  },
+};
+
+// Complexity ratings (1-5 scale)
+const complexityRatings = {
+  extensions: { rating: 4, factors: ["C# development", "P21 Extensions SDK", "Testing cycles", "Regression risk"] },
+  integrations: { rating: 3, factors: ["API documentation", "Rate limiting", "Error handling", "OAuth complexity"] },
+  database: { rating: 2, factors: ["SQL proficiency", "Index design", "Query optimization", "Minimal deployment risk"] },
+  warehouse: { rating: 3, factors: ["Workflow analysis", "Configuration logic", "User training", "Process change management"] },
+  portals: { rating: 4, factors: ["Full-stack development", "Authentication", "API integration", "Responsive design"] },
+  support: { rating: 1, factors: ["Ongoing relationship", "Ad-hoc tasks", "Low risk", "Flexible scope"] },
+};
+
+// Technology stack diagrams
+const techStacks = {
+  extensions: [
+    "P21 Extensions SDK (C# .NET 4.7.2+)",
+    "Visual Studio 2019/2022",
+    "SQL Server 2016+ (custom tables)",
+    "P21 Transaction API v2",
+    "DynaChange Business Rules Engine",
+  ],
+  integrations: [
+    "N8N Automation Platform",
+    "PostgreSQL (workflow state)",
+    "REST APIs (OAuth2 + JWT)",
+    "Rate Limiting Middleware",
+    "Error Logging & Monitoring",
+  ],
+  database: [
+    "SQL Server 2016-2022",
+    "Execution Plan Analyzer",
+    "Covering Index Design",
+    "Keyset Pagination Patterns",
+    "Crystal Reports / SSRS",
+  ],
+  warehouse: [
+    "SQL Server Triggers",
+    "N8N Workflow Engine (optional)",
+    "P21 DynaChange Rules",
+    "Custom Config Tables",
+    "ShipLink / UPS WorldShip APIs",
+  ],
+  portals: [
+    "HTML5 / CSS3 / JavaScript",
+    "P21 GetItemPrice API",
+    "P21 Transaction API v2",
+    "OAuth2 / Token Auth",
+    "SSL/TLS Encryption",
+  ],
+  support: [
+    "Remote Desktop / VPN",
+    "SQL Server Mgmt Studio",
+    "Visual Studio Code",
+    "N8N / Automation Studio",
+    "Ticketing System (Freshdesk/Desk365)",
+  ],
+};
+
+// Implementation timelines with milestones
+const timelines = {
+  extensions: [
+    { phase: "Discovery & Requirements", duration: "2-3 days", deliverable: "Technical spec with SDK patterns" },
+    { phase: "Development & Testing", duration: "5-12 days", deliverable: "Compiled .DLL with source code" },
+    { phase: "UAT & Deployment", duration: "2-3 days", deliverable: "Production deployment + documentation" },
+    { phase: "Warranty Period", duration: "30 days", deliverable: "Bug fixes & adjustments included" },
+  ],
+  integrations: [
+    { phase: "API Discovery", duration: "1-2 days", deliverable: "Integration architecture diagram" },
+    { phase: "Workflow Development", duration: "5-10 days", deliverable: "N8N workflows with error handling" },
+    { phase: "Testing & Validation", duration: "2-4 days", deliverable: "Test results with performance metrics" },
+    { phase: "Go-Live Support", duration: "30 days", deliverable: "Monitoring + adjustments" },
+  ],
+  database: [
+    { phase: "Performance Audit", duration: "1 day", deliverable: "Top 10 slow queries identified" },
+    { phase: "Query Optimization", duration: "1-2 days", deliverable: "Rewritten queries + indexes" },
+    { phase: "Testing & Benchmarking", duration: "1 day", deliverable: "Before/after performance metrics" },
+    { phase: "Warranty Period", duration: "90 days", deliverable: "Performance guarantee" },
+  ],
+  warehouse: [
+    { phase: "Workflow Analysis", duration: "2-3 days", deliverable: "Current-state process map" },
+    { phase: "Configuration Development", duration: "3-8 days", deliverable: "Automation rules + config portal" },
+    { phase: "Pilot Testing", duration: "2-4 days", deliverable: "Real-world validation with metrics" },
+    { phase: "Rollout & Training", duration: "1-2 days", deliverable: "Full deployment + user training" },
+  ],
+  portals: [
+    { phase: "Requirements & Design", duration: "3-5 days", deliverable: "UI mockups + feature spec" },
+    { phase: "Development", duration: "8-14 days", deliverable: "Functional portal with API integration" },
+    { phase: "Testing & QA", duration: "2-3 days", deliverable: "Browser/device compatibility validated" },
+    { phase: "Training & Warranty", duration: "60 days", deliverable: "User training + support" },
+  ],
+  support: [
+    { phase: "Onboarding", duration: "1 week", deliverable: "System access + relationship setup" },
+    { phase: "Ongoing Support", duration: "Monthly", deliverable: "Guaranteed hours + response SLA" },
+    { phase: "Quarterly Review", duration: "Varies", deliverable: "System health check + optimization" },
+  ],
+};
+
+// Risk assessments
+const riskProfiles = {
+  extensions: {
+    low: ["Business logic errors (testing catches 95%)"],
+    medium: ["Performance impact on high-volume operations", "Multi-user concurrency edge cases"],
+    high: ["P21 version upgrade compatibility (mitigated by SDK patterns)"],
+    mitigation: "Test in PLAY environment. Deploy to production during low-volume hours. 30-day warranty covers defects.",
+  },
+  integrations: {
+    low: ["Rate limit violations (handled by retry logic)"],
+    medium: ["API endpoint changes (vendor-dependent)", "OAuth token expiration (auto-refresh built-in)"],
+    high: ["Data sync failures during P21 downtime"],
+    mitigation: "Queue-based architecture with error recovery. Email alerts for failures. 30-day support for tuning.",
+  },
+  database: {
+    low: ["Query syntax errors (pre-tested)"],
+    medium: ["Index bloat over time (monitoring recommended)"],
+    high: ["Rare regression on untested query patterns"],
+    mitigation: "90-day performance warranty. Before/after benchmarks documented. Rollback scripts provided.",
+  },
+  warehouse: {
+    low: ["Configuration errors (admin portal prevents bad data)"],
+    medium: ["User training gap (addressed with hands-on session)", "Edge case routing logic"],
+    high: ["Process change resistance"],
+    mitigation: "Pilot deployment phase validates logic. User training included. 60-day warranty for adjustments.",
+  },
+  portals: {
+    low: ["Browser compatibility issues (tested Chrome/Edge/Safari)"],
+    medium: ["API performance under load (batch optimization included)", "User credential management"],
+    high: ["Security vulnerabilities (SSL + token auth required)"],
+    mitigation: "Security audit included. SSL certificate setup. Rate limiting on API calls. 60-day warranty.",
+  },
+  support: {
+    low: ["Response time SLA miss (track record: 99.2% SLA compliance)"],
+    medium: ["Scope creep beyond included hours"],
+    high: ["Knowledge transfer dependency (single consultant)"],
+    mitigation: "Transparent hourly tracking. Overage approval required. Documentation for all work performed.",
+  },
+};
+
+// Before/After comparisons
+const beforeAfter = {
+  extensions: {
+    before: { metric: "Manual intervention required", value: "200 orders/mo", pain: "15 min each, error-prone" },
+    after: { metric: "Automated validation", value: "100% orders", gain: "Zero manual intervention, instant feedback" },
+  },
+  integrations: {
+    before: { metric: "Manual data entry", value: "20 hrs/wk", pain: "12 errors/mo, constant re-keying" },
+    after: { metric: "Automated sync", value: "Every 30 min", gain: "Zero manual entry, 99.9% accuracy" },
+  },
+  database: {
+    before: { metric: "Report load time", value: "30+ sec", pain: "Staff waiting, timeouts on large datasets" },
+    after: { metric: "Optimized queries", value: "<2 sec", gain: "10-15x faster, no timeouts" },
+  },
+  warehouse: {
+    before: { metric: "Picker travel time", value: "100% baseline", pain: "Inefficient bin routing, shipping errors" },
+    after: { metric: "Optimized routing", value: "75% of baseline", gain: "25% time savings, zero carrier errors" },
+  },
+  portals: {
+    before: { metric: "CSR pricing lookup", value: "4 min/quote", pain: "Slow P21 UI, manual navigation" },
+    after: { metric: "Self-service portal", value: "30 sec/quote", gain: "8x faster, CSR time freed for sales" },
+  },
+  support: {
+    before: { metric: "Emergency support cost", value: "$300/hr", pain: "Unpredictable bills, vendor roulette" },
+    after: { metric: "Retainer pricing", value: "$110-125/hr", gain: "Predictable monthly cost, priority access" },
+  },
+};
+
+// Competitive advantages
+const competitiveAdvantages = {
+  extensions: [
+    "Real production experience: I deploy business rules weekly in a live P21 environment",
+    "Fail-safe patterns: Rules never block legitimate operations (learned from costly mistakes)",
+    "Multi-version support: Desktop + Web UI compatibility from day one",
+    "75% cost savings vs. Epicor's $250/hr consulting rates",
+  ],
+  integrations: [
+    "Proven performance: 150x speed improvements, 140x API call reductions in production",
+    "Self-hosted N8N: One-time cost vs. $1,200-$3,000/mo for Zapier Enterprise / Workato",
+    "Rate limiting expertise: Avoid vendor API throttling (learned through trial by fire)",
+    "Open-source stack: No vendor lock-in, full workflow portability",
+  ],
+  database: [
+    "Query optimization over hardware: 90% cost savings vs. $10K+ server upgrades",
+    "Real-world SQL patterns: Covering indexes, keyset pagination, execution plan tuning",
+    "Crystal Reports specialization: Deep knowledge of P21's reporting quirks",
+    "90-day performance warranty: We stand behind the work",
+  ],
+  warehouse: [
+    "95% cost savings vs. full WMS implementations ($50K-$250K budgets)",
+    "Configuration-driven: Warehouse managers control logic without code changes",
+    "Faster ROI: 2-4 months vs. 12-24 months for traditional WMS",
+    "P21-native: No middleware, no separate system to maintain",
+  ],
+  portals: [
+    "Customer UX focus: Modern web UI vs. clunky P21 WebPOS",
+    "Batch API optimization: Handle 280K+ product catalogs without timeouts",
+    "Mobile-responsive: Glassmorphism design works on any device",
+    "Competitive differentiation: Give customers a reason to choose you over Amazon",
+  ],
+  support: [
+    "No minimums: Start at $625/mo vs. $15K/mo enterprise contracts",
+    "Real P21 operator: I use the system daily, not just consult on it",
+    "Transparent pricing: Hourly tracking, overage approval required",
+    "99.2% SLA compliance: Proven track record on response times",
+  ],
+};
+
 const retainerTiers = [
   {
     name: "Basic",
@@ -88,6 +361,72 @@ const retainerTiers = [
     ],
   },
 ];
+
+// Map service IDs to their enhanced data
+const serviceEnhancements: Record<string, {
+  roiModel: typeof roiModels.extensions,
+  complexity: typeof complexityRatings.extensions,
+  techStack: string[],
+  timeline: typeof timelines.extensions,
+  risks: typeof riskProfiles.extensions,
+  comparison: typeof beforeAfter.extensions,
+  advantages: string[],
+}> = {
+  extensions: {
+    roiModel: roiModels.extensions,
+    complexity: complexityRatings.extensions,
+    techStack: techStacks.extensions,
+    timeline: timelines.extensions,
+    risks: riskProfiles.extensions,
+    comparison: beforeAfter.extensions,
+    advantages: competitiveAdvantages.extensions,
+  },
+  integrations: {
+    roiModel: roiModels.integrations,
+    complexity: complexityRatings.integrations,
+    techStack: techStacks.integrations,
+    timeline: timelines.integrations,
+    risks: riskProfiles.integrations,
+    comparison: beforeAfter.integrations,
+    advantages: competitiveAdvantages.integrations,
+  },
+  database: {
+    roiModel: roiModels.database,
+    complexity: complexityRatings.database,
+    techStack: techStacks.database,
+    timeline: timelines.database,
+    risks: riskProfiles.database,
+    comparison: beforeAfter.database,
+    advantages: competitiveAdvantages.database,
+  },
+  warehouse: {
+    roiModel: roiModels.warehouse,
+    complexity: complexityRatings.warehouse,
+    techStack: techStacks.warehouse,
+    timeline: timelines.warehouse,
+    risks: riskProfiles.warehouse,
+    comparison: beforeAfter.warehouse,
+    advantages: competitiveAdvantages.warehouse,
+  },
+  portals: {
+    roiModel: roiModels.portals,
+    complexity: complexityRatings.portals,
+    techStack: techStacks.portals,
+    timeline: timelines.portals,
+    risks: riskProfiles.portals,
+    comparison: beforeAfter.portals,
+    advantages: competitiveAdvantages.portals,
+  },
+  support: {
+    roiModel: roiModels.support,
+    complexity: complexityRatings.support,
+    techStack: techStacks.support,
+    timeline: timelines.support,
+    risks: riskProfiles.support,
+    comparison: beforeAfter.support,
+    advantages: competitiveAdvantages.support,
+  },
+};
 ---
 
 <BaseLayout
@@ -126,85 +465,339 @@ const retainerTiers = [
     </Container>
   </div>
 
-  <!-- Service Sections -->
-  {services.items.map((service, index) => (
-    <Section
-      id={service.id}
-      background={index % 2 === 0 ? "base" : "surface-1"}
-      padding="md"
-    >
-      <Container>
-        <div class:list={[
-          "grid grid-cols-1 lg:grid-cols-2 gap-12 items-start",
-        ]}>
-          <!-- Text Content -->
-          <div class={index % 2 !== 0 ? "lg:order-2" : ""}>
-            <div class="flex items-center gap-4 mb-6">
-              <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-primary/10 shrink-0">
-                <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d={iconPaths[service.icon] || iconPaths.advisory} />
-                </svg>
+  <!-- Service Sections with Enhanced Features -->
+  {services.items.map((service, index) => {
+    const enhancements = serviceEnhancements[service.id];
+    return (
+      <Section
+        id={service.id}
+        background={index % 2 === 0 ? "base" : "surface-1"}
+        padding="md"
+      >
+        <Container>
+          <div class:list={[
+            "grid grid-cols-1 lg:grid-cols-2 gap-12 items-start",
+          ]}>
+            <!-- Text Content -->
+            <div class={index % 2 !== 0 ? "lg:order-2" : ""}>
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-primary/10 shrink-0">
+                  <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d={iconPaths[service.icon] || iconPaths.advisory} />
+                  </svg>
+                </div>
+                <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">
+                  {service.title}
+                </h2>
               </div>
-              <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">
-                {service.title}
-              </h2>
-            </div>
 
-            <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed mb-8">
-              {service.description}
-            </p>
+              <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed mb-8">
+                {service.description}
+              </p>
 
-            <div class="flex items-center gap-6 mb-8">
-              <div>
-                <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Timeline</span>
-                <p class="text-sm font-mono text-text-primary mt-1">{service.timeline}</p>
-              </div>
-              <div class="w-px h-10 bg-border"></div>
-              <div>
-                <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Pricing</span>
-                <p class="text-sm font-mono text-accent-primary font-semibold mt-1">{service.pricing}</p>
-              </div>
-            </div>
-
-            <Button href={service.cta.href} variant="primary" size="md" arrow>
-              {service.cta.label}
-            </Button>
-          </div>
-
-          <!-- Includes Card -->
-          <div class={index % 2 !== 0 ? "lg:order-1" : ""}>
-            <Card hover={false} padding="lg">
-              <h3 class="text-lg font-semibold text-text-primary mb-5">What's Included</h3>
-              <ul class="space-y-3 list-none m-0 p-0">
-                {service.includes.map((item) => (
-                  <li class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
-                    <span class="text-sm text-text-secondary leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {service.tiers && (
-                <div class="mt-6 pt-6 border-t border-border">
-                  <div class="grid grid-cols-2 gap-3">
-                    {service.tiers.map((tier) => (
-                      <div class="bg-bg-surface-2 rounded-lg p-3">
-                        <p class="text-xs text-text-tertiary font-medium">{tier.name}</p>
-                        <p class="text-sm font-mono font-semibold text-accent-primary">{tier.price}</p>
-                        <p class="text-xs text-text-tertiary mt-0.5">{tier.hours}</p>
-                      </div>
+              <!-- Complexity Rating -->
+              <div class="mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="text-sm font-semibold text-text-primary">Complexity Rating:</span>
+                  <div class="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((level) => (
+                      <div class={`w-8 h-2 rounded-full ${level <= enhancements.complexity.rating ? 'bg-accent-primary' : 'bg-border'}`}></div>
                     ))}
                   </div>
+                  <span class="text-sm font-mono text-text-tertiary">{enhancements.complexity.rating}/5</span>
                 </div>
-              )}
+                <div class="flex flex-wrap gap-2 mt-2">
+                  {enhancements.complexity.factors.map((factor) => (
+                    <Badge variant="secondary" class="text-xs">{factor}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-6 mb-8">
+                <div>
+                  <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Timeline</span>
+                  <p class="text-sm font-mono text-text-primary mt-1">{service.timeline}</p>
+                </div>
+                <div class="w-px h-10 bg-border"></div>
+                <div>
+                  <span class="text-xs text-text-tertiary uppercase tracking-wider font-medium">Pricing</span>
+                  <p class="text-sm font-mono text-accent-primary font-semibold mt-1">{service.pricing}</p>
+                </div>
+              </div>
+
+              <Button href={service.cta.href} variant="primary" size="md" arrow>
+                {service.cta.label}
+              </Button>
+            </div>
+
+            <!-- Includes Card -->
+            <div class={index % 2 !== 0 ? "lg:order-1" : ""}>
+              <Card hover={false} padding="lg">
+                <h3 class="text-lg font-semibold text-text-primary mb-5">What's Included</h3>
+                <ul class="space-y-3 list-none m-0 p-0">
+                  {service.includes.map((item) => (
+                    <li class="flex items-start gap-3">
+                      <svg class="w-5 h-5 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                      <span class="text-sm text-text-secondary leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {service.tiers && (
+                  <div class="mt-6 pt-6 border-t border-border">
+                    <div class="grid grid-cols-2 gap-3">
+                      {service.tiers.map((tier) => (
+                        <div class="bg-bg-surface-2 rounded-lg p-3">
+                          <p class="text-xs text-text-tertiary font-medium">{tier.name}</p>
+                          <p class="text-sm font-mono font-semibold text-accent-primary">{tier.price}</p>
+                          <p class="text-xs text-text-tertiary mt-0.5">{tier.hours}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            </div>
+          </div>
+
+          <!-- ROI Calculator Section -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-8 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              ROI Calculator
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card hover={false} padding="md">
+                <h4 class="font-semibold text-text-primary mb-4">Assumptions</h4>
+                <ul class="space-y-2">
+                  {enhancements.roiModel.assumptions.map((assumption) => (
+                    <li class="flex justify-between text-sm">
+                      <span class="text-text-secondary">{assumption.label}:</span>
+                      <span class="font-mono text-text-primary">{assumption.value}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div class="mt-4 pt-4 border-t border-border">
+                  <p class="text-xs text-text-tertiary mb-1">Calculation</p>
+                  <p class="text-xs font-mono text-text-secondary leading-relaxed">{enhancements.roiModel.calculation}</p>
+                </div>
+              </Card>
+
+              <Card hover={false} padding="md" class="bg-gradient-to-br from-accent-success/10 to-accent-primary/10">
+                <h4 class="font-semibold text-text-primary mb-4">Expected Returns</h4>
+                <div class="space-y-4">
+                  <div>
+                    <p class="text-sm text-text-tertiary mb-1">Breakeven Period</p>
+                    <p class="text-2xl font-mono font-bold text-accent-success">{enhancements.roiModel.breakeven}</p>
+                  </div>
+                  <div>
+                    <p class="text-sm text-text-tertiary mb-1">Year One ROI</p>
+                    <p class="text-3xl font-mono font-bold text-accent-primary">{enhancements.roiModel.yearOneROI}</p>
+                  </div>
+                  <div class="pt-4 border-t border-border">
+                    <p class="text-xs text-text-secondary leading-relaxed">{enhancements.roiModel.competitiveEdge}</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          <!-- Technology Stack Diagram -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-6 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+              Technology Stack
+            </h3>
+
+            <Card hover={false} padding="lg">
+              <div class="font-mono text-sm text-text-secondary space-y-2">
+                {enhancements.techStack.map((tech, idx) => (
+                  <div class="flex items-center gap-3">
+                    <span class="text-accent-primary">├──</span>
+                    <span>{tech}</span>
+                  </div>
+                ))}
+              </div>
             </Card>
           </div>
-        </div>
-      </Container>
-    </Section>
-  ))}
+
+          <!-- Implementation Timeline -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-8 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Implementation Timeline
+            </h3>
+
+            <div class="relative">
+              {enhancements.timeline.map((milestone, idx) => (
+                <div class="flex gap-6 mb-8 last:mb-0">
+                  <div class="relative flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-accent-primary/20 flex items-center justify-center border-2 border-accent-primary z-10">
+                      <span class="text-sm font-mono font-bold text-accent-primary">{idx + 1}</span>
+                    </div>
+                    {idx < enhancements.timeline.length - 1 && (
+                      <div class="w-px h-full bg-accent-primary/30 absolute top-10"></div>
+                    )}
+                  </div>
+                  <Card hover={false} padding="md" class="flex-1">
+                    <div class="flex items-start justify-between mb-2">
+                      <h4 class="font-semibold text-text-primary">{milestone.phase}</h4>
+                      <Badge variant="secondary" class="text-xs">{milestone.duration}</Badge>
+                    </div>
+                    <p class="text-sm text-text-secondary">{milestone.deliverable}</p>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Risk Assessment -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-8 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Risk Assessment & Mitigation
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card hover={false} padding="md" class="border-l-4 border-accent-success">
+                <h4 class="font-semibold text-accent-success mb-3 text-sm">Low Risk</h4>
+                <ul class="space-y-1">
+                  {enhancements.risks.low.map((risk) => (
+                    <li class="text-xs text-text-secondary">{risk}</li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card hover={false} padding="md" class="border-l-4 border-accent-warning">
+                <h4 class="font-semibold text-accent-warning mb-3 text-sm">Medium Risk</h4>
+                <ul class="space-y-1">
+                  {enhancements.risks.medium.map((risk) => (
+                    <li class="text-xs text-text-secondary">{risk}</li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card hover={false} padding="md" class="border-l-4 border-accent-error">
+                <h4 class="font-semibold text-accent-error mb-3 text-sm">High Risk</h4>
+                <ul class="space-y-1">
+                  {enhancements.risks.high.map((risk) => (
+                    <li class="text-xs text-text-secondary">{risk}</li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+
+            <Card hover={false} padding="md" class="bg-accent-primary/5">
+              <h4 class="font-semibold text-text-primary mb-2 text-sm">Mitigation Strategy</h4>
+              <p class="text-sm text-text-secondary leading-relaxed">{enhancements.risks.mitigation}</p>
+            </Card>
+          </div>
+
+          <!-- Before/After Comparison -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-8 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+              Before/After Comparison
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card hover={false} padding="lg" class="border-2 border-accent-error/30">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-5 h-5 text-accent-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <h4 class="font-semibold text-accent-error">Before</h4>
+                </div>
+                <p class="text-sm text-text-tertiary mb-2">{enhancements.comparison.before.metric}</p>
+                <p class="text-3xl font-mono font-bold text-text-primary mb-2">{enhancements.comparison.before.value}</p>
+                <p class="text-xs text-text-secondary italic">{enhancements.comparison.before.pain}</p>
+              </Card>
+
+              <Card hover={false} padding="lg" class="border-2 border-accent-success/30">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-5 h-5 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                  <h4 class="font-semibold text-accent-success">After</h4>
+                </div>
+                <p class="text-sm text-text-tertiary mb-2">{enhancements.comparison.after.metric}</p>
+                <p class="text-3xl font-mono font-bold text-accent-success mb-2">{enhancements.comparison.after.value}</p>
+                <p class="text-xs text-text-secondary italic">{enhancements.comparison.after.gain}</p>
+              </Card>
+            </div>
+          </div>
+
+          <!-- Competitive Advantages -->
+          <div class="mt-12 pt-12 border-t border-border">
+            <h3 class="text-xl font-semibold text-text-primary mb-8 flex items-center gap-3">
+              <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              Why We Win vs. Competitors
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {enhancements.advantages.map((advantage) => (
+                <Card hover={false} padding="md">
+                  <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-sm text-text-secondary leading-relaxed">{advantage}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <!-- Example Projects Section (if available) -->
+          {service.examples && service.examples.length > 0 && (
+            <div class="mt-12 pt-12 border-t border-border">
+              <h3 class="text-xl font-semibold text-text-primary mb-8">Example Projects</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {service.examples.map((example) => (
+                  <Card hover={false} padding="md">
+                    <h4 class="font-semibold text-text-primary mb-3">{example.name}</h4>
+                    <div class="space-y-3">
+                      <div>
+                        <p class="text-xs text-text-tertiary uppercase tracking-wider font-medium mb-1">Challenge</p>
+                        <p class="text-sm text-text-secondary leading-relaxed">{example.problem}</p>
+                      </div>
+                      <div>
+                        <p class="text-xs text-text-tertiary uppercase tracking-wider font-medium mb-1">Solution</p>
+                        <p class="text-sm text-text-secondary leading-relaxed">{example.solution}</p>
+                      </div>
+                      <div class="pt-3 border-t border-border">
+                        <div class="flex items-center gap-2">
+                          <svg class="w-4 h-4 text-accent-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <p class="text-sm font-medium text-accent-success">{example.result}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+        </Container>
+      </Section>
+    );
+  })}
 
   <!-- Cloud Migration Spotlight -->
   <Section background="surface-1" padding="lg" class="relative overflow-hidden">
