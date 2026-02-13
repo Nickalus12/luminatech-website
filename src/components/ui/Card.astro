@@ -22,7 +22,7 @@ const paddingClasses = {
 const classes = [
   'bg-bg-surface-1 rounded-lg border border-border',
   paddingClasses[padding],
-  hover ? 'transition-all duration-normal ease-out hover:border-accent-primary hover:-translate-y-1 hover:shadow-lg' : '',
+  hover ? 'transition-all duration-normal ease-out hover:border-accent-primary/60 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent-primary/5' : '',
   glow ? 'shadow-glow' : '',
   className,
 ].filter(Boolean).join(' ');
