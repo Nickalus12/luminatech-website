@@ -1,17 +1,17 @@
-// Lumina eRP - Website Copy
+// Lumina Erp - Website Copy
 // All website copy as typed constants for page builders to import
 
 // ─── Brand ────────────────────────────────────────────────────────────────────
 
 export const brand = {
-  name: "Lumina eRP",
+  name: "Lumina Erp",
   tagline: "Illuminate your ERP potential.",
   domain: "Lumina-ERP.com",
   email: "Nickalus@Lumina-ERP.com",
   location: "Humble, TX",
   locationFull: "Based in Humble, TX. Serving distributors nationwide.",
   founder: "Nick Brewer",
-  copyright: `\u00A9 ${new Date().getFullYear()} Lumina eRP. All rights reserved.`,
+  copyright: `\u00A9 ${new Date().getFullYear()} Lumina Erp. All rights reserved.`,
   footerDescription:
     "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
 } as const;
@@ -321,7 +321,7 @@ export const about = {
     greeting: "Hey, I'm Nick Brewer.",
     paragraphs: [
       "I'm an ERP administrator at a wholesale distribution company in Houston. I use Prophet 21 every single day -- managing inventory, processing orders, writing business rules, building reports, and keeping the system running for a real distribution operation.",
-      "I started Lumina eRP because I kept seeing the same thing: distributors struggling with P21 problems that I'd already solved at my own company. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
+      "I started Lumina Erp because I kept seeing the same thing: distributors struggling with P21 problems that I'd already solved at my own company. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
       "When you work with me, you're getting someone who lives inside P21. I know the workarounds, the gotchas, and the shortcuts that only come from daily hands-on experience. I don't implement and leave -- I build things that actually work in the real world of wholesale distribution.",
       "I'm also a developer. C#, SQL, Python -- I write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. And with the mandatory cloud migration deadline approaching, I help distributors plan and execute their transition without disrupting operations.",
     ],
@@ -516,7 +516,7 @@ export const contact = {
 
 export const footer = {
   brand: {
-    name: "Lumina eRP",
+    name: "Lumina Erp",
     description: brand.footerDescription,
     tagline: brand.tagline,
   },

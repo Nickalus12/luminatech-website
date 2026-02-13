@@ -7,7 +7,7 @@ export async function GET(context: APIContext) {
   const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return rss({
-    title: 'Lumina eRP Blog',
+    title: 'Lumina Erp Blog',
     description: 'Expert Prophet 21 insights for wholesale distributors. Business rules, cloud migration, SQL reporting, and ERP best practices.',
     site: context.site!,
     items: sorted.map((post) => ({
