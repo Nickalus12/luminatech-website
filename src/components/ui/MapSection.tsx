@@ -3,14 +3,21 @@ import { useEffect, useRef, useState } from 'react';
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
 
-export default function MapSection() {
+interface MapSectionProps {
+  compact?: boolean;
+}
+
+export default function MapSection({ compact = false }: MapSectionProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
+  const mapHeight = compact ? '200px' : '380px';
+  const mapMinHeight = compact ? '160px' : '280px';
+  const mapZoom = compact ? 10 : 9;
+
   useEffect(() => {
-    // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Load Mapbox GL CSS
@@ -46,19 +53,22 @@ export default function MapSection() {
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/dark-v11',
           center: HUMBLE_TX,
-          zoom: 9,
-          interactive: true,
+          zoom: mapZoom,
+          interactive: !compact,
           attributionControl: false,
           pitchWithRotate: false,
           dragRotate: false,
+          scrollZoom: false,
         });
 
-        map.addControl(
-          new mapboxgl.AttributionControl({ compact: true }),
-          'bottom-right'
-        );
-
-        map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+        // In compact mode, skip controls; in full mode, add them
+        if (!compact) {
+          map.addControl(
+            new mapboxgl.AttributionControl({ compact: true }),
+            'bottom-right'
+          );
+          map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+        }
 
         mapRef.current = map;
 
@@ -73,9 +83,12 @@ export default function MapSection() {
             <div class="marker-dot"></div>
           `;
 
-          new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
-            .setLngLat(HUMBLE_TX)
-            .setPopup(
+          const marker = new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
+            .setLngLat(HUMBLE_TX);
+
+          // Only add popup in full mode — compact mode has contact info in the card
+          if (!compact) {
+            marker.setPopup(
               new mapboxgl.Popup({
                 offset: 16,
                 closeButton: false,
@@ -88,8 +101,10 @@ export default function MapSection() {
                   <p style="margin:6px 0 0; color:#3B82F6; font-size:11px; font-weight:500;">Serving distributors nationwide</p>
                 </div>
               `)
-            )
-            .addTo(map);
+            );
+          }
+
+          marker.addTo(map);
 
           // Add the nationwide service ring (subtle)
           if (!prefersReducedMotion) {
@@ -105,13 +120,12 @@ export default function MapSection() {
               },
             });
 
-            // Outer glow ring
             map.addLayer({
               id: 'service-ring',
               type: 'circle',
               source: 'service-area',
               paint: {
-                'circle-radius': 60,
+                'circle-radius': compact ? 45 : 60,
                 'circle-color': 'transparent',
                 'circle-stroke-width': 1.5,
                 'circle-stroke-color': '#3B82F6',
@@ -135,14 +149,19 @@ export default function MapSection() {
 
   return (
     <div className="w-full">
-      <div className="relative rounded-xl overflow-hidden border border-[var(--color-border)]"
-        style={{ background: 'var(--color-bg-surface-1)' }}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          borderRadius: compact ? '8px' : '12px',
+          border: compact ? 'none' : '1px solid var(--color-border)',
+          background: 'var(--color-bg-surface-1)',
+        }}
       >
         {/* Map container */}
         <div
           ref={mapContainer}
           className="w-full"
-          style={{ height: '380px', minHeight: '280px' }}
+          style={{ height: mapHeight, minHeight: mapMinHeight }}
         />
 
         {/* Loading skeleton */}
@@ -151,14 +170,16 @@ export default function MapSection() {
             className="absolute inset-0 flex items-center justify-center"
             style={{ background: 'var(--color-bg-surface-1)' }}
           >
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-2">
               <div
-                className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
                 style={{ borderColor: 'var(--color-accent-primary)', borderTopColor: 'transparent' }}
               />
-              <span className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
-                Loading map...
-              </span>
+              {!compact && (
+                <span className="text-sm" style={{ color: 'var(--color-text-tertiary)' }}>
+                  Loading map...
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -171,16 +192,16 @@ export default function MapSection() {
           >
             <div className="text-center px-6">
               <div
-                className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center"
+                className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center"
                 style={{ background: 'rgba(59,130,246,0.1)' }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
               </div>
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                Humble, TX &middot; Houston Metro
+                Humble, TX
               </p>
               <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
                 Serving distributors nationwide
@@ -189,8 +210,8 @@ export default function MapSection() {
           </div>
         )}
 
-        {/* Bottom overlay label */}
-        {loaded && (
+        {/* Bottom overlay label — only in full mode */}
+        {!compact && loaded && (
           <div className="absolute bottom-0 left-0 right-0 pointer-events-none"
             style={{
               background: 'linear-gradient(to top, rgba(10,10,15,0.85) 0%, transparent 100%)',
@@ -213,21 +234,28 @@ export default function MapSection() {
         )}
       </div>
 
+      {/* Compact mode: manual attribution text below the map */}
+      {compact && (
+        <p className="text-[10px] mt-1.5 opacity-60" style={{ color: 'var(--color-text-tertiary)' }}>
+          Map &copy; Mapbox &copy; OpenStreetMap
+        </p>
+      )}
+
       {/* Inline styles for the custom marker and popup */}
       <style dangerouslySetInnerHTML={{ __html: `
         .lumina-map-marker {
           position: relative;
           width: 20px;
           height: 20px;
-          cursor: pointer;
+          cursor: ${compact ? 'default' : 'pointer'};
         }
         .marker-dot {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 12px;
-          height: 12px;
-          margin: -6px 0 0 -6px;
+          width: ${compact ? '10px' : '12px'};
+          height: ${compact ? '10px' : '12px'};
+          margin: ${compact ? '-5px 0 0 -5px' : '-6px 0 0 -6px'};
           background: #3B82F6;
           border: 2px solid #E8E8ED;
           border-radius: 50%;
@@ -239,9 +267,9 @@ export default function MapSection() {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 40px;
-            height: 40px;
-            margin: -20px 0 0 -20px;
+            width: ${compact ? '30px' : '40px'};
+            height: ${compact ? '30px' : '40px'};
+            margin: ${compact ? '-15px 0 0 -15px' : '-20px 0 0 -20px'};
             background: rgba(59,130,246,0.25);
             border-radius: 50%;
             animation: marker-pulse 2.5s ease-out infinite;
