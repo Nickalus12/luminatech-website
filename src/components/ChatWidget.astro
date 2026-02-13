@@ -22,10 +22,11 @@
 
 <style>
   .chat-launcher {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: var(--z-modal);
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    left: auto !important;
+    z-index: 9999 !important;
     width: 60px;
     height: 60px;
     border-radius: var(--radius-full);
@@ -42,7 +43,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     outline: none;
   }
 
@@ -229,11 +229,21 @@
 
     // Handle launcher click
     launcher.addEventListener('click', () => {
+      console.log('Chat launcher clicked', { hasTawkAPI: !!window.Tawk_API, hasToggle: !!window.Tawk_API?.toggle });
+
       if (window.Tawk_API?.toggle) {
         window.Tawk_API.toggle();
         // Update state manually if widget doesn't trigger events
         isWidgetOpen = !isWidgetOpen;
         launcher.classList.toggle('widget-open', isWidgetOpen);
+      } else if (window.Tawk_API?.maximize) {
+        // Fallback to maximize if toggle isn't available
+        window.Tawk_API.maximize();
+        isWidgetOpen = true;
+        launcher.classList.add('widget-open');
+      } else {
+        console.error('Tawk.to API not loaded yet. Please wait a moment and try again.');
+        alert('Chat is loading... Please wait a moment and try again.');
       }
     });
 

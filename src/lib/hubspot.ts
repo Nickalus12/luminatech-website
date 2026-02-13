@@ -67,7 +67,7 @@ export function mapToHubSpotFields(data: ContactFormData) {
     context: {
       hutk: getHubSpotCookie(), // Visitor tracking token
       pageUri: typeof window !== 'undefined' ? window.location.href : '',
-      pageName: 'Contact Page - Lumina ERP',
+      pageName: 'Contact Page - Lumina eRP',
     },
   };
 }

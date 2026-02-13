@@ -17,7 +17,7 @@ const {
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
 } = Astro.props;
 
-const siteName = 'Lumina ERP';
+const siteName = 'Lumina eRP';
 const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
 const ogType = article ? 'article' : 'website';
 const ogImage = new URL(image, Astro.site).href;
