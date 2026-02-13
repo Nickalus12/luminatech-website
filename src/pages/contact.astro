@@ -107,8 +107,8 @@ import { contact, brand } from '../content/copy';
             </p>
           </div>
 
-          <!-- Schedule Widget - HubSpot Meetings -->
-          <div class="bg-bg-surface-1 border border-border rounded-xl p-6 overflow-hidden" id="schedule">
+          <!-- Schedule Widget - Google Calendar -->
+          <div class="bg-bg-surface-1 border border-border rounded-xl p-6" id="schedule">
             <h3 class="text-lg font-semibold text-text-primary mb-2">
               {contact.sidebar.scheduling.heading}
             </h3>
@@ -118,8 +118,23 @@ import { contact, brand } from '../content/copy';
             <p class="text-xs text-text-tertiary mb-4">
               30 minutes, no obligation. We'll discuss your P21 setup, current challenges, and where we see opportunities.
             </p>
-            <div class="meetings-iframe-container" data-src="https://meetings-na2.hubspot.com/nickalus-brewer?embed=true"></div>
-            <script type="text/javascript" src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js" is:inline></script>
+            <a
+              href="https://calendar.app.google/REPLACE_WITH_YOUR_SCHEDULE_LINK"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-accent-primary text-white text-base font-semibold rounded-lg hover:bg-accent-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-glow no-underline"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg>
+              Schedule a Free Consultation
+            </a>
+            <p class="text-xs text-text-tertiary text-center mt-3">
+              Powered by Google Calendar &middot; Includes Google Meet link
+            </p>
           </div>
         </div>
       </div>
@@ -186,9 +201,6 @@ import { contact, brand } from '../content/copy';
     details:nth-child(5) { animation-delay: 400ms; }
   }
 
-  /* Calendly widget dark mode adjustments */
-  .calendly-inline-widget {
-    border-radius: 0.5rem;
-  }
+  /* Scheduling widget adjustments */
 </style>
 
