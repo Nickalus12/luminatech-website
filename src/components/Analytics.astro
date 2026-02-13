@@ -2,9 +2,7 @@
 // Analytics and third-party scripts
 // Google Tag Manager: GTM-TGNXHWTC
 // Google Analytics 4: G-2P1FBWXLFK (Stream ID: 13604810988)
-// Tawk.to: Live chat widget with custom launcher
 // Odoo: lumina-erp.odoo.com
-import ChatWidget from './ChatWidget.astro';
 ---
 
 <!-- Google Tag Manager -->
@@ -25,34 +23,3 @@ gtag('js', new Date());
 gtag('config', 'G-2P1FBWXLFK');
 </script>
 
-<!-- Tawk.to Live Chat with Custom Launcher -->
-<!--
-  Dashboard Settings (https://dashboard.tawk.to):
-  1. Widget Behavior > Visibility > Hide widget on load: ENABLED
-  2. Widget Appearance > Colors: Match site theme
-     - Primary: #3B82F6 (accent-primary)
-     - Background: #12121A (bg-surface-1)
-     - Text: #E8E8ED (text-primary)
--->
-<script type="text/javascript" is:inline>
-// Initialize Tawk_API before loading the widget script
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-
-// Custom styling: high z-index to appear above custom launcher
-Tawk_API.customStyle = {
-  zIndex: 1000
-};
-
-// Load Tawk.to widget script
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/698e083af6e6d41c36a25add/1jh9d099o';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-
-<!-- Custom Chat Widget Launcher -->
-<ChatWidget />

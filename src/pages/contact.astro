@@ -103,11 +103,6 @@ import { contact, brand } from '../content/copy';
               </div>
             </div>
 
-            <!-- Compact Map — visually reinforces location -->
-            <div class="pt-2 border-t border-border">
-              <MapSection compact client:visible />
-            </div>
-
             <p class="text-xs text-text-tertiary">
               Remote consultations available nationwide. We typically respond within 24 hours.
             </p>
@@ -144,6 +139,13 @@ import { contact, brand } from '../content/copy';
           </div>
         </div>
       </div>
+    </Container>
+  </Section>
+
+  <!-- Cinematic Map -->
+  <Section background="base" padding="md">
+    <Container>
+      <MapSection client:visible />
     </Container>
   </Section>
 
