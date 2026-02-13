@@ -1,13 +1,29 @@
 ---
 // Analytics and third-party scripts
-// HubSpot: CRM tracking, forms, and analytics (Hub ID: 245170452)
+// Google Tag Manager: GTM-TGNXHWTC
+// Google Analytics 4: G-2P1FBWXLFK (Stream ID: 13604810988)
 // Tawk.to: Live chat widget with custom launcher
-// Cloudflare Web Analytics: Enable in CF dashboard for Core Web Vitals
+// Odoo: lumina-erp.odoo.com
 import ChatWidget from './ChatWidget.astro';
 ---
 
-<!-- HubSpot Tracking Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/245170452.js" is:inline></script>
+<!-- Google Tag Manager -->
+<script is:inline>
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TGNXHWTC');
+</script>
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2P1FBWXLFK" is:inline></script>
+<script is:inline>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-2P1FBWXLFK');
+</script>
 
 <!-- Tawk.to Live Chat with Custom Launcher -->
 <!--
@@ -40,6 +56,3 @@ s0.parentNode.insertBefore(s1,s0);
 
 <!-- Custom Chat Widget Launcher -->
 <ChatWidget />
-
-<!-- Cloudflare Web Analytics (enable in CF dashboard, replace token) -->
-<!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CF_ANALYTICS_TOKEN"}'></script> -->
