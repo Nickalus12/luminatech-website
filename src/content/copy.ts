@@ -468,16 +468,16 @@ export const about = {
     subheadline: "The practitioner-consultant.",
   },
   intro: {
-    greeting: "Hey, I'm Nick Brewer.",
+    greeting: "Nick Brewer, Founder",
     paragraphs: [
-      "I'm an ERP administrator at a wholesale distribution company in Houston. I use Prophet 21 every single day -- managing inventory, processing orders, writing business rules, building reports, and keeping the system running for a real distribution operation.",
-      "I started Lumina Erp because I kept seeing the same thing: distributors struggling with P21 problems that I'd already solved at my own company. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
-      "When you work with me, you're getting someone who lives inside P21. I know the workarounds, the gotchas, and the shortcuts that only come from daily hands-on experience. I don't implement and leave -- I build things that actually work in the real world of wholesale distribution.",
-      "I'm also a developer. C#, SQL, Python -- I write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. And with the mandatory cloud migration deadline approaching, I help distributors plan and execute their transition without disrupting operations.",
+      "Lumina Erp was built on a simple idea: ERP consulting should come from people who actually use the system every day. Our founder, Nick Brewer, is an ERP administrator at a wholesale distribution company in Houston -- managing inventory, processing orders, writing business rules, and keeping Prophet 21 running for a real distribution operation.",
+      "We started this practice because we kept seeing the same pattern: distributors struggling with P21 problems that had already been solved in real distribution environments. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
+      "When you work with us, you're getting practitioners who live inside P21. We know the workarounds, the gotchas, and the shortcuts that only come from daily hands-on experience. We don't implement and leave -- we build solutions that actually work in the real world of wholesale distribution.",
+      "We're developers, too. C#, SQL, Python -- we write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. And with the mandatory cloud migration deadline approaching, we help distributors plan and execute their transition without disrupting operations.",
     ],
   },
   skills: {
-    heading: "What I Bring to the Table",
+    heading: "What We Bring to the Table",
     categories: [
       {
         title: "Core P21",
@@ -513,29 +513,29 @@ export const about = {
   },
   credentials: [
     {
-      metric: "10+",
-      label: "Years with Prophet 21",
-      detail: "Daily production use, not just project-based exposure",
+      metric: "Daily",
+      label: "Production P21 Use",
+      detail: "Not project-based exposure -- hands-on administration of a live distribution ERP every single day.",
     },
     {
       metric: "Full Stack",
-      label: "P21 Developer",
-      detail: "C#, SQL, Python, APIs -- I write the code, not just configure",
+      label: "Development Team",
+      detail: "C#, SQL, Python, REST APIs -- we write the code, not just configure screens.",
     },
     {
       metric: "Real",
-      label: "Distribution Operator",
+      label: "Distribution Operators",
       detail:
-        "I run P21 at a live distributor. I know the inventory headaches, pricing edge cases, and reporting gaps firsthand.",
+        "We run P21 at a live distributor. We know the inventory headaches, pricing edge cases, and reporting gaps firsthand.",
     },
   ],
   process: {
-    heading: "How I Work",
+    heading: "How We Work",
     steps: [
       {
         title: "Discovery",
         description:
-          "I listen first. A free 30-minute call to understand your setup, pain points, and goals.",
+          "We listen first. A free 30-minute call to understand your setup, pain points, and goals.",
       },
       {
         title: "Blueprint",
@@ -545,7 +545,7 @@ export const about = {
       {
         title: "Execute",
         description:
-          "I do the work with regular check-ins. No hand-offs, no junior staff -- just me.",
+          "We do the work with regular check-ins. No hand-offs to junior staff -- you get our A-team.",
       },
       {
         title: "Optimize",
@@ -555,7 +555,7 @@ export const about = {
     ],
   },
   personal: {
-    text: "Based in Humble, TX (Houston metro), serving distributors nationwide. When I'm not elbow-deep in P21, I'm building electronics projects with my daughters and tinkering with AI automation.",
+    text: "Based in Humble, TX (Houston metro), serving distributors nationwide. Founded by Nick Brewer -- when he's not elbow-deep in P21, he's building electronics projects with his daughters and pushing the boundaries of AI automation.",
   },
   cta: {
     heading: "Let's See If We're a Good Fit",
