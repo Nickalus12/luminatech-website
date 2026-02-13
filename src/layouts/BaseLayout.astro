@@ -77,5 +77,36 @@ const {
     </main>
     <Footer />
     <Analytics />
+
+    <script>
+      function initScrollReveal() {
+        const selectors = '.scroll-reveal, .scroll-reveal-left, .scroll-reveal-scale';
+        const elements = document.querySelectorAll(selectors);
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          elements.forEach((el) => el.classList.add('visible'));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target as HTMLElement;
+                const delay = el.style.animationDelay || '0ms';
+                const ms = parseInt(delay, 10) || 0;
+                setTimeout(() => el.classList.add('visible'), ms);
+                observer.unobserve(el);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+        );
+
+        elements.forEach((el) => observer.observe(el));
+      }
+
+      document.addEventListener('astro:page-load', initScrollReveal);
+    </script>
   </body>
 </html>

@@ -22,7 +22,7 @@ They had previously engaged a large consulting firm for a "P21 optimization" pro
 
 ## The Solution
 
-I started with a 2-day P21 Health Check to understand their specific configuration, data patterns, and workflow bottlenecks. The audit revealed three high-impact opportunities:
+We started with a 2-day P21 Health Check to understand their specific configuration, data patterns, and workflow bottlenecks. The audit revealed three high-impact opportunities:
 
 **1. Automated Pricing Validation (Business Rule)**
 Built a DynaChange business rule that automatically applies the correct contract pricing tier at order entry. The rule cross-references the customer's pricing agreement, validates against the current price book, and flags any discrepancies for review -- all before the order saves.

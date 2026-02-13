@@ -8,7 +8,7 @@ tags: ["SQL", "Reporting", "P21", "Analytics"]
 readTime: "4 min"
 ---
 
-Every P21 installation ships with a library of canned reports. And every distributor I've worked with has the same complaint about them: "They give us numbers, but not the numbers we need."
+Every P21 installation ships with a library of canned reports. And every distributor we've worked with has the same complaint about them: "They give us numbers, but not the numbers we need."
 
 The built-in reports were designed to cover the broadest set of use cases. They're fine for basic lookups. But when you need to answer real business questions -- *which customers are trending down, which products have margin erosion, where are we losing money on freight* -- the canned reports fall short.
 
@@ -26,7 +26,7 @@ P21's standard reports share a few common limitations:
 
 ## Five Queries That Replace an Analyst
 
-Here are five SQL queries I build for nearly every distributor. Each one answers a question that no canned report can.
+Here are five SQL queries we build for nearly every distributor. Each one answers a question that no canned report can.
 
 ### 1. Customer Trend Detection
 
@@ -122,7 +122,7 @@ HAVING MAX(il.invoice_date) < DATEADD(MONTH, -6, GETDATE())
 ORDER BY iw.qty_on_hand * im.last_cost DESC;
 ```
 
-I've found $50K-$200K in dead inventory at mid-size distributors using this query. That's cash you can redeploy immediately.
+We've found $50K-$200K in dead inventory at mid-size distributors using this query. That's cash you can redeploy immediately.
 
 ### 4. Order-to-Ship Time by Warehouse
 

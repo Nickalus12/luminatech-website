@@ -43,9 +43,3 @@ export async function submitToFormspree(data: ContactFormData): Promise<boolean>
   }
 }
 
-/**
- * @deprecated Use submitToFormspree instead. Kept for backward compatibility during migration.
- */
-export async function submitToHubSpot(data: ContactFormData): Promise<boolean> {
-  return submitToFormspree(data);
-}

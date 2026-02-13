@@ -29,7 +29,7 @@ Their IT team (one person) had tried building SSRS reports but hit a wall with P
 
 ## The Solution
 
-I took a phased approach -- quick wins first to build confidence, then the larger dashboard project.
+We took a phased approach -- quick wins first to build confidence, then the larger dashboard project.
 
 **Phase 1: Core SSRS Reports (Week 1-2)**
 Built seven automated SSRS reports that replaced the manual Excel process:

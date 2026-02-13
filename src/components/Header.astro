@@ -217,6 +217,5 @@ function isActive(href: string): boolean {
   }
 
   // Run on initial load and after Astro page transitions
-  initHeader();
-  document.addEventListener('astro:after-swap', initHeader);
+  document.addEventListener('astro:page-load', initHeader);
 </script>

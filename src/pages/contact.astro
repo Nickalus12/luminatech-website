@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import ContactForm from '../components/ContactForm';
+import MapSection from '../components/ui/MapSection';
 import { contact, brand } from '../content/copy';
 ---
 
@@ -16,7 +17,7 @@ import { contact, brand } from '../content/copy';
   <!-- Hero -->
   <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12">
     <Container narrow>
-      <div class="text-center">
+      <div class="text-center scroll-reveal">
         <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
           {contact.hero.headline}
         </h1>
@@ -33,14 +34,14 @@ import { contact, brand } from '../content/copy';
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
 
         <!-- Form (left, wider) -->
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-3 scroll-reveal">
           <div class="bg-bg-surface-1 border border-border rounded-xl p-6 md:p-8">
             <ContactForm client:load />
           </div>
         </div>
 
         <!-- Sidebar (right) -->
-        <div class="lg:col-span-2 space-y-8">
+        <div class="lg:col-span-2 space-y-8 scroll-reveal" style="animation-delay: 150ms;">
 
           <!-- What to Expect -->
           <div class="bg-bg-surface-1 border border-border rounded-xl p-6">
@@ -141,10 +142,17 @@ import { contact, brand } from '../content/copy';
     </Container>
   </Section>
 
+  <!-- Map Section -->
+  <Section background="base" padding="sm">
+    <Container>
+      <MapSection client:visible />
+    </Container>
+  </Section>
+
   <!-- FAQ Section -->
   <Section background="surface-1" padding="md">
     <Container narrow>
-      <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary text-center mb-12">
+      <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary text-center mb-12 scroll-reveal">
         {contact.faq.heading}
       </h2>
       <div class="space-y-4">

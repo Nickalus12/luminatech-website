@@ -693,17 +693,17 @@ export const footer = {
       heading: "Connect",
       links: [
         {
-          label: "Nickalus@Lumina-ERP.com",
-          href: "mailto:Nickalus@Lumina-ERP.com",
+          label: "Support@Lumina-ERP.com",
+          href: "mailto:Support@Lumina-ERP.com",
         },
         {
           label: "LinkedIn",
-          href: "https://linkedin.com/in/nickalus",
+          href: "https://www.linkedin.com/in/nickalus-brewer",
           external: true,
         },
         {
           label: "GitHub",
-          href: "https://github.com/nickalus",
+          href: "https://github.com/LuminaHQ",
           external: true,
         },
       ],

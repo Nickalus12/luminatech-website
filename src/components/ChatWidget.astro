@@ -258,11 +258,6 @@
     });
   }
 
-  // Initialize when DOM is ready + after Astro view transitions
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initChatWidget);
-  } else {
-    initChatWidget();
-  }
-  document.addEventListener('astro:after-swap', initChatWidget);
+  // Initialize on every page load (initial + view transitions)
+  document.addEventListener('astro:page-load', initChatWidget);
 </script>

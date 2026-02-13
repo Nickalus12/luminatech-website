@@ -14,7 +14,7 @@ const studies = allStudies.sort((a, b) => b.data.date.valueOf() - a.data.date.va
 >
   <section class="py-12 md:py-20">
     <Container>
-      <header class="mb-12 max-w-3xl">
+      <header class="mb-12 max-w-3xl scroll-reveal">
         <h1 class="text-[length:var(--font-size-h2)] font-bold mb-3">Client Success Stories</h1>
         <p class="text-text-secondary text-[length:var(--font-size-body-lg)] max-w-2xl">
           Real results from real distributors. See how targeted P21 customization and automation deliver measurable ROI.
@@ -22,12 +22,13 @@ const studies = allStudies.sort((a, b) => b.data.date.valueOf() - a.data.date.va
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {studies.map((study) => {
+        {studies.map((study, i) => {
           const metricEntries = Object.entries(study.data.metrics).slice(0, 3);
           return (
             <a
               href={`/case-studies/${study.data.slug}/`}
-              class="group block bg-bg-surface-1 rounded-xl border border-border p-6 md:p-8 hover:border-accent-primary hover:-translate-y-1 transition-all duration-normal shadow-card hover:shadow-card-hover no-underline"
+              class="group block bg-bg-surface-1 rounded-xl border border-border p-6 md:p-8 hover:border-accent-primary hover:-translate-y-1 transition-all duration-normal shadow-card hover:shadow-card-hover no-underline scroll-reveal"
+              style={`animation-delay: ${i * 100}ms;`}
             >
               <div class="flex flex-wrap items-center gap-2 mb-4">
                 <Badge variant="primary">{study.data.industry}</Badge>

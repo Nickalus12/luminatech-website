@@ -206,7 +206,7 @@ const beforeAfter = {
 
 const competitiveAdvantages = {
   extensions: [
-    "Real production experience: I deploy business rules weekly in a live P21 environment",
+    "Real production experience: We deploy business rules weekly in a live P21 environment",
     "Fail-safe patterns: Rules never block legitimate operations (learned from costly mistakes)",
     "Multi-version support: Desktop + Web UI compatibility from day one",
     "75% cost savings vs. Epicor's $250/hr consulting rates",
@@ -237,7 +237,7 @@ const competitiveAdvantages = {
   ],
   support: [
     "No minimums: Start at $625/mo vs. $15K/mo enterprise contracts",
-    "Real P21 operator: I use the system daily, not just consult on it",
+    "Real P21 operator: We use the system daily, not just consult on it",
     "Transparent pricing: Hourly tracking, overage approval required",
     "99.2% SLA compliance: Proven track record on response times",
   ],
@@ -370,7 +370,7 @@ const retainerTiers = [
       </div>
 
       <!-- ROI Calculator -->
-      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 200ms;">
+      <div class="max-w-4xl mx-auto scroll-reveal min-h-[320px]" style="animation-delay: 200ms;">
         <InteractiveROICalculator client:visible />
       </div>
 
@@ -383,7 +383,9 @@ const retainerTiers = [
   <!-- SERVICE SELECTOR QUIZ -->
   <Section id="service-quiz" background="surface-1" padding="sm" class="py-8">
     <Container>
-      <ServiceSelectorQuiz client:visible className="max-w-3xl mx-auto" />
+      <div class="min-h-[200px]">
+        <ServiceSelectorQuiz client:visible className="max-w-3xl mx-auto" />
+      </div>
     </Container>
   </Section>
 
@@ -415,10 +417,12 @@ const retainerTiers = [
         </p>
       </div>
 
-      <ServiceCardGrid
-        client:visible
-        services={serializedServices}
-      />
+      <div class="min-h-[400px]">
+        <ServiceCardGrid
+          client:visible
+          services={serializedServices}
+        />
+      </div>
     </Container>
   </Section>
 
@@ -668,6 +672,5 @@ const retainerTiers = [
     }
   }
 
-  initServices();
-  document.addEventListener('astro:after-swap', initServices);
+  document.addEventListener('astro:page-load', initServices);
 </script>
