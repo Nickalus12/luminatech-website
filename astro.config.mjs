@@ -15,7 +15,7 @@ const rehypePrettyCodeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://luminatech.xyz',
+  site: 'https://lumina-erp.com',
   prefetch: true,
   integrations: [
     react(),

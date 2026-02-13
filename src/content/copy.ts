@@ -6,8 +6,8 @@
 export const brand = {
   name: "Lumina ERP",
   tagline: "Illuminate your ERP potential.",
-  domain: "LuminaTech.xyz",
-  email: "Nickalus@LuminaResume.com",
+  domain: "Lumina-ERP.com",
+  email: "Nickalus@Lumina-ERP.com",
   location: "Humble, TX",
   locationFull: "Based in Humble, TX. Serving distributors nationwide.",
   founder: "Nick Brewer",
@@ -468,7 +468,7 @@ export const contact = {
       "You'll get honest feedback, even if the answer is 'you don't need a consultant for this'",
     ],
     directContact: {
-      email: "Support@LuminaResume.com",
+      email: "Support@Lumina-ERP.com",
       location: "Humble, TX (Houston Metro)",
       availability: "Mon-Fri evenings & weekends",
     },
@@ -542,8 +542,8 @@ export const footer = {
       heading: "Connect",
       links: [
         {
-          label: "Nickalus@LuminaResume.com",
-          href: "mailto:Nickalus@LuminaResume.com",
+          label: "Nickalus@Lumina-ERP.com",
+          href: "mailto:Nickalus@Lumina-ERP.com",
         },
         {
           label: "LinkedIn",
