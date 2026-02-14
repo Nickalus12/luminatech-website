@@ -1673,10 +1673,7 @@ const downloadables = [
     </Container>
   </Section>
 
-  </ClientGate>
-  <!-- End Client-Exclusive Gate (first block) -->
-
-  <!-- Email Gate — free with email signup -->
+  <!-- Email Gate — free with email signup (within same ClientGate) -->
   <KnowledgeHubGate client:load>
 
   <!-- Common Gotchas -->
@@ -1749,9 +1746,6 @@ const downloadables = [
 
   </KnowledgeHubGate>
   <!-- End Email Gate -->
-
-  <!-- Client-Exclusive Gate — premium consulting resources (second block) -->
-  <ClientGate client:load>
 
   <!-- Performance Benchmarks -->
   <Section id="performance" background="base" padding="lg">
@@ -2052,7 +2046,7 @@ const downloadables = [
   </Section>
 
   </ClientGate>
-  <!-- End Client-Exclusive Gate (second block) -->
+  <!-- End Client-Exclusive Gate -->
 
   <!-- Bottom CTA -->
   <Section background="gradient" padding="lg">
