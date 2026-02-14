@@ -1,5 +1,13 @@
 import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  trackFieldFocus,
+  trackFieldComplete,
+  trackServiceSelect,
+  trackLocationDetect,
+  trackFormSubmit,
+  trackFormValidationError,
+} from '../lib/analytics';
 
 interface FormData {
   name: string;
@@ -343,6 +351,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     }
 
     setGeoStatus('loading');
+    trackLocationDetect('started');
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -370,25 +379,29 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             const locationStr = city && state ? `${city}, ${state}` : feature.place_name || '';
             if (locationStr) {
               setFormData((prev) => ({ ...prev, location: locationStr }));
-              // Clear location error if present
               setErrors((prev) => {
                 const next = { ...prev };
                 delete next.location;
                 return next;
               });
               setGeoStatus('success');
+              trackLocationDetect('success', locationStr);
             } else {
               setGeoStatus('error');
+              trackLocationDetect('error');
             }
           } else {
             setGeoStatus('error');
+            trackLocationDetect('error');
           }
         } catch {
           setGeoStatus('error');
+          trackLocationDetect('error');
         }
       },
       () => {
         setGeoStatus('error');
+        trackLocationDetect('denied');
       },
       { enableHighAccuracy: false, timeout: 10000 }
     );
@@ -427,6 +440,9 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
 
   function handleChange(field: keyof FormData, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === 'helpType' && value) {
+      trackServiceSelect(value);
+    }
     if (errors[field as keyof FormErrors]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -434,6 +450,14 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         return next;
       });
     }
+  }
+
+  function handleFieldFocus(field: string) {
+    trackFieldFocus(field);
+  }
+
+  function handleFieldBlur(field: string, value: string) {
+    trackFieldComplete(field, !!value.trim());
   }
 
   function focusFirstError(errs: FormErrors) {
@@ -468,6 +492,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       setErrors(errs);
       setShakeKey((k) => k + 1);
       focusFirstError(errs);
+      trackFormValidationError(Object.keys(errs).length, Object.keys(errs));
       return;
     }
 
@@ -492,6 +517,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
 
       const result = await response.json();
       if (result.success) {
+        trackFormSubmit(true, formData.helpType);
         const firstName = formData.name.split(' ')[0];
 
         if (onSuccess) {
@@ -506,9 +532,11 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           setTimeout(() => setShowToast(false), 8000);
         }
       } else {
+        trackFormSubmit(false, formData.helpType);
         setStatus('error');
       }
     } catch {
+      trackFormSubmit(false, formData.helpType);
       setStatus('error');
     }
   }
@@ -595,8 +623,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
               placeholder={nameFocused || formData.name ? 'Your name' : ' '}
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              onFocus={() => setNameFocused(true)}
-              onBlur={() => setNameFocused(false)}
+              onFocus={() => { setNameFocused(true); handleFieldFocus('name'); }}
+              onBlur={() => { setNameFocused(false); handleFieldBlur('name', formData.name); }}
               className={`${inputBase} ${errors.name ? inputError : ''}`}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? 'name-error' : undefined}
@@ -650,6 +678,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             placeholder="Your company"
             value={formData.company}
             onChange={(e) => handleChange('company', e.target.value)}
+            onFocus={() => handleFieldFocus('company')}
+            onBlur={() => handleFieldBlur('company', formData.company)}
             className={`${inputBase} ${errors.company ? inputError : ''}`}
             aria-invalid={!!errors.company}
             aria-describedby={errors.company ? 'company-error' : undefined}
@@ -688,6 +718,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             placeholder="you@company.com"
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
+            onFocus={() => handleFieldFocus('email')}
+            onBlur={() => handleFieldBlur('email', formData.email)}
             className={`${inputBase} ${errors.email ? inputError : ''}`}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
@@ -728,6 +760,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
               placeholder="(555) 123-4567"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
+              onFocus={() => handleFieldFocus('phone')}
+              onBlur={() => handleFieldBlur('phone', formData.phone)}
               className={`${inputBase} ${errors.phone ? inputError : ''}`}
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? 'phone-error' : undefined}
@@ -767,6 +801,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                 placeholder="City, State"
                 value={formData.location}
                 onChange={(e) => handleChange('location', e.target.value)}
+                onFocus={() => handleFieldFocus('location')}
+                onBlur={() => handleFieldBlur('location', formData.location)}
                 className={`${inputBase} pr-10 ${errors.location ? inputError : ''}`}
                 aria-invalid={!!errors.location}
                 aria-describedby={errors.location ? 'location-error' : undefined}
@@ -843,6 +879,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             id="contact-help"
             value={formData.helpType}
             onChange={(e) => handleChange('helpType', e.target.value)}
+            onFocus={() => handleFieldFocus('helpType')}
+            onBlur={() => handleFieldBlur('helpType', formData.helpType)}
             className={`${inputBase} ${!formData.helpType ? 'text-text-tertiary' : ''} ${errors.helpType ? inputError : ''} appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2716%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%237A7A8A%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27m6%209%206%206%206-6%27%2F%3E%3C%2Fsvg%3E")] bg-no-repeat bg-[right_12px_center]`}
             aria-invalid={!!errors.helpType}
             aria-describedby={errors.helpType ? 'help-error' : undefined}
@@ -881,6 +919,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             placeholder="What's going on with your P21? The more context, the better we can help."
             value={formData.message}
             onChange={(e) => handleChange('message', e.target.value)}
+            onFocus={() => handleFieldFocus('message')}
+            onBlur={() => handleFieldBlur('message', formData.message)}
             className={`${inputBase} resize-y min-h-[100px]`}
           />
         </div>

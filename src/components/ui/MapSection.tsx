@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackMapInteraction } from '../../lib/analytics';
 
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
@@ -609,6 +610,7 @@ export default function MapSection() {
 
                   const holdTimer = setTimeout(() => {
                     setPhase('flying');
+                    trackMapInteraction('flythrough_started');
 
                     map.flyTo({
                       center: landing.center,
@@ -636,6 +638,7 @@ export default function MapSection() {
                       // Transition to landed (HUD appears)
                       const landTimer = setTimeout(() => {
                         setPhase('landed');
+                        trackMapInteraction('landed');
                         startOrbit();
                       }, 2200);
                       timeoutRefs.current.push(landTimer);
