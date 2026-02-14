@@ -10,6 +10,8 @@ import ServiceCardGrid from '../components/ui/ServiceCardGrid';
 import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
 import GlowText from '../components/ui/GlowText.astro';
 import SocialProofToast from '../components/ui/SocialProofToast';
+import TextReveal from '../components/ui/TextReveal';
+import ScrollCounter from '../components/ui/ScrollCounter';
 import { services, brand } from '../content/copy';
 
 const description = "Comprehensive Prophet 21 consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support for wholesale distributors.";
@@ -347,9 +349,12 @@ const retainerTiers = [
 
     <Container class="relative">
       <div class="max-w-3xl mx-auto text-center mb-10 scroll-reveal">
-        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4" transition:name="hero">
-          {services.hero.headline}
-        </h1>
+        <TextReveal
+          text={services.hero.headline}
+          as="h1"
+          className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4"
+          client:visible
+        />
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
           {services.hero.subheadline}
         </p>
@@ -358,15 +363,15 @@ const retainerTiers = [
       <!-- Trust Metrics -->
       <div class="grid grid-cols-3 gap-3 sm:gap-6 max-w-xl mx-auto mb-10 scroll-reveal" style="animation-delay: 100ms;">
         <div class="text-center">
-          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">150x</p>
+          <ScrollCounter value="150x" className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary" client:visible />
           <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Performance Boost</p>
         </div>
         <div class="text-center">
-          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">280K</p>
+          <ScrollCounter value="280K" className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary" client:visible />
           <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Products Synced</p>
         </div>
         <div class="text-center">
-          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">140x</p>
+          <ScrollCounter value="140x" className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary" client:visible />
           <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Fewer API Calls</p>
         </div>
       </div>

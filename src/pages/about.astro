@@ -5,6 +5,8 @@ import Container from '../components/ui/Container.astro';
 import Card from '../components/ui/Card.astro';
 import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
+import TextReveal from '../components/ui/TextReveal';
+import ScrollCounter from '../components/ui/ScrollCounter';
 import { about, brand } from '../content/copy';
 ---
 
@@ -21,9 +23,12 @@ import { about, brand } from '../content/copy';
     <Container>
       <div class="max-w-3xl scroll-reveal">
         <Badge variant="primary" class="mb-6">Practitioner-Consultants</Badge>
-        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4" transition:name="hero">
-          P21 Expertise Built on <span class="about-gradient-text">Daily Hands-On</span> Experience
-        </h1>
+        <TextReveal
+          text="P21 Expertise Built on Daily Hands-On Experience"
+          as="h1"
+          className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4"
+          client:visible
+        />
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl leading-relaxed">
           Not a generic consulting firm. A team of working ERP practitioners who solve real Prophet 21 problems at real distribution companies -- every single day.
         </p>
@@ -59,9 +64,11 @@ import { about, brand } from '../content/copy';
         <div class="lg:col-span-2 space-y-6" data-stagger-group>
           {about.credentials.map((credential, i) => (
             <div class="about-credential-card stagger-item bg-bg-surface-1 border border-border rounded-xl p-6">
-              <span class="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary block mb-1 about-metric-value">
-                {credential.metric}
-              </span>
+              <ScrollCounter
+                value={credential.metric}
+                className="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary block mb-1 about-metric-value"
+                client:visible
+              />
               <h3 class="text-lg font-semibold text-text-primary mb-2">{credential.label}</h3>
               <p class="text-sm text-text-secondary leading-relaxed">{credential.detail}</p>
             </div>

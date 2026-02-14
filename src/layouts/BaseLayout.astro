@@ -7,6 +7,7 @@ import SEO from '../components/SEO.astro';
 import SchemaMarkup from '../components/SchemaMarkup.astro';
 import Analytics from '../components/Analytics.astro';
 import StickyCTA from '../components/ui/StickyCTA';
+import ExitIntent from '../components/ui/ExitIntent';
 
 interface Props {
   title: string;
@@ -81,6 +82,7 @@ const {
     </main>
     <Footer />
     <StickyCTA client:idle />
+    <ExitIntent client:idle />
     <Analytics />
 
     <script is:inline>

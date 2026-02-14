@@ -13,6 +13,8 @@ import AnimatedTrustBar from '../components/ui/AnimatedTrustBar';
 import SocialProofToast from '../components/ui/SocialProofToast';
 import OnboardingFlow from '../components/ui/OnboardingFlow';
 import ChatPrompt from '../components/ui/ChatPrompt';
+import TextReveal from '../components/ui/TextReveal';
+import Spotlight from '../components/ui/Spotlight';
 import { homepage } from '../content/copy';
 ---
 
@@ -33,6 +35,9 @@ import { homepage } from '../content/copy';
       <div class="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-accent-primary/3 rounded-full blur-[140px] -translate-x-1/2 -translate-y-1/2 hero-orb-3"></div>
     </div>
 
+    <!-- Hero spotlight effect -->
+    <Spotlight className="-top-40 left-0 md:-top-20 md:left-60" fill="#3B82F6" client:idle />
+
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">
         <!-- Text content (60%) -->
@@ -41,13 +46,12 @@ import { homepage } from '../content/copy';
             Prophet 21 Consulting
           </Badge>
 
-          <h1
-            class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6 animate-slide-up"
-            style="white-space: pre-line;"
-            transition:name="hero"
-          >
-            {homepage.hero.headline}
-          </h1>
+          <TextReveal
+            text={homepage.hero.headline}
+            as="h1"
+            className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6"
+            client:visible
+          />
 
           <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed max-w-xl mb-8 animate-slide-up" style="animation-delay: 100ms;">
             {homepage.hero.subheadline}

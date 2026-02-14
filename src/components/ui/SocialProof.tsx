@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import SpotlightCard from './SpotlightCard';
 
 /* ── Types ─────────────────────────────────────────────────── */
 
@@ -101,7 +102,7 @@ function AnimatedMetric({
   );
 }
 
-/* ── Story card with cursor-following spotlight ─────────────── */
+/* ── Story card using SpotlightCard ────────────────────────── */
 
 function StoryCard({
   story,
@@ -113,20 +114,10 @@ function StoryCard({
   inView: boolean;
 }) {
   const colors = accentMap[story.accent];
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  }, []);
 
   return (
     <motion.div
-      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{
@@ -134,33 +125,18 @@ function StoryCard({
         delay: index * 0.12,
         ease: [0.16, 1, 0.3, 1],
       }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      className="relative overflow-hidden rounded-xl border group"
-      style={{
-        background: 'var(--bg-surface-1)',
-        borderColor: isHovering ? colors.border : 'var(--border)',
-        transition: 'border-color 0.3s ease',
-      }}
     >
-      {/* Cursor-following spotlight */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
-        style={{
-          opacity: isHovering ? 1 : 0,
-          background: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, ${colors.glow}, transparent 70%)`,
-        }}
-      />
+      <SpotlightCard
+        glowColor={colors.glow}
+        borderColor={colors.border}
+      >
+        {/* Left accent stripe */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-[3px] z-20"
+          style={{ background: colors.stripe }}
+        />
 
-      {/* Left accent stripe */}
-      <div
-        className="absolute left-0 top-0 bottom-0 w-[3px]"
-        style={{ background: colors.stripe }}
-      />
-
-      {/* Card content */}
-      <div className="relative z-10 p-6 md:p-7">
+        <div className="p-6 md:p-7">
         {/* Metric */}
         <div className="mb-1">
           <AnimatedMetric
@@ -268,6 +244,7 @@ function StoryCard({
           )}
         </div>
       </div>
+      </SpotlightCard>
     </motion.div>
   );
 }
