@@ -5,6 +5,8 @@ interface FormData {
   name: string;
   company: string;
   email: string;
+  phone: string;
+  location: string;
   helpType: string;
   message: string;
   _honeypot: string;
@@ -14,6 +16,8 @@ interface FormErrors {
   name?: string;
   company?: string;
   email?: string;
+  phone?: string;
+  location?: string;
   helpType?: string;
 }
 
@@ -38,6 +42,12 @@ const labelClass = 'block text-sm font-medium text-text-secondary mb-1.5';
 
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validatePhone(phone: string): boolean {
+  // Accept digits, spaces, dashes, parens, dots, plus — at least 7 digits
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 7 && digits.length <= 15;
 }
 
 /* Shake animation for invalid fields */
@@ -234,6 +244,8 @@ export default function ContactForm() {
     name: '',
     company: '',
     email: '',
+    phone: '',
+    location: '',
     helpType: '',
     message: '',
     _honeypot: '',
@@ -254,6 +266,12 @@ export default function ContactForm() {
     } else if (!validateEmail(formData.email)) {
       errs.email = 'Please enter a valid email';
     }
+    if (!formData.phone.trim()) {
+      errs.phone = 'Phone number is required';
+    } else if (!validatePhone(formData.phone)) {
+      errs.phone = 'Please enter a valid phone number';
+    }
+    if (!formData.location.trim()) errs.location = 'Location is required';
     if (!formData.helpType) errs.helpType = 'Please select an option';
     return errs;
   }
@@ -271,11 +289,13 @@ export default function ContactForm() {
 
   /** Scroll the first invalid field into view and focus it */
   function focusFirstError(errs: FormErrors) {
-    const fieldOrder: (keyof FormErrors)[] = ['name', 'company', 'email', 'helpType'];
+    const fieldOrder: (keyof FormErrors)[] = ['name', 'company', 'email', 'phone', 'location', 'helpType'];
     const idMap: Record<string, string> = {
       name: 'contact-name',
       company: 'contact-company',
       email: 'contact-email',
+      phone: 'contact-phone',
+      location: 'contact-location',
       helpType: 'contact-help',
     };
     for (const field of fieldOrder) {
@@ -314,6 +334,8 @@ export default function ContactForm() {
           name: formData.name,
           company: formData.company,
           email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
           helpType: formData.helpType,
           message: formData.message,
           source: 'contact-form',
@@ -327,8 +349,11 @@ export default function ContactForm() {
         setSubmittedName(firstName);
         setShowToast(true);
         setStatus('success');
-        setFormData({ name: '', company: '', email: '', helpType: '', message: '', _honeypot: '' });
+        setFormData({ name: '', company: '', email: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
         setErrors({});
+
+        // Reveal the cinematic map section
+        window.dispatchEvent(new CustomEvent('lumina:form-submitted'));
 
         // Auto-dismiss toast after 8 seconds
         setTimeout(() => setShowToast(false), 8000);
@@ -518,6 +543,85 @@ export default function ContactForm() {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* Phone & Location — side by side */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Phone */}
+          <motion.div
+            key={`phone-${shakeKey}`}
+            variants={shakeVariants}
+            animate={errors.phone ? 'shake' : undefined}
+          >
+            <label htmlFor="contact-phone" className={labelClass}>
+              Phone <span className="text-accent-error">*</span>
+            </label>
+            <input
+              id="contact-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="(555) 123-4567"
+              value={formData.phone}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              className={`${inputBase} ${errors.phone ? inputError : ''}`}
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? 'phone-error' : undefined}
+            />
+            <AnimatePresence>
+              {errors.phone && (
+                <motion.p
+                  id="phone-error"
+                  role="alert"
+                  className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                  {errors.phone}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Location */}
+          <motion.div
+            key={`location-${shakeKey}`}
+            variants={shakeVariants}
+            animate={errors.location ? 'shake' : undefined}
+          >
+            <label htmlFor="contact-location" className={labelClass}>
+              Location <span className="text-accent-error">*</span>
+            </label>
+            <input
+              id="contact-location"
+              type="text"
+              autoComplete="address-level1"
+              placeholder="City, State"
+              value={formData.location}
+              onChange={(e) => handleChange('location', e.target.value)}
+              className={`${inputBase} ${errors.location ? inputError : ''}`}
+              aria-invalid={!!errors.location}
+              aria-describedby={errors.location ? 'location-error' : undefined}
+            />
+            <AnimatePresence>
+              {errors.location && (
+                <motion.p
+                  id="location-error"
+                  role="alert"
+                  className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                  {errors.location}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
 
         {/* Service Interest */}
         <motion.div

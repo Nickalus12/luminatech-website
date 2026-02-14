@@ -4,6 +4,7 @@ import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import ContactForm from '../components/ContactForm';
 import MapSection from '../components/ui/MapSection';
+import FAQTicker from '../components/ui/FAQTicker';
 import { contact, brand } from '../content/copy';
 ---
 
@@ -142,37 +143,18 @@ import { contact, brand } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- Cinematic Map -->
-  <Section background="base" padding="md" id="lumina-map">
-    <Container>
-      <MapSection client:visible />
-    </Container>
-  </Section>
+  <!-- Cinematic Map (hidden until form submission) -->
+  <div id="lumina-map-wrapper" class="map-section-hidden">
+    <Section background="base" padding="md" id="lumina-map">
+      <Container>
+        <MapSection client:visible />
+      </Container>
+    </Section>
+  </div>
 
-  <!-- FAQ Section -->
-  <Section background="surface-1" padding="md">
-    <Container narrow>
-      <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary text-center mb-12 scroll-reveal">
-        {contact.faq.heading}
-      </h2>
-      <div class="space-y-4">
-        {contact.faq.items.map((item) => (
-          <details class="group bg-bg-surface-2 border border-border rounded-xl faq-details">
-            <summary class="flex items-center justify-between gap-4 px-6 py-5 cursor-pointer text-text-primary font-medium text-base select-none hover:bg-bg-surface-3 transition-colors duration-fast list-none [&::-webkit-details-marker]:hidden">
-              <span>{item.question}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-text-tertiary transition-transform duration-300 ease-out group-open:rotate-180" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </summary>
-            <div class="faq-content">
-              <div class="px-6 pb-5 text-sm text-text-secondary leading-relaxed">
-                {item.answer}
-              </div>
-            </div>
-          </details>
-        ))}
-      </div>
-    </Container>
+  <!-- FAQ Ticker -->
+  <Section background="base" padding="sm">
+    <FAQTicker items={contact.faq.items} heading={contact.faq.heading} client:visible />
   </Section>
 
   <!-- Schema Markup -->
@@ -198,40 +180,34 @@ import { contact, brand } from '../content/copy';
 </BaseLayout>
 
 <style>
-  /* Scroll reveal animation for sections */
-  @media (prefers-reduced-motion: no-preference) {
-    details {
-      animation: slide-up 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-    }
-
-    details:nth-child(1) { animation-delay: 0ms; }
-    details:nth-child(2) { animation-delay: 100ms; }
-    details:nth-child(3) { animation-delay: 200ms; }
-    details:nth-child(4) { animation-delay: 300ms; }
-    details:nth-child(5) { animation-delay: 400ms; }
-  }
-
-  /* FAQ smooth height + content fade */
-  .faq-content {
+  /* Map section: hidden until form submitted */
+  .map-section-hidden {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-  }
-
-  .faq-content > div {
-    overflow: hidden;
     opacity: 0;
-    transition: opacity 0.25s ease-out 0.05s;
+    overflow: hidden;
+    transition: grid-template-rows 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.8s ease-out 0.2s;
   }
 
-  .faq-details[open] > .faq-content {
+  .map-section-hidden > * {
+    overflow: hidden;
+  }
+
+  .map-section-revealed {
     grid-template-rows: 1fr;
-  }
-
-  .faq-details[open] > .faq-content > div {
     opacity: 1;
-    transition: opacity 0.3s ease-out 0.1s;
   }
 </style>
+
+<script>
+  // Listen for form submission to reveal the cinematic map section
+  window.addEventListener('lumina:form-submitted', () => {
+    const wrapper = document.getElementById('lumina-map-wrapper');
+    if (wrapper) {
+      wrapper.classList.remove('map-section-hidden');
+      wrapper.classList.add('map-section-hidden', 'map-section-revealed');
+    }
+  });
+</script>
 
