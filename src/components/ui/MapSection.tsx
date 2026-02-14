@@ -132,7 +132,7 @@ export default function MapSection() {
               showPointOfInterestLabels: false,
               showTransitLabels: false,
               showRoadLabels: false,
-              show3dObjects: false,
+              show3dObjects: true,
             },
           },
         });
@@ -141,6 +141,15 @@ export default function MapSection() {
 
         map.on('load', () => {
           setLoaded(true);
+
+          // Fog config — blends map edges seamlessly with container background
+          map.setFog({
+            color: '#0a0a14',
+            'high-color': '#0a0a14',
+            'horizon-blend': 0.08,
+            'space-color': '#060610',
+            'star-intensity': 0,
+          });
 
           // Arc source data — from Humble TX to each warehouse city
           const arcFeatures = WAREHOUSE_CITIES.map((dest) => ({
@@ -541,7 +550,7 @@ export default function MapSection() {
           className="w-full h-[350px] md:h-[480px]"
           style={{
             transition: 'filter 2s ease',
-            filter: revealed ? 'brightness(0.45)' : 'brightness(1)',
+            filter: revealed ? 'brightness(0.55)' : 'brightness(1)',
           }}
         />
 

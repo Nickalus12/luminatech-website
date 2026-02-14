@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import ContactForm from '../components/ContactForm';
-import MapSection from '../components/ui/MapSection';
 import FAQTicker from '../components/ui/FAQTicker';
 import { contact, brand } from '../content/copy';
 ---
@@ -14,6 +13,10 @@ import { contact, brand } from '../content/copy';
   schemaType="contact"
   schemaFaqs={contact.faq.items}
 >
+
+  <!-- Prefetch Mapbox GL JS assets (loaded after form submission) -->
+  <link rel="prefetch" href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js" as="script" />
+  <link rel="prefetch" href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" as="style" />
 
   <!-- Hero -->
   <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12">
@@ -37,7 +40,7 @@ import { contact, brand } from '../content/copy';
         <!-- Form (left, wider) -->
         <div class="lg:col-span-3 scroll-reveal">
           <div class="bg-bg-surface-1 border border-border rounded-xl p-6 md:p-8">
-            <ContactForm client:load />
+            <ContactForm client:idle />
           </div>
         </div>
 
@@ -143,15 +146,6 @@ import { contact, brand } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- Cinematic Map (hidden until form submission) -->
-  <div id="lumina-map-wrapper" class="map-section-hidden">
-    <Section background="base" padding="md" id="lumina-map">
-      <Container>
-        <MapSection client:visible />
-      </Container>
-    </Section>
-  </div>
-
   <!-- FAQ Ticker -->
   <Section background="base" padding="sm">
     <FAQTicker items={contact.faq.items} heading={contact.faq.heading} client:visible />
@@ -180,34 +174,31 @@ import { contact, brand } from '../content/copy';
 </BaseLayout>
 
 <style>
-  /* Map section: hidden until form submitted */
-  .map-section-hidden {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    overflow: hidden;
-    transition: grid-template-rows 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.8s ease-out 0.2s;
+  /* FAQ Marquee — extracted from React for pre-hydration availability */
+  .faq-marquee-track {
+    display: inline-flex;
+    width: max-content;
+    will-change: transform;
   }
-
-  .map-section-hidden > * {
-    overflow: hidden;
+  .faq-marquee-left {
+    animation: faq-scroll-left linear infinite;
   }
-
-  .map-section-revealed {
-    grid-template-rows: 1fr;
-    opacity: 1;
+  .faq-marquee-right {
+    animation: faq-scroll-right linear infinite;
+  }
+  @keyframes faq-scroll-left {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes faq-scroll-right {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-marquee-left,
+    .faq-marquee-right {
+      animation: none;
+    }
   }
 </style>
-
-<script>
-  // Listen for form submission to reveal the cinematic map section
-  window.addEventListener('lumina:form-submitted', () => {
-    const wrapper = document.getElementById('lumina-map-wrapper');
-    if (wrapper) {
-      wrapper.classList.remove('map-section-hidden');
-      wrapper.classList.add('map-section-hidden', 'map-section-revealed');
-    }
-  });
-</script>
 

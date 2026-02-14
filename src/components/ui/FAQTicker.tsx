@@ -249,34 +249,7 @@ export default function FAQTicker({ items, heading = 'Quick Answers' }: FAQTicke
         />
       </div>
 
-      {/* Inline styles for CSS marquee animation — GPU-accelerated via translate3d */}
-      <style>{`
-        .faq-marquee-track {
-          display: inline-flex;
-          width: max-content;
-          will-change: transform;
-        }
-        .faq-marquee-left {
-          animation: faq-scroll-left linear infinite;
-        }
-        .faq-marquee-right {
-          animation: faq-scroll-right linear infinite;
-        }
-        @keyframes faq-scroll-left {
-          0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-50%, 0, 0); }
-        }
-        @keyframes faq-scroll-right {
-          0% { transform: translate3d(-50%, 0, 0); }
-          100% { transform: translate3d(0, 0, 0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .faq-marquee-left,
-          .faq-marquee-right {
-            animation: none;
-          }
-        }
-      `}</style>
+      {/* Marquee CSS is in contact.astro <style> block for pre-hydration availability */}
     </div>
   );
 }
