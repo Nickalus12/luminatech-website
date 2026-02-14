@@ -117,58 +117,25 @@ function isActive(href: string): boolean {
   </div>
 </div>
 
-<script>
-  function initHeader() {
-    const header = document.getElementById('site-header');
-    const toggle = document.getElementById('menu-toggle');
-    const menu = document.getElementById('mobile-menu');
-    const iconOpen = document.getElementById('menu-icon-open');
-    const iconClose = document.getElementById('menu-icon-close');
+<script is:inline>
+  (function() {
+    var headerAbort = null;
 
-    if (!header || !toggle || !menu || !iconOpen || !iconClose) return;
+    function initHeader() {
+      // Clean up previous listeners
+      if (headerAbort) headerAbort.abort();
+      headerAbort = new AbortController();
+      var signal = headerAbort.signal;
 
-    // Auto-hide header on scroll
-    let lastScrollY = 0;
-    let ticking = false;
+      var header = document.getElementById('site-header');
+      var toggle = document.getElementById('menu-toggle');
+      var menu = document.getElementById('mobile-menu');
+      var iconOpen = document.getElementById('menu-icon-open');
+      var iconClose = document.getElementById('menu-icon-close');
 
-    function updateHeader() {
-      const scrollY = window.scrollY;
-      const isMenuOpen = menu.classList.contains('flex');
+      if (!header || !toggle || !menu || !iconOpen || !iconClose) return;
 
-      if (!isMenuOpen) {
-        if (scrollY > lastScrollY && scrollY > 80) {
-          header.style.transform = 'translateY(-100%)';
-        } else {
-          header.style.transform = 'translateY(0)';
-        }
-      }
-
-      lastScrollY = scrollY;
-      ticking = false;
-    }
-
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(updateHeader);
-        ticking = true;
-      }
-    }, { passive: true });
-
-    // Mobile menu toggle
-    function openMenu() {
-      menu.classList.remove('hidden');
-      menu.classList.add('flex');
-      menu.setAttribute('aria-hidden', 'false');
-      toggle.setAttribute('aria-expanded', 'true');
-      iconOpen.classList.add('hidden');
-      iconClose.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      // Focus first link in menu
-      const firstLink = menu.querySelector('a');
-      if (firstLink) (firstLink as HTMLElement).focus();
-    }
-
-    function closeMenu() {
+      // Reset state on navigation (close menu, show header)
       menu.classList.add('hidden');
       menu.classList.remove('flex');
       menu.setAttribute('aria-hidden', 'true');
@@ -176,46 +143,103 @@ function isActive(href: string): boolean {
       iconClose.classList.add('hidden');
       iconOpen.classList.remove('hidden');
       document.body.style.overflow = '';
+      header.style.transform = 'translateY(0)';
+
+      // Auto-hide header on scroll
+      var lastScrollY = 0;
+      var ticking = false;
+
+      function updateHeader() {
+        var scrollY = window.scrollY;
+        var isMenuOpen = menu.classList.contains('flex');
+
+        if (!isMenuOpen) {
+          if (scrollY > lastScrollY && scrollY > 80) {
+            header.style.transform = 'translateY(-100%)';
+          } else {
+            header.style.transform = 'translateY(0)';
+          }
+        }
+
+        lastScrollY = scrollY;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(updateHeader);
+          ticking = true;
+        }
+      }, { passive: true, signal: signal });
+
+      // Mobile menu toggle
+      function openMenu() {
+        menu.classList.remove('hidden');
+        menu.classList.add('flex');
+        menu.setAttribute('aria-hidden', 'false');
+        toggle.setAttribute('aria-expanded', 'true');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        var firstLink = menu.querySelector('a');
+        if (firstLink) firstLink.focus();
+      }
+
+      function closeMenu() {
+        menu.classList.add('hidden');
+        menu.classList.remove('flex');
+        menu.setAttribute('aria-hidden', 'true');
+        toggle.setAttribute('aria-expanded', 'false');
+        iconClose.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        document.body.style.overflow = '';
+      }
+
+      toggle.addEventListener('click', function() {
+        var isOpen = menu.classList.contains('flex');
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      }, { signal: signal });
+
+      // Close on escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && menu.classList.contains('flex')) {
+          closeMenu();
+          toggle.focus();
+        }
+      }, { signal: signal });
+
+      // Focus trap within mobile menu
+      document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab' || !menu.classList.contains('flex')) return;
+        var focusable = [toggle].concat(Array.from(menu.querySelectorAll('a')));
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }, { signal: signal });
+
+      // Close on link click
+      menu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', closeMenu, { signal: signal });
+      });
     }
 
-    toggle.addEventListener('click', () => {
-      const isOpen = menu.classList.contains('flex');
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    // Close on escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menu.classList.contains('flex')) {
-        closeMenu();
-        toggle.focus();
-      }
-    });
-
-    // Focus trap within mobile menu
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Tab' || !menu.classList.contains('flex')) return;
-      const focusable = [toggle, ...menu.querySelectorAll('a')] as HTMLElement[];
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    });
-
-    // Close on link click
-    menu.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', closeMenu);
-    });
-  }
-
-  // Run on initial load and after Astro page transitions
-  document.addEventListener('astro:page-load', initHeader);
+    // Primary: Astro view transitions event
+    document.addEventListener('astro:page-load', initHeader);
+    // Fallback: standard DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHeader);
+    } else {
+      initHeader();
+    }
+  })();
 </script>

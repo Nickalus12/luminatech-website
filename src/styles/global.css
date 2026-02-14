@@ -291,6 +291,20 @@ body {
   }
 }
 
+/* CSS-only fallback: if JS fails to add .visible, elements auto-reveal after 2s */
+@keyframes scroll-reveal-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.scroll-reveal:not(.visible),
+.scroll-reveal-left:not(.visible),
+.scroll-reveal-scale:not(.visible) {
+  animation: scroll-reveal-fallback 0.6s ease 2s both;
+}
+
 /* ── View transitions ── */
 ::view-transition-old(root) {
   animation: vt-fade-out 200ms cubic-bezier(0.4, 0, 0.2, 1) both;

@@ -78,35 +78,50 @@ const {
     <Footer />
     <Analytics />
 
-    <script>
-      function initScrollReveal() {
-        const selectors = '.scroll-reveal, .scroll-reveal-left, .scroll-reveal-scale';
-        const elements = document.querySelectorAll(selectors);
+    <script is:inline>
+      (function() {
+        function initScrollReveal() {
+          var selectors = '.scroll-reveal, .scroll-reveal-left, .scroll-reveal-scale';
+          var elements = document.querySelectorAll(selectors);
 
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          elements.forEach((el) => el.classList.add('visible'));
-          return;
+          if (!elements.length) return;
+
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            elements.forEach(function(el) { el.classList.add('visible'); });
+            return;
+          }
+
+          var observer = new IntersectionObserver(
+            function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  var el = entry.target;
+                  var delay = el.style.animationDelay || '0ms';
+                  var ms = parseInt(delay, 10) || 0;
+                  setTimeout(function() { el.classList.add('visible'); }, ms);
+                  observer.unobserve(el);
+                }
+              });
+            },
+            { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+          );
+
+          elements.forEach(function(el) {
+            if (!el.classList.contains('visible')) {
+              observer.observe(el);
+            }
+          });
         }
 
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                const el = entry.target as HTMLElement;
-                const delay = el.style.animationDelay || '0ms';
-                const ms = parseInt(delay, 10) || 0;
-                setTimeout(() => el.classList.add('visible'), ms);
-                observer.unobserve(el);
-              }
-            });
-          },
-          { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
-        );
-
-        elements.forEach((el) => observer.observe(el));
-      }
-
-      document.addEventListener('astro:page-load', initScrollReveal);
+        // Primary: Astro view transitions event
+        document.addEventListener('astro:page-load', initScrollReveal);
+        // Fallback: standard DOM ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initScrollReveal);
+        } else {
+          initScrollReveal();
+        }
+      })();
     </script>
   </body>
 </html>

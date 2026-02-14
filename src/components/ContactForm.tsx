@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormData {
@@ -39,6 +39,14 @@ const labelClass = 'block text-sm font-medium text-text-secondary mb-1.5';
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+/* Shake animation for invalid fields */
+const shakeVariants = {
+  shake: {
+    x: [0, -8, 8, -6, 6, -3, 3, 0],
+    transition: { duration: 0.5, ease: 'easeInOut' },
+  },
+};
 
 /** Frosted glass toast notification with enter/exit animation */
 function Toast({ name, onClose }: { name: string; onClose: () => void }) {
@@ -92,6 +100,135 @@ function Toast({ name, onClose }: { name: string; onClose: () => void }) {
   );
 }
 
+/** Full-card success celebration that replaces the form */
+function SuccessCelebration({ name }: { name: string }) {
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
+  useEffect(() => {
+    // Show the scroll hint after the celebration animation plays
+    const hintTimer = setTimeout(() => setShowScrollHint(true), 1400);
+
+    // Auto-scroll to the map after 2.5 seconds
+    const scrollTimer = setTimeout(() => {
+      const mapEl = document.getElementById('lumina-map');
+      if (mapEl) {
+        mapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 2500);
+
+    return () => {
+      clearTimeout(hintTimer);
+      clearTimeout(scrollTimer);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      className="flex flex-col items-center justify-center text-center py-12 px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Animated checkmark with spring physics */}
+      <div className="relative mx-auto w-24 h-24 mb-8">
+        {/* Expanding glow ring */}
+        <motion.div
+          className="absolute inset-0 rounded-full bg-emerald-400/20"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1.8, opacity: 0 }}
+          transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
+        />
+        {/* Pulse ring */}
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-emerald-400/30"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1.4, opacity: [0, 0.5, 0] }}
+          transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5, repeat: 2, repeatDelay: 0.8 }}
+        />
+        {/* Circle background with spring */}
+        <motion.div
+          className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/15 to-emerald-500/10 border-2 border-emerald-400/30"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', bounce: 0.5, duration: 0.7 }}
+        />
+        {/* Checkmark SVG with path draw */}
+        <motion.svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="absolute inset-0 w-full h-full p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <motion.path
+            d="M20 6 9 17l-5-5"
+            stroke="#34d399"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ type: 'spring', bounce: 0, duration: 0.6, delay: 0.4 }}
+          />
+        </motion.svg>
+      </div>
+
+      {/* Personalized heading */}
+      <motion.h3
+        className="text-2xl md:text-3xl font-bold text-text-primary"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', bounce: 0.3, duration: 0.6, delay: 0.5 }}
+      >
+        Thanks, {name}!
+      </motion.h3>
+
+      {/* Subtext */}
+      <motion.p
+        className="text-base text-text-secondary mt-3 max-w-sm leading-relaxed"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', bounce: 0.2, duration: 0.5, delay: 0.7 }}
+      >
+        We'll review your inquiry and be in touch within 24 hours.
+      </motion.p>
+
+      {/* Scroll hint - appears after delay */}
+      <AnimatePresence>
+        {showScrollHint && (
+          <motion.div
+            className="mt-8 flex flex-col items-center gap-2"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className="text-sm text-text-tertiary">Scroll down to see our reach</p>
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </motion.svg>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 export default function ContactForm() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -105,6 +242,8 @@ export default function ContactForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [submittedName, setSubmittedName] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function validate(): FormErrors {
     const errs: FormErrors = {};
@@ -130,6 +269,27 @@ export default function ContactForm() {
     }
   }
 
+  /** Scroll the first invalid field into view and focus it */
+  function focusFirstError(errs: FormErrors) {
+    const fieldOrder: (keyof FormErrors)[] = ['name', 'company', 'email', 'helpType'];
+    const idMap: Record<string, string> = {
+      name: 'contact-name',
+      company: 'contact-company',
+      email: 'contact-email',
+      helpType: 'contact-help',
+    };
+    for (const field of fieldOrder) {
+      if (errs[field]) {
+        const el = document.getElementById(idMap[field]);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => el.focus(), 350);
+        }
+        break;
+      }
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
@@ -139,6 +299,8 @@ export default function ContactForm() {
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      setShakeKey((k) => k + 1); // trigger shake animation
+      focusFirstError(errs);
       return;
     }
 
@@ -161,7 +323,8 @@ export default function ContactForm() {
 
       const result = await response.json();
       if (result.success) {
-        setSubmittedName(formData.name.split(' ')[0]);
+        const firstName = formData.name.split(' ')[0];
+        setSubmittedName(firstName);
         setShowToast(true);
         setStatus('success');
         setFormData({ name: '', company: '', email: '', helpType: '', message: '', _honeypot: '' });
@@ -186,7 +349,19 @@ export default function ContactForm() {
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <AnimatePresence mode="wait">
+      {status === 'success' ? (
+        <SuccessCelebration key="success" name={submittedName} />
+      ) : (
+      <motion.form
+        key="form"
+        ref={formRef}
+        onSubmit={handleSubmit}
+        noValidate
+        className="space-y-5"
+        initial={false}
+        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.3 } }}
+      >
         {/* Honeypot */}
         <div className="absolute opacity-0 h-0 overflow-hidden" aria-hidden="true">
           <label>
@@ -202,8 +377,40 @@ export default function ContactForm() {
           </label>
         </div>
 
+        {/* Validation summary banner */}
+        <AnimatePresence>
+          {Object.keys(errors).length > 0 && (
+            <motion.div
+              role="alert"
+              className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/[0.06] p-4"
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginBottom: 0 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="shrink-0 mt-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-red-400">Please fill in the required fields</p>
+                <p className="text-xs text-red-400/60 mt-0.5">
+                  {Object.keys(errors).length === 1 ? '1 field needs' : `${Object.keys(errors).length} fields need`} your attention below.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Name */}
-        <div>
+        <motion.div
+          key={`name-${shakeKey}`}
+          variants={shakeVariants}
+          animate={errors.name ? 'shake' : undefined}
+        >
           <label htmlFor="contact-name" className={labelClass}>
             Name <span className="text-accent-error">*</span>
           </label>
@@ -218,13 +425,30 @@ export default function ContactForm() {
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? 'name-error' : undefined}
           />
-          {errors.name && (
-            <p id="name-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.name}</p>
-          )}
-        </div>
+          <AnimatePresence>
+            {errors.name && (
+              <motion.p
+                id="name-error"
+                role="alert"
+                className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                {errors.name}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Company */}
-        <div>
+        <motion.div
+          key={`company-${shakeKey}`}
+          variants={shakeVariants}
+          animate={errors.company ? 'shake' : undefined}
+        >
           <label htmlFor="contact-company" className={labelClass}>
             Company <span className="text-accent-error">*</span>
           </label>
@@ -239,13 +463,30 @@ export default function ContactForm() {
             aria-invalid={!!errors.company}
             aria-describedby={errors.company ? 'company-error' : undefined}
           />
-          {errors.company && (
-            <p id="company-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.company}</p>
-          )}
-        </div>
+          <AnimatePresence>
+            {errors.company && (
+              <motion.p
+                id="company-error"
+                role="alert"
+                className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                {errors.company}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Email */}
-        <div>
+        <motion.div
+          key={`email-${shakeKey}`}
+          variants={shakeVariants}
+          animate={errors.email ? 'shake' : undefined}
+        >
           <label htmlFor="contact-email" className={labelClass}>
             Email <span className="text-accent-error">*</span>
           </label>
@@ -260,13 +501,30 @@ export default function ContactForm() {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
           />
-          {errors.email && (
-            <p id="email-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.email}</p>
-          )}
-        </div>
+          <AnimatePresence>
+            {errors.email && (
+              <motion.p
+                id="email-error"
+                role="alert"
+                className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                {errors.email}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Service Interest */}
-        <div>
+        <motion.div
+          key={`help-${shakeKey}`}
+          variants={shakeVariants}
+          animate={errors.helpType ? 'shake' : undefined}
+        >
           <label htmlFor="contact-help" className={labelClass}>
             How Can We Help? <span className="text-accent-error">*</span>
           </label>
@@ -283,10 +541,23 @@ export default function ContactForm() {
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
-          {errors.helpType && (
-            <p id="help-error" role="alert" className="mt-1.5 text-sm text-accent-error">{errors.helpType}</p>
-          )}
-        </div>
+          <AnimatePresence>
+            {errors.helpType && (
+              <motion.p
+                id="help-error"
+                role="alert"
+                className="mt-1.5 text-sm text-accent-error flex items-center gap-1.5"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                {errors.helpType}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Message */}
         <div>
@@ -304,20 +575,31 @@ export default function ContactForm() {
         </div>
 
         {/* Error message */}
-        {status === 'error' && (
-          <div role="alert" className="bg-accent-error/10 border border-accent-error/30 rounded-lg p-4 text-sm text-accent-error animate-[fade-in_0.3s_ease-out]">
-            Something went wrong. Please try again or email us directly at{' '}
-            <a href="mailto:Support@Lumina-ERP.com" className="underline">
-              Support@Lumina-ERP.com
-            </a>
-          </div>
-        )}
+        <AnimatePresence>
+          {status === 'error' && (
+            <motion.div
+              role="alert"
+              className="bg-accent-error/10 border border-accent-error/30 rounded-lg p-4 text-sm text-accent-error"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3 }}
+            >
+              Something went wrong. Please try again or email us directly at{' '}
+              <a href="mailto:Support@Lumina-ERP.com" className="underline">
+                Support@Lumina-ERP.com
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Submit */}
-        <button
+        <motion.button
           type="submit"
           disabled={status === 'submitting'}
-          className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-accent-primary text-white text-base font-semibold rounded-lg hover:bg-accent-primary-hover hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none shadow-glow cursor-pointer"
+          className="w-full inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-accent-primary text-white text-base font-semibold rounded-lg hover:bg-accent-primary-hover transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none shadow-glow cursor-pointer"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
           {status === 'submitting' ? (
             <>
@@ -327,13 +609,6 @@ export default function ContactForm() {
               </svg>
               Sending...
             </>
-          ) : status === 'success' ? (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
-              Sent Successfully
-            </>
           ) : (
             <>
               Get My Free Assessment
@@ -342,11 +617,13 @@ export default function ContactForm() {
               </svg>
             </>
           )}
-        </button>
+        </motion.button>
         <p className="text-center text-xs text-text-tertiary mt-3">
           Free 30-minute call. No contracts. No obligations.
         </p>
-      </form>
+      </motion.form>
+      )}
+      </AnimatePresence>
     </>
   );
 }
