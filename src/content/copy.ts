@@ -142,11 +142,46 @@ export const homepage = {
       href: "/case-studies/hvac-distributor",
     },
   },
-  testimonial: {
-    quote:
-      "We tried two other consulting firms before finding Lumina. Lumina ERP was the first team that actually understood how we use P21 day-to-day. They didn't just fix the problem -- they showed us three other things we didn't know we were doing wrong.",
-    name: "IT Director",
-    company: "Multi-Branch Electrical Supply",
+  socialProof: {
+    heading: "Results We've Delivered",
+    subheading:
+      "Real metrics from real P21 projects. No vague promises -- just measurable outcomes.",
+    stories: [
+      {
+        metric: { value: 150, suffix: "x", label: "Performance Improvement" },
+        title: "Address Truncation Fix",
+        problem:
+          "SellerCloud integration failing with 1,200+ orders due to 30-character address limits.",
+        solution:
+          "We built a compiled C# business rule with intelligent truncation -- preserving critical address data while eliminating integration failures.",
+        result: "150x faster than the SQL trigger approach, with zero data loss across 1,200+ orders.",
+        tech: ["C# .NET", "DynaChange", "SellerCloud API"],
+        accent: "primary" as const,
+      },
+      {
+        metric: { value: 60, suffix: "%", label: "Faster Order Processing" },
+        title: "HVAC Distribution Workflow",
+        problem:
+          "Order processing consuming 45 minutes per order due to manual validation steps.",
+        solution:
+          "We automated critical workflow checkpoints and optimized P21 business rules for real-time validation.",
+        result: "Cut order processing from 45 minutes to 18 minutes -- a 60% reduction.",
+        tech: ["P21 Business Rules", "SQL Server", "Workflow Automation"],
+        link: { label: "Read Case Study", href: "/case-studies/hvac-distributor" },
+        accent: "violet" as const,
+      },
+      {
+        metric: { value: 95, suffix: "%", label: "Time Saved" },
+        title: "Bulk Product Sync Automation",
+        problem:
+          "Manual product sync and pricing updates taking hours across 280K+ SKUs.",
+        solution:
+          "We built an automated workflow with intelligent batching, rate limiting, and error handling -- syncing 280K+ products without intervention.",
+        result: "95% reduction in manual effort with 140x fewer API calls.",
+        tech: ["N8N", "REST API", "PostgreSQL"],
+        accent: "success" as const,
+      },
+    ],
   },
   bottomCta: {
     heading: "Ready to Illuminate Your P21?",

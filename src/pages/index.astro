@@ -8,6 +8,7 @@ import GlowText from '../components/ui/GlowText.astro';
 import Badge from '../components/ui/Badge.astro';
 import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
 import MetricsGrid from '../components/ui/MetricsGrid';
+import SocialProof from '../components/ui/SocialProof';
 import { homepage } from '../content/copy';
 ---
 
@@ -465,75 +466,17 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       TESTIMONIALS SECTION
-       Three testimonial cards
+       SOCIAL PROOF / RESULTS SECTION
+       Three real project outcome cards with animated metrics
   ═══════════════════════════════════════════════════════════════════════════ -->
   <Section background="base" padding="md">
     <Container>
-      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
-          What Clients Say
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        <!-- Testimonial 1 -->
-        <Card hover={false} padding="lg" class="scroll-reveal relative testimonial-card">
-          <div class="absolute top-3 left-5 text-7xl font-serif leading-none select-none testimonial-quote-mark" aria-hidden="true">&ldquo;</div>
-          <div class="relative pt-8">
-            <blockquote class="text-text-primary leading-relaxed mb-6 italic text-[15px]">
-              {homepage.testimonial.quote}
-            </blockquote>
-            <div class="flex items-center gap-3 pt-4 border-t border-border/50">
-              <div class="w-10 h-10 rounded-full bg-accent-primary/15 flex items-center justify-center ring-2 ring-accent-primary/10">
-                <span class="text-accent-primary font-semibold text-sm">IT</span>
-              </div>
-              <div>
-                <p class="text-text-primary text-sm font-semibold">{homepage.testimonial.name}</p>
-                <p class="text-text-tertiary text-xs">{homepage.testimonial.company}</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <!-- Testimonial 2 -->
-        <Card hover={false} padding="lg" class="scroll-reveal relative testimonial-card" style="animation-delay: 100ms;">
-          <div class="absolute top-3 left-5 text-7xl font-serif leading-none select-none testimonial-quote-mark" aria-hidden="true">&ldquo;</div>
-          <div class="relative pt-8">
-            <blockquote class="text-text-primary leading-relaxed mb-6 italic text-[15px]">
-              {homepage.featuredCaseStudy.quote}
-            </blockquote>
-            <div class="flex items-center gap-3 pt-4 border-t border-border/50">
-              <div class="w-10 h-10 rounded-full bg-accent-success/15 flex items-center justify-center ring-2 ring-accent-success/10">
-                <span class="text-accent-success font-semibold text-sm">OM</span>
-              </div>
-              <div>
-                <p class="text-text-primary text-sm font-semibold">Operations Manager</p>
-                <p class="text-text-tertiary text-xs">Regional HVAC Distributor</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <!-- Testimonial 3 -->
-        <Card hover={false} padding="lg" class="scroll-reveal relative testimonial-card" style="animation-delay: 200ms;">
-          <div class="absolute top-3 left-5 text-7xl font-serif leading-none select-none testimonial-quote-mark" aria-hidden="true">&ldquo;</div>
-          <div class="relative pt-8">
-            <blockquote class="text-text-primary leading-relaxed mb-6 italic text-[15px]">
-              We were dreading the cloud migration until the Lumina team walked us through the plan. They audited every customization, flagged the three that wouldn't survive, and gave us a realistic timeline. First consultants who didn't try to upsell us on things we didn't need.
-            </blockquote>
-            <div class="flex items-center gap-3 pt-4 border-t border-border/50">
-              <div class="w-10 h-10 rounded-full bg-accent-warning/15 flex items-center justify-center ring-2 ring-accent-warning/10">
-                <span class="text-accent-warning font-semibold text-sm">CFO</span>
-              </div>
-              <div>
-                <p class="text-text-primary text-sm font-semibold">CFO</p>
-                <p class="text-text-tertiary text-xs">Industrial Supply Distributor</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
+      <SocialProof
+        heading={homepage.socialProof.heading}
+        subheading={homepage.socialProof.subheading}
+        stories={homepage.socialProof.stories}
+        client:visible
+      />
     </Container>
   </Section>
 
@@ -582,17 +525,6 @@ import { homepage } from '../content/copy';
     animation: hero-gradient-shift 14s ease-in-out infinite reverse;
   }
 
-  /* ── Testimonial quote marks ── */
-  .testimonial-quote-mark {
-    color: var(--color-accent-primary);
-    opacity: 0.1;
-    transition: opacity 0.4s ease;
-  }
-
-  .testimonial-card:hover .testimonial-quote-mark {
-    opacity: 0.2;
-  }
-
   /* ── CTA glow orbs ── */
   .cta-glow-orb {
     animation: glow-breathe 6s ease-in-out infinite;
@@ -620,10 +552,6 @@ import { homepage } from '../content/copy';
     .cta-glow-orb,
     .cta-glow-orb-alt {
       animation: none;
-    }
-
-    .testimonial-card:hover .testimonial-quote-mark {
-      opacity: 0.1;
     }
 
     .problem-card:hover {
