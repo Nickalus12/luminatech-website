@@ -61,7 +61,7 @@ export default function ConsultationExperience() {
       {phase === 'form' && (
         <motion.div
           key="form-phase"
-          className="bg-bg-surface-1 border border-border rounded-xl p-6 md:p-8"
+          className="bg-bg-surface-1 border border-border rounded-xl p-6 md:p-8 form-glow-border"
           exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.3 } }}
         >
           <ContactForm onSuccess={handleFormSuccess} />

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormData {
@@ -23,6 +23,8 @@ interface FormErrors {
 
 const API_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/contact';
 
+const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
+
 const helpOptions = [
   'P21 Health Check / Audit',
   'Custom Business Rules',
@@ -33,8 +35,23 @@ const helpOptions = [
   'Something Else',
 ];
 
+const CYCLING_NAMES = [
+  'Sarah Mitchell',
+  'James Chen',
+  'Maria Rodriguez',
+  'David Okafor',
+  'Emma Larsson',
+  'Amir Patel',
+  'Olivia Thompson',
+  'Kenji Nakamura',
+  'Rachel Foster',
+  'Carlos Mendoza',
+  'Priya Sharma',
+  'Lucas Weber',
+];
+
 const inputBase =
-  'w-full bg-bg-surface-1 border border-border rounded-lg px-4 py-3 text-text-primary placeholder-text-tertiary text-base transition-all duration-200 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary focus:shadow-glow';
+  'w-full bg-bg-surface-2 border border-border rounded-lg px-4 py-3 text-text-primary placeholder-text-tertiary text-base transition-all duration-200 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary focus:shadow-glow hover:border-[rgba(59,130,246,0.3)]';
 
 const inputError = 'border-accent-error focus:border-accent-error focus:ring-accent-error';
 
@@ -45,7 +62,6 @@ function validateEmail(email: string): boolean {
 }
 
 function validatePhone(phone: string): boolean {
-  // Accept digits, spaces, dashes, parens, dots, plus — at least 7 digits
   const digits = phone.replace(/\D/g, '');
   return digits.length >= 7 && digits.length <= 15;
 }
@@ -57,6 +73,69 @@ const shakeVariants = {
     transition: { duration: 0.5, ease: 'easeInOut' },
   },
 };
+
+/* ── Cycling Name Placeholder Hook ── */
+function useCyclingPlaceholder(names: string[], isFocused: boolean, hasValue: boolean) {
+  const [displayText, setDisplayText] = useState('');
+  const [nameIndex, setNameIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isFocused || hasValue) return;
+
+    const currentName = names[nameIndex];
+
+    if (isPaused) {
+      const pauseTimer = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(pauseTimer);
+    }
+
+    if (!isDeleting) {
+      // Typing forward
+      if (charIndex < currentName.length) {
+        const timer = setTimeout(() => {
+          setDisplayText(currentName.slice(0, charIndex + 1));
+          setCharIndex((c) => c + 1);
+        }, 60 + Math.random() * 40);
+        return () => clearTimeout(timer);
+      } else {
+        // Finished typing - pause before deleting
+        setIsPaused(true);
+      }
+    } else {
+      // Deleting
+      if (charIndex > 0) {
+        const timer = setTimeout(() => {
+          setCharIndex((c) => c - 1);
+          setDisplayText(currentName.slice(0, charIndex - 1));
+        }, 35);
+        return () => clearTimeout(timer);
+      } else {
+        // Finished deleting - move to next name
+        setIsDeleting(false);
+        setNameIndex((i) => (i + 1) % names.length);
+      }
+    }
+  }, [names, nameIndex, charIndex, isDeleting, isPaused, isFocused, hasValue]);
+
+  // Reset when focus is lost and no value
+  useEffect(() => {
+    if (!isFocused && !hasValue) {
+      setCharIndex(0);
+      setDisplayText('');
+      setIsDeleting(false);
+      setIsPaused(false);
+    }
+  }, [isFocused, hasValue]);
+
+  if (isFocused || hasValue) return 'Your name';
+  return displayText || 'Your name';
+}
 
 /** Frosted glass toast notification with enter/exit animation */
 function Toast({ name, onClose }: { name: string; onClose: () => void }) {
@@ -115,10 +194,7 @@ function SuccessCelebration({ name }: { name: string }) {
   const [showScrollHint, setShowScrollHint] = useState(false);
 
   useEffect(() => {
-    // Show the scroll hint after the celebration animation plays
     const hintTimer = setTimeout(() => setShowScrollHint(true), 1400);
-
-    // Auto-scroll to the map after 2.5 seconds
     const scrollTimer = setTimeout(() => {
       const mapEl = document.getElementById('lumina-map');
       if (mapEl) {
@@ -139,30 +215,25 @@ function SuccessCelebration({ name }: { name: string }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Animated checkmark with spring physics */}
       <div className="relative mx-auto w-24 h-24 mb-8">
-        {/* Expanding glow ring */}
         <motion.div
           className="absolute inset-0 rounded-full bg-emerald-400/20"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1.8, opacity: 0 }}
           transition={{ duration: 1.2, ease: 'easeOut', delay: 0.3 }}
         />
-        {/* Pulse ring */}
         <motion.div
           className="absolute inset-0 rounded-full border-2 border-emerald-400/30"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1.4, opacity: [0, 0.5, 0] }}
           transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5, repeat: 2, repeatDelay: 0.8 }}
         />
-        {/* Circle background with spring */}
         <motion.div
           className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/15 to-emerald-500/10 border-2 border-emerald-400/30"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', bounce: 0.5, duration: 0.7 }}
         />
-        {/* Checkmark SVG with path draw */}
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -185,7 +256,6 @@ function SuccessCelebration({ name }: { name: string }) {
         </motion.svg>
       </div>
 
-      {/* Personalized heading */}
       <motion.h3
         className="text-2xl md:text-3xl font-bold text-text-primary"
         initial={{ opacity: 0, y: 16 }}
@@ -195,7 +265,6 @@ function SuccessCelebration({ name }: { name: string }) {
         Thanks, {name}!
       </motion.h3>
 
-      {/* Subtext */}
       <motion.p
         className="text-base text-text-secondary mt-3 max-w-sm leading-relaxed"
         initial={{ opacity: 0, y: 12 }}
@@ -205,7 +274,6 @@ function SuccessCelebration({ name }: { name: string }) {
         We'll review your inquiry and be in touch within 24 hours.
       </motion.p>
 
-      {/* Scroll hint - appears after delay */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
@@ -261,6 +329,83 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [shakeKey, setShakeKey] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Cycling name placeholder state
+  const [nameFocused, setNameFocused] = useState(false);
+  const cyclingPlaceholder = useCyclingPlaceholder(CYCLING_NAMES, nameFocused, !!formData.name);
+
+  // Location detection state
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const detectLocation = useCallback(async () => {
+    if (!navigator.geolocation) {
+      setGeoStatus('error');
+      return;
+    }
+
+    setGeoStatus('loading');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place,region&limit=1&access_token=${MAPBOX_TOKEN}`
+          );
+          const data = await response.json();
+
+          if (data.features && data.features.length > 0) {
+            const feature = data.features[0];
+            // Extract city and state from the context or place name
+            let city = '';
+            let state = '';
+
+            if (feature.place_type?.includes('place')) {
+              city = feature.text || '';
+              const regionCtx = feature.context?.find((c: { id: string }) => c.id.startsWith('region'));
+              state = regionCtx?.short_code?.replace('US-', '') || regionCtx?.text || '';
+            } else if (feature.place_type?.includes('region')) {
+              state = feature.text || '';
+            }
+
+            const locationStr = city && state ? `${city}, ${state}` : feature.place_name || '';
+            if (locationStr) {
+              setFormData((prev) => ({ ...prev, location: locationStr }));
+              // Clear location error if present
+              setErrors((prev) => {
+                const next = { ...prev };
+                delete next.location;
+                return next;
+              });
+              setGeoStatus('success');
+            } else {
+              setGeoStatus('error');
+            }
+          } else {
+            setGeoStatus('error');
+          }
+        } catch {
+          setGeoStatus('error');
+        }
+      },
+      () => {
+        setGeoStatus('error');
+      },
+      { enableHighAccuracy: false, timeout: 10000 }
+    );
+  }, []);
+
+  // Reset geo error after a few seconds
+  useEffect(() => {
+    if (geoStatus === 'error') {
+      const timer = setTimeout(() => setGeoStatus('idle'), 3000);
+      return () => clearTimeout(timer);
+    }
+    if (geoStatus === 'success') {
+      const timer = setTimeout(() => setGeoStatus('idle'), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [geoStatus]);
+
   function validate(): FormErrors {
     const errs: FormErrors = {};
     if (!formData.name.trim()) errs.name = 'Name is required';
@@ -291,7 +436,6 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     }
   }
 
-  /** Scroll the first invalid field into view and focus it */
   function focusFirstError(errs: FormErrors) {
     const fieldOrder: (keyof FormErrors)[] = ['name', 'company', 'email', 'phone', 'location', 'helpType'];
     const idMap: Record<string, string> = {
@@ -317,13 +461,12 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    // Honeypot check
     if (formData._honeypot) return;
 
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
-      setShakeKey((k) => k + 1); // trigger shake animation
+      setShakeKey((k) => k + 1);
       focusFirstError(errs);
       return;
     }
@@ -352,10 +495,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         const firstName = formData.name.split(' ')[0];
 
         if (onSuccess) {
-          // Parent (ConsultationExperience) manages the transition
           onSuccess(firstName);
         } else {
-          // Standalone behavior
           setSubmittedName(firstName);
           setShowToast(true);
           setStatus('success');
@@ -437,7 +578,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           )}
         </AnimatePresence>
 
-        {/* Name */}
+        {/* Name - with cycling placeholder */}
         <motion.div
           key={`name-${shakeKey}`}
           variants={shakeVariants}
@@ -446,17 +587,35 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           <label htmlFor="contact-name" className={labelClass}>
             Name <span className="text-accent-error">*</span>
           </label>
-          <input
-            id="contact-name"
-            type="text"
-            autoComplete="name"
-            placeholder="Your name"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            className={`${inputBase} ${errors.name ? inputError : ''}`}
-            aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? 'name-error' : undefined}
-          />
+          <div className="relative">
+            <input
+              id="contact-name"
+              type="text"
+              autoComplete="name"
+              placeholder={nameFocused || formData.name ? 'Your name' : ' '}
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              onFocus={() => setNameFocused(true)}
+              onBlur={() => setNameFocused(false)}
+              className={`${inputBase} ${errors.name ? inputError : ''}`}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+            />
+            {/* Cycling placeholder overlay */}
+            {!nameFocused && !formData.name && (
+              <div
+                className="absolute inset-0 flex items-center px-4 pointer-events-none text-text-tertiary text-base"
+                aria-hidden="true"
+              >
+                <span>{cyclingPlaceholder}</span>
+                <motion.span
+                  className="inline-block w-[2px] h-[1.1em] bg-text-tertiary/50 ml-[1px]"
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
+                />
+              </div>
+            )}
+          </div>
           <AnimatePresence>
             {errors.name && (
               <motion.p
@@ -551,7 +710,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           </AnimatePresence>
         </motion.div>
 
-        {/* Phone & Location — side by side */}
+        {/* Phone & Location -- side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Phone */}
           <motion.div
@@ -591,7 +750,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             </AnimatePresence>
           </motion.div>
 
-          {/* Location */}
+          {/* Location - with geolocation detect button */}
           <motion.div
             key={`location-${shakeKey}`}
             variants={shakeVariants}
@@ -600,17 +759,58 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             <label htmlFor="contact-location" className={labelClass}>
               Location <span className="text-accent-error">*</span>
             </label>
-            <input
-              id="contact-location"
-              type="text"
-              autoComplete="address-level1"
-              placeholder="City, State"
-              value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-              className={`${inputBase} ${errors.location ? inputError : ''}`}
-              aria-invalid={!!errors.location}
-              aria-describedby={errors.location ? 'location-error' : undefined}
-            />
+            <div className="relative">
+              <input
+                id="contact-location"
+                type="text"
+                autoComplete="address-level1"
+                placeholder="City, State"
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
+                className={`${inputBase} pr-10 ${errors.location ? inputError : ''}`}
+                aria-invalid={!!errors.location}
+                aria-describedby={errors.location ? 'location-error' : undefined}
+              />
+              {/* Location detect button */}
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={geoStatus === 'loading'}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-text-tertiary hover:text-accent-primary hover:bg-accent-primary/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                title="Detect my location"
+                aria-label="Detect my location"
+              >
+                {geoStatus === 'loading' ? (
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : geoStatus === 'success' ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 2v4" /><path d="M12 18v4" />
+                    <path d="M2 12h4" /><path d="M18 12h4" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            <AnimatePresence>
+              {geoStatus === 'error' && (
+                <motion.p
+                  className="mt-1 text-xs text-text-tertiary"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  Could not detect location. Please type it in.
+                </motion.p>
+              )}
+            </AnimatePresence>
             <AnimatePresence>
               {errors.location && (
                 <motion.p
