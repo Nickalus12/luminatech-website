@@ -504,13 +504,20 @@ export default function MapSection() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full" id="lumina-map">
+    <div ref={containerRef} className="w-full relative" id="lumina-map">
+      {/* Background radial glow */}
+      <div
+        className="absolute inset-0 -m-8 md:-m-16 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(59, 130, 246, 0.06) 0%, rgba(139, 92, 246, 0.03) 40%, transparent 70%)',
+        }}
+      />
       <div
         className="relative overflow-hidden rounded-xl md:rounded-2xl"
         style={{
           border: '1px solid rgba(59, 130, 246, 0.15)',
           background: '#060610',
-          boxShadow: '0 0 60px rgba(59, 130, 246, 0.06)',
+          boxShadow: '0 0 80px rgba(59, 130, 246, 0.08), 0 0 160px rgba(139, 92, 246, 0.04)',
         }}
       >
         {/* Map container */}
@@ -587,90 +594,63 @@ export default function MapSection() {
           {phase === 'landed' && loaded && (
             <motion.div
               key="landing-panel"
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[320px] pointer-events-none z-10"
-              initial={{ opacity: 0, y: 30, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{
-                duration: 0.8,
-                delay: 0.5,
+                duration: 1,
+                delay: 0.4,
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
               <div
-                className="rounded-2xl p-5 relative overflow-hidden"
+                className="rounded-2xl px-8 py-6 relative overflow-hidden text-center"
                 style={{
-                  background: 'rgba(10, 10, 18, 0.82)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  background: 'rgba(6, 6, 14, 0.75)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: '1px solid rgba(59, 130, 246, 0.15)',
                   boxShadow:
-                    '0 8px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.08)',
+                    '0 12px 48px rgba(0, 0, 0, 0.6), 0 0 80px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
                 }}
               >
-                {/* Left accent stripe */}
+                {/* Top accent line */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-[3px]"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-[60%]"
                   style={{
-                    background:
-                      'linear-gradient(180deg, #3B82F6, #8B5CF6)',
+                    background: 'linear-gradient(90deg, transparent, #3B82F6, #8B5CF6, transparent)',
                   }}
                 />
 
-                <div className="pl-3">
-                  {/* Brand */}
-                  <h3 className="text-xl font-bold text-white tracking-tight">
-                    LUMINA
-                    <span style={{ color: '#3B82F6' }}> ERP</span>
-                  </h3>
+                {/* Brand */}
+                <h3 className="text-2xl font-bold text-white tracking-tight">
+                  LUMINA<span style={{ color: '#3B82F6' }}> ERP</span>
+                </h3>
 
-                  {/* Location */}
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="lumina-reveal-dot" />
-                    <span
-                      className="text-sm font-medium"
-                      style={{ color: 'rgba(255, 255, 255, 0.65)' }}
-                    >
-                      Humble, TX
-                    </span>
-                  </div>
-
-                  {/* Tagline */}
-                  <p
-                    className="text-sm mt-3 leading-relaxed"
-                    style={{ color: 'rgba(255, 255, 255, 0.45)' }}
+                {/* Location with live dot */}
+                <div className="flex items-center justify-center gap-2 mt-2.5">
+                  <span className="lumina-reveal-dot" />
+                  <span
+                    className="text-sm font-medium tracking-wide"
+                    style={{ color: 'rgba(255, 255, 255, 0.7)' }}
                   >
-                    Serving distributors nationwide
-                  </p>
-
-                  {/* Divider + response promise */}
-                  <div
-                    className="mt-4 pt-3"
-                    style={{
-                      borderTop:
-                        '1px solid rgba(255, 255, 255, 0.08)',
-                    }}
-                  >
-                    <p
-                      className="text-xs flex items-center gap-2"
-                      style={{ color: 'rgba(255, 255, 255, 0.35)' }}
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                      We'll be in touch within 24 hours
-                    </p>
-                  </div>
+                    Humble, TX
+                  </span>
                 </div>
+
+                {/* Divider */}
+                <div
+                  className="mx-auto mt-3 mb-3 w-12 h-px"
+                  style={{ background: 'rgba(59, 130, 246, 0.3)' }}
+                />
+
+                {/* Tagline */}
+                <p
+                  className="text-xs font-medium uppercase tracking-[0.15em]"
+                  style={{ color: 'rgba(255, 255, 255, 0.4)' }}
+                >
+                  Serving distributors nationwide
+                </p>
               </div>
             </motion.div>
           )}
