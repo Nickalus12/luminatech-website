@@ -21,7 +21,7 @@ import { about, brand } from '../content/copy';
     <Container>
       <div class="max-w-3xl scroll-reveal">
         <Badge variant="primary" class="mb-6">Practitioner-Consultants</Badge>
-        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4" transition:name="hero">
           P21 Expertise Built on <span class="about-gradient-text">Daily Hands-On</span> Experience
         </h1>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl leading-relaxed">
@@ -56,9 +56,9 @@ import { about, brand } from '../content/copy';
         </div>
 
         <!-- Credential Cards (right sidebar) -->
-        <div class="lg:col-span-2 space-y-6 scroll-reveal" style="animation-delay: 150ms;">
+        <div class="lg:col-span-2 space-y-6" data-stagger-group>
           {about.credentials.map((credential, i) => (
-            <div class="about-credential-card bg-bg-surface-1 border border-border rounded-xl p-6" style={`animation-delay: ${i * 80}ms;`}>
+            <div class="about-credential-card stagger-item bg-bg-surface-1 border border-border rounded-xl p-6">
               <span class="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary block mb-1 about-metric-value">
                 {credential.metric}
               </span>
@@ -80,9 +80,9 @@ import { about, brand } from '../content/copy';
         </h2>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8" data-stagger-group>
         {about.skills.categories.map((category, i) => (
-          <div class="bg-bg-surface-2 border border-border rounded-xl p-6 md:p-8 scroll-reveal" style={`animation-delay: ${i * 100}ms;`}>
+          <div class="bg-bg-surface-2 border border-border rounded-xl p-6 md:p-8 stagger-item">
             <h3 class="text-lg font-semibold text-text-primary mb-5">{category.title}</h3>
             <div class="flex flex-wrap gap-2">
               {category.items.map((item) => (
