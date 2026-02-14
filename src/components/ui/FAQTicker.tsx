@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FAQItem {
@@ -11,245 +11,190 @@ interface FAQTickerProps {
   heading?: string;
 }
 
-// Split items into two rows for dual-marquee effect
-function splitItems(items: FAQItem[]): [FAQItem[], FAQItem[]] {
-  const mid = Math.ceil(items.length / 2);
-  return [items.slice(0, mid), items.slice(mid)];
+// Chevron icon that rotates when open
+function ChevronIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <motion.svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 text-[var(--text-tertiary)]"
+      aria-hidden="true"
+      animate={{ rotate: isOpen ? 180 : 0 }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </motion.svg>
+  );
 }
 
-// ── Single question chip ──────────────────────────────────────
-
-function FAQChip({
+// Single accordion item
+function FAQAccordionItem({
   item,
   index,
-  isActive,
-  onActivate,
-  onDeactivate,
+  isOpen,
+  onToggle,
 }: {
   item: FAQItem;
-  index: string;
-  isActive: boolean;
-  onActivate: () => void;
-  onDeactivate: () => void;
+  index: number;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const chipRef = useRef<HTMLButtonElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  const handleClick = useCallback(() => {
-    if (isMobile) {
-      if (isActive) onDeactivate();
-      else onActivate();
-    }
-  }, [isMobile, isActive, onActivate, onDeactivate]);
+  const itemId = `faq-item-${index}`;
+  const answerId = `faq-answer-${index}`;
 
   return (
-    <span className="relative inline-flex flex-col items-center shrink-0">
-      <button
-        ref={chipRef}
-        onClick={handleClick}
-        onMouseEnter={isMobile ? undefined : onActivate}
-        onMouseLeave={isMobile ? undefined : onDeactivate}
-        onFocus={onActivate}
-        onBlur={onDeactivate}
-        aria-expanded={isActive}
-        aria-controls={`faq-answer-${index}`}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <div
         className={`
-          relative px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap
-          border transition-all duration-200 cursor-pointer select-none
-          ${isActive
-            ? 'bg-[var(--accent-primary)]/15 border-[var(--accent-primary)]/60 text-[var(--text-primary)] shadow-[0_0_16px_rgba(59,130,246,0.25)]'
-            : 'bg-[var(--bg-surface-2)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--text-primary)] hover:shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          relative rounded-xl border transition-all duration-300
+          ${isOpen
+            ? 'bg-[var(--accent-primary)]/[0.04] border-[var(--accent-primary)]/25 shadow-[0_0_24px_rgba(59,130,246,0.06)]'
+            : 'bg-[var(--bg-surface-1)] border-[var(--border)] hover:border-[var(--text-tertiary)]/40'
           }
         `}
       >
-        <span className="flex items-center gap-2">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="shrink-0 opacity-50"
-            aria-hidden="true"
+        {/* Glow accent bar on left edge */}
+        <div
+          className="absolute left-0 top-3 bottom-3 w-[2px] rounded-full transition-all duration-300"
+          style={{
+            background: isOpen
+              ? 'linear-gradient(180deg, var(--accent-primary), var(--accent-violet))'
+              : 'transparent',
+            boxShadow: isOpen
+              ? '0 0 8px rgba(59, 130, 246, 0.4)'
+              : 'none',
+          }}
+        />
+
+        {/* Question button */}
+        <button
+          id={itemId}
+          onClick={onToggle}
+          aria-expanded={isOpen}
+          aria-controls={answerId}
+          className="w-full flex items-center gap-4 px-5 py-4 md:px-6 md:py-5 text-left cursor-pointer group"
+        >
+          {/* Number badge */}
+          <span
+            className={`
+              shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
+              text-xs font-mono font-semibold transition-all duration-300
+              ${isOpen
+                ? 'bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]'
+                : 'bg-[var(--bg-surface-2)] text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]'
+              }
+            `}
           >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <path d="M12 17h.01" />
-          </svg>
-          {item.question}
-        </span>
-      </button>
+            {String(index + 1).padStart(2, '0')}
+          </span>
 
-      {/* Desktop: popover above */}
-      {!isMobile && (
-        <AnimatePresence>
-          {isActive && (
-            <motion.div
-              id={`faq-answer-${index}`}
-              role="tooltip"
-              initial={{ opacity: 0, y: 8, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.95 }}
-              transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-              className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 z-50
-                w-72 max-w-[85vw] px-4 py-3 rounded-xl
-                bg-[var(--bg-surface-1)] border border-[var(--accent-primary)]/30
-                shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_20px_rgba(59,130,246,0.15)]
-                text-sm text-[var(--text-secondary)] leading-relaxed pointer-events-none"
-            >
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3
-                bg-[var(--bg-surface-1)] border-r border-b border-[var(--accent-primary)]/30
-                rotate-45" />
-              {item.answer}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
+          {/* Question text */}
+          <span
+            className={`
+              flex-1 text-sm md:text-base font-medium leading-snug transition-colors duration-200
+              ${isOpen
+                ? 'text-[var(--text-primary)]'
+                : 'text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]'
+              }
+            `}
+          >
+            {item.question}
+          </span>
 
-      {/* Mobile: answer expands below */}
-      {isMobile && (
-        <AnimatePresence>
-          {isActive && (
+          <ChevronIcon isOpen={isOpen} />
+        </button>
+
+        {/* Answer panel */}
+        <AnimatePresence initial={false}>
+          {isOpen && (
             <motion.div
-              id={`faq-answer-${index}`}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-              className="overflow-hidden mt-2 w-64 max-w-[80vw]"
+              id={answerId}
+              role="region"
+              aria-labelledby={itemId}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                height: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
+                opacity: { duration: 0.25, delay: 0.08 },
+              }}
+              className="overflow-hidden"
             >
-              <div className="px-4 py-3 rounded-xl
-                bg-[var(--bg-surface-1)] border border-[var(--accent-primary)]/20
-                text-xs text-[var(--text-secondary)] leading-relaxed">
-                {item.answer}
+              <div className="px-5 pb-5 md:px-6 md:pb-6 pl-[4.25rem] md:pl-[4.75rem]">
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                  {item.answer}
+                </p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      )}
-    </span>
+      </div>
+    </motion.div>
   );
 }
 
-// ── Marquee row ──────────────────────────────────────────────
+export default function FAQTicker({ items, heading = 'Common Questions' }: FAQTickerProps) {
+  // First item open by default so the user sees the answer pattern
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-function MarqueeRow({
-  items,
-  direction,
-  speed,
-  activeId,
-  onActivate,
-  onDeactivate,
-  rowIndex,
-}: {
-  items: FAQItem[];
-  direction: 'left' | 'right';
-  speed: number;
-  activeId: string | null;
-  onActivate: (id: string) => void;
-  onDeactivate: () => void;
-  rowIndex: number;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isPaused = activeId !== null;
-
-  // Duplicate items 4x for seamless loop
-  const repeated = [...items, ...items, ...items, ...items];
+  const handleToggle = useCallback((index: number) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative overflow-hidden"
-      aria-label={`FAQ questions row ${rowIndex + 1}`}
-    >
-      {/* Fade edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-24 z-10
-        bg-gradient-to-r from-[var(--bg-base)] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-24 z-10
-        bg-gradient-to-l from-[var(--bg-base)] to-transparent" />
+    <div className="w-full py-10 md:py-16">
+      {/* Section heading */}
+      <div className="text-center mb-8 md:mb-10">
+        <p className="text-xs uppercase tracking-[0.2em] font-medium text-[var(--text-tertiary)] mb-3">
+          {heading}
+        </p>
+        <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)]">
+          Got questions? We've got answers.
+        </h2>
+      </div>
 
-      <div
-        className={`faq-marquee-track faq-marquee-${direction}`}
-        style={{
-          animationDuration: `${speed}s`,
-          animationPlayState: isPaused ? 'paused' : 'running',
-        }}
+      {/* Accordion items */}
+      <div className="max-w-2xl mx-auto space-y-3">
+        {items.map((item, i) => (
+          <FAQAccordionItem
+            key={i}
+            item={item}
+            index={i}
+            isOpen={openIndex === i}
+            onToggle={() => handleToggle(i)}
+          />
+        ))}
+      </div>
+
+      {/* Bottom note */}
+      <motion.p
+        className="text-center text-xs text-[var(--text-tertiary)] mt-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
       >
-        <div className="flex gap-3 py-2">
-          {repeated.map((item, i) => {
-            const id = `${rowIndex}-${i}`;
-            return (
-              <FAQChip
-                key={id}
-                item={item}
-                index={id}
-                isActive={activeId === id}
-                onActivate={() => onActivate(id)}
-                onDeactivate={onDeactivate}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Main ticker ─────────────────────────────────────────────
-
-export default function FAQTicker({ items, heading = 'Quick Answers' }: FAQTickerProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [row1, row2] = splitItems(items);
-
-  const handleActivate = useCallback((id: string) => {
-    setActiveId(id);
-  }, []);
-
-  const handleDeactivate = useCallback(() => {
-    setActiveId(null);
-  }, []);
-
-  return (
-    <div className="w-full py-8 md:py-12">
-      {/* Heading */}
-      <p className="text-center text-xs uppercase tracking-[0.2em] font-medium text-[var(--text-tertiary)] mb-6">
-        {heading}
-      </p>
-
-      {/* Dual marquee rows */}
-      <div className="space-y-3">
-        <MarqueeRow
-          items={row1}
-          direction="left"
-          speed={35}
-          activeId={activeId}
-          onActivate={handleActivate}
-          onDeactivate={handleDeactivate}
-          rowIndex={0}
-        />
-        <MarqueeRow
-          items={row2}
-          direction="right"
-          speed={40}
-          activeId={activeId}
-          onActivate={handleActivate}
-          onDeactivate={handleDeactivate}
-          rowIndex={1}
-        />
-      </div>
-
-      {/* Marquee CSS is in contact.astro <style> block for pre-hydration availability */}
+        Have a different question?{' '}
+        <a
+          href="mailto:Support@Lumina-ERP.com"
+          className="text-[var(--accent-primary)] hover:underline"
+        >
+          Reach out directly
+        </a>
+      </motion.p>
     </div>
   );
 }
