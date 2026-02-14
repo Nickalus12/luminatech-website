@@ -1,21 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
-const US_CENTER: [number, number] = [-96.5, 38.5];
 
-// 10 major US distribution hubs
-const WAREHOUSE_CITIES: { coords: [number, number]; name: string }[] = [
-  { coords: [-122.33, 47.61], name: 'Seattle' },
-  { coords: [-122.42, 37.77], name: 'San Francisco' },
-  { coords: [-118.24, 34.05], name: 'Los Angeles' },
-  { coords: [-112.07, 33.45], name: 'Phoenix' },
-  { coords: [-104.99, 39.74], name: 'Denver' },
-  { coords: [-87.63, 41.88], name: 'Chicago' },
-  { coords: [-93.27, 44.98], name: 'Minneapolis' },
-  { coords: [-84.39, 33.75], name: 'Atlanta' },
-  { coords: [-80.19, 25.76], name: 'Miami' },
-  { coords: [-74.01, 40.71], name: 'New York' },
+// 10 major US distribution hubs with relative building heights (meters, exaggerated for viz)
+const WAREHOUSE_CITIES: {
+  coords: [number, number];
+  name: string;
+  height: number;
+}[] = [
+  { coords: [-122.33, 47.61], name: 'Seattle', height: 200000 },
+  { coords: [-122.42, 37.77], name: 'San Francisco', height: 180000 },
+  { coords: [-118.24, 34.05], name: 'Los Angeles', height: 250000 },
+  { coords: [-112.07, 33.45], name: 'Phoenix', height: 150000 },
+  { coords: [-104.99, 39.74], name: 'Denver', height: 160000 },
+  { coords: [-87.63, 41.88], name: 'Chicago', height: 280000 },
+  { coords: [-93.27, 44.98], name: 'Minneapolis', height: 140000 },
+  { coords: [-84.39, 33.75], name: 'Atlanta', height: 220000 },
+  { coords: [-80.19, 25.76], name: 'Miami', height: 180000 },
+  { coords: [-74.01, 40.71], name: 'New York', height: 300000 },
 ];
 
 /**
@@ -38,7 +42,8 @@ function generateArc(
   const perpY = dx / perpLen;
   const curvature = dist * 0.18;
   const controlLng = midLng + perpX * curvature * (perpY >= 0 ? 1 : -1);
-  const controlLat = midLat + Math.abs(perpY) * curvature + curvature * 0.35;
+  const controlLat =
+    midLat + Math.abs(perpY) * curvature + curvature * 0.35;
   const points: [number, number][] = [];
   for (let i = 0; i <= numPoints; i++) {
     const t = i / numPoints;
@@ -48,6 +53,24 @@ function generateArc(
     points.push([lng, lat]);
   }
   return points;
+}
+
+/**
+ * Create a small rectangular polygon at a coordinate for fill-extrusion.
+ */
+function createBuildingPolygon(
+  center: [number, number],
+  sizeDegs = 0.35
+): number[][] {
+  const [lng, lat] = center;
+  const h = sizeDegs / 2;
+  return [
+    [lng - h, lat - h],
+    [lng + h, lat - h],
+    [lng + h, lat + h],
+    [lng - h, lat + h],
+    [lng - h, lat - h],
+  ];
 }
 
 export default function MapSection() {
@@ -60,7 +83,7 @@ export default function MapSection() {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const [phase, setPhase] = useState<'wide' | 'flying' | 'landed'>('wide');
+  const [phase, setPhase] = useState<'globe' | 'flying' | 'landed'>('globe');
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -68,16 +91,20 @@ export default function MapSection() {
     ).matches;
     const isMobile = window.innerWidth < 768;
 
-    // Landing parameters
-    const landingZoom = isMobile ? 14.5 : 15.5;
-    const landingPitch = 60;
-    const landingBearing = -30;
+    // Landing camera — zoomed out enough to see the warehouse network
+    const landing = {
+      center: (isMobile ? [-96, 38] : [-95, 37]) as [number, number],
+      zoom: isMobile ? 3.8 : 4.8,
+      pitch: isMobile ? 45 : 50,
+      bearing: -15,
+    };
 
     // Load Mapbox GL CSS
     if (!document.querySelector('link[href*="mapbox-gl"]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css';
+      link.href =
+        'https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css';
       document.head.appendChild(link);
     }
 
@@ -103,14 +130,16 @@ export default function MapSection() {
 
         const skipAnimation = prefersReducedMotion;
 
-        // Phase 1: Wide Shot (or skip to landing for reduced motion)
+        // === MAP INIT ===
+        // Globe projection at low zoom shows the earth; Mapbox transitions to mercator at ~zoom 5
         const map = new mapboxgl.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/standard',
-          center: skipAnimation ? HUMBLE_TX : US_CENTER,
-          zoom: skipAnimation ? landingZoom : 3.5,
-          pitch: skipAnimation ? landingPitch : 0,
-          bearing: skipAnimation ? landingBearing : 0,
+          center: skipAnimation ? landing.center : [-100, 40],
+          zoom: skipAnimation ? landing.zoom : 1.5,
+          pitch: skipAnimation ? landing.pitch : 0,
+          bearing: skipAnimation ? landing.bearing : 10,
+          projection: 'globe',
           antialias: true,
           attributionControl: false,
           interactive: false,
@@ -133,16 +162,18 @@ export default function MapSection() {
         map.on('load', () => {
           setLoaded(true);
 
-          // Atmospheric fog
+          // Atmospheric fog with subtle stars for globe view
           map.setFog({
             color: 'rgba(10, 10, 15, 0.85)',
             'high-color': 'rgba(15, 15, 35, 0.6)',
-            'horizon-blend': 0.05,
+            'horizon-blend': 0.04,
             'space-color': '#060610',
-            'star-intensity': 0,
+            'star-intensity': 0.12,
           });
 
-          // Arc source data
+          // ──────────────────────────────────
+          // ARC DATA
+          // ──────────────────────────────────
           const arcFeatures = WAREHOUSE_CITIES.map((dest) => ({
             type: 'Feature' as const,
             properties: { name: dest.name },
@@ -152,7 +183,6 @@ export default function MapSection() {
             },
           }));
 
-          // Origin point (Humble TX)
           const originFeature = {
             type: 'Feature' as const,
             properties: { isOrigin: true },
@@ -162,7 +192,7 @@ export default function MapSection() {
             },
           };
 
-          const warehouseFeatures = WAREHOUSE_CITIES.map((dest) => ({
+          const warehousePointFeatures = WAREHOUSE_CITIES.map((dest) => ({
             type: 'Feature' as const,
             properties: { name: dest.name },
             geometry: {
@@ -178,7 +208,10 @@ export default function MapSection() {
 
           map.addSource('warehouses', {
             type: 'geojson',
-            data: { type: 'FeatureCollection', features: warehouseFeatures },
+            data: {
+              type: 'FeatureCollection',
+              features: warehousePointFeatures,
+            },
           });
 
           map.addSource('origin', {
@@ -186,7 +219,47 @@ export default function MapSection() {
             data: { type: 'FeatureCollection', features: [originFeature] },
           });
 
-          // === ARC LAYERS ===
+          // ──────────────────────────────────
+          // 3D WAREHOUSE BUILDING DATA
+          // ──────────────────────────────────
+          const buildingFeatures = WAREHOUSE_CITIES.map((city) => ({
+            type: 'Feature' as const,
+            properties: {
+              name: city.name,
+              height: city.height,
+              isHQ: false,
+            },
+            geometry: {
+              type: 'Polygon' as const,
+              coordinates: [createBuildingPolygon(city.coords, 0.35)],
+            },
+          }));
+
+          // HQ building — tallest and largest footprint
+          buildingFeatures.push({
+            type: 'Feature' as const,
+            properties: {
+              name: 'Lumina ERP HQ',
+              height: 420000,
+              isHQ: true,
+            },
+            geometry: {
+              type: 'Polygon' as const,
+              coordinates: [createBuildingPolygon(HUMBLE_TX, 0.45)],
+            },
+          });
+
+          map.addSource('warehouse-buildings', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: buildingFeatures,
+            },
+          });
+
+          // ──────────────────────────────────
+          // ARC LAYERS (visible on globe, fade during zoom)
+          // ──────────────────────────────────
 
           // Arc glow (wide, soft)
           map.addLayer({
@@ -200,7 +273,7 @@ export default function MapSection() {
               'line-width': 10,
               'line-opacity': skipAnimation ? 0 : 0.08,
               'line-blur': 6,
-              'line-opacity-transition': { duration: 1500, delay: 0 },
+              'line-opacity-transition': { duration: 1200, delay: 0 },
             },
           });
 
@@ -215,7 +288,7 @@ export default function MapSection() {
               'line-color': '#60A5FA',
               'line-width': 3,
               'line-opacity': skipAnimation ? 0 : 0.3,
-              'line-opacity-transition': { duration: 1500, delay: 0 },
+              'line-opacity-transition': { duration: 1200, delay: 0 },
             },
           });
 
@@ -232,12 +305,14 @@ export default function MapSection() {
                 'line-width': 2,
                 'line-opacity': 0.6,
                 'line-dasharray': [0, 4, 3],
-                'line-opacity-transition': { duration: 1500, delay: 0 },
+                'line-opacity-transition': { duration: 1200, delay: 0 },
               },
             });
           }
 
-          // === WAREHOUSE MARKERS ===
+          // ──────────────────────────────────
+          // WAREHOUSE POINT MARKERS (for globe/wide view)
+          // ──────────────────────────────────
 
           map.addLayer({
             id: 'warehouse-glow-outer',
@@ -249,7 +324,7 @@ export default function MapSection() {
               'circle-color': '#3B82F6',
               'circle-opacity': skipAnimation ? 0 : 0.06,
               'circle-blur': 1,
-              'circle-opacity-transition': { duration: 1500, delay: 0 },
+              'circle-opacity-transition': { duration: 1200, delay: 0 },
             },
           });
 
@@ -265,12 +340,17 @@ export default function MapSection() {
               'circle-stroke-width': 1.5,
               'circle-stroke-color': '#3B82F6',
               'circle-stroke-opacity': skipAnimation ? 0 : 0.6,
-              'circle-opacity-transition': { duration: 1500, delay: 0 },
-              'circle-stroke-opacity-transition': { duration: 1500, delay: 0 },
+              'circle-opacity-transition': { duration: 1200, delay: 0 },
+              'circle-stroke-opacity-transition': {
+                duration: 1200,
+                delay: 0,
+              },
             },
           });
 
-          // === ORIGIN MARKER (Humble TX — HQ) ===
+          // ──────────────────────────────────
+          // ORIGIN MARKER (Humble TX — HQ pulse)
+          // ──────────────────────────────────
 
           map.addLayer({
             id: 'origin-glow-outer',
@@ -282,6 +362,7 @@ export default function MapSection() {
               'circle-color': '#8B5CF6',
               'circle-opacity': 0.08,
               'circle-blur': 1,
+              'circle-opacity-transition': { duration: 1200, delay: 0 },
             },
           });
 
@@ -297,10 +378,70 @@ export default function MapSection() {
               'circle-stroke-width': 2,
               'circle-stroke-color': '#8B5CF6',
               'circle-stroke-opacity': 0.6,
+              'circle-opacity-transition': { duration: 1200, delay: 0 },
+              'circle-stroke-opacity-transition': {
+                duration: 1200,
+                delay: 0,
+              },
             },
           });
 
-          // Dash animation (ant-path effect)
+          // ──────────────────────────────────
+          // 3D WAREHOUSE BUILDINGS (fill-extrusion)
+          // Visible at landing zoom as illuminated pillars
+          // ──────────────────────────────────
+
+          // Building glow base — wider, shorter, translucent
+          map.addLayer({
+            id: 'buildings-glow',
+            type: 'fill-extrusion',
+            source: 'warehouse-buildings',
+            slot: 'top',
+            paint: {
+              'fill-extrusion-color': [
+                'case',
+                ['get', 'isHQ'],
+                '#8B5CF6',
+                '#3B82F6',
+              ],
+              'fill-extrusion-height': ['*', ['get', 'height'], 0.5],
+              'fill-extrusion-base': 0,
+              'fill-extrusion-opacity': 0.12,
+              'fill-extrusion-opacity-transition': {
+                duration: 2000,
+                delay: 0,
+              },
+            },
+          });
+
+          // Building core — taller, brighter
+          map.addLayer({
+            id: 'buildings-core',
+            type: 'fill-extrusion',
+            source: 'warehouse-buildings',
+            slot: 'top',
+            paint: {
+              'fill-extrusion-color': [
+                'case',
+                ['get', 'isHQ'],
+                '#A78BFA',
+                '#60A5FA',
+              ],
+              'fill-extrusion-height': ['get', 'height'],
+              'fill-extrusion-base': 0,
+              'fill-extrusion-opacity': 0.6,
+              'fill-extrusion-vertical-gradient': true,
+              'fill-extrusion-opacity-transition': {
+                duration: 2000,
+                delay: 0,
+              },
+            },
+          });
+
+          // ──────────────────────────────────
+          // DASH ANIMATION (ant-path effect on arcs)
+          // ──────────────────────────────────
+
           if (!prefersReducedMotion && !skipAnimation) {
             const dashSequence = [
               [0, 4, 3],
@@ -340,8 +481,7 @@ export default function MapSection() {
           }
 
           /**
-           * Fade arcs and warehouse markers during the flythrough.
-           * Called by zoom listener when zoom passes threshold.
+           * Fade arcs and warehouse point markers during the flythrough.
            */
           function fadeArcsOut() {
             if (map.getLayer('arcs-glow'))
@@ -351,10 +491,33 @@ export default function MapSection() {
             if (map.getLayer('arcs-animated'))
               map.setPaintProperty('arcs-animated', 'line-opacity', 0);
             if (map.getLayer('warehouse-glow-outer'))
-              map.setPaintProperty('warehouse-glow-outer', 'circle-opacity', 0);
+              map.setPaintProperty(
+                'warehouse-glow-outer',
+                'circle-opacity',
+                0
+              );
             if (map.getLayer('warehouse-dot')) {
               map.setPaintProperty('warehouse-dot', 'circle-opacity', 0);
-              map.setPaintProperty('warehouse-dot', 'circle-stroke-opacity', 0);
+              map.setPaintProperty(
+                'warehouse-dot',
+                'circle-stroke-opacity',
+                0
+              );
+            }
+            // Also fade origin marker — buildings take over
+            if (map.getLayer('origin-glow-outer'))
+              map.setPaintProperty(
+                'origin-glow-outer',
+                'circle-opacity',
+                0
+              );
+            if (map.getLayer('origin-dot')) {
+              map.setPaintProperty('origin-dot', 'circle-opacity', 0);
+              map.setPaintProperty(
+                'origin-dot',
+                'circle-stroke-opacity',
+                0
+              );
             }
             // Stop dash animation
             if (dashRef.current) {
@@ -364,12 +527,12 @@ export default function MapSection() {
           }
 
           /**
-           * Start slow orbit around Humble TX after landing.
+           * Slow orbit — continuously rotate bearing around focal point.
            */
           function startOrbit() {
-            let bearing = landingBearing;
+            let bearing = landing.bearing;
             function orbit() {
-              bearing += 0.03;
+              bearing += 0.015;
               if (mapRef.current) {
                 mapRef.current.setBearing(bearing);
               }
@@ -378,14 +541,17 @@ export default function MapSection() {
             orbitRef.current = requestAnimationFrame(orbit);
           }
 
-          // Phase 2: Cinematic flythrough triggered on scroll
+          // ──────────────────────────────────
+          // FLYTHROUGH TRIGGER
+          // ──────────────────────────────────
+
           if (!prefersReducedMotion && containerRef.current) {
             let triggered = false;
             let arcsFaded = false;
 
-            // Listen for zoom changes during flight to fade arcs
+            // Fade arcs when zoom passes globe → country threshold
             map.on('zoom', () => {
-              if (!arcsFaded && map.getZoom() > 6) {
+              if (!arcsFaded && map.getZoom() > 3) {
                 arcsFaded = true;
                 fadeArcsOut();
               }
@@ -397,26 +563,25 @@ export default function MapSection() {
                   triggered = true;
                   observerRef.current?.disconnect();
 
-                  // Hold wide shot for 0.5s then fly
+                  // Brief hold on globe view, then fly
                   timeoutRef.current = setTimeout(() => {
                     setPhase('flying');
 
                     map.flyTo({
-                      center: HUMBLE_TX,
-                      zoom: landingZoom,
-                      pitch: landingPitch,
-                      bearing: landingBearing,
-                      duration: 4000,
-                      curve: 1.5,
+                      center: landing.center,
+                      zoom: landing.zoom,
+                      pitch: landing.pitch,
+                      bearing: landing.bearing,
+                      duration: 5000,
+                      curve: 1.8,
                       essential: true,
                     });
 
-                    // Phase 3: Landing
                     map.once('moveend', () => {
                       setPhase('landed');
                       startOrbit();
                     });
-                  }, 500);
+                  }, 600);
                 }
               },
               { threshold: 0.3 }
@@ -424,7 +589,7 @@ export default function MapSection() {
 
             observerRef.current.observe(containerRef.current);
           } else {
-            // Reduced motion — start at final position, no animation
+            // Reduced motion — start at final position
             setPhase('landed');
           }
         });
@@ -509,7 +674,10 @@ export default function MapSection() {
                   <circle cx="12" cy="10" r="3" />
                 </svg>
               </div>
-              <p className="text-sm font-medium" style={{ color: '#E8E8ED' }}>
+              <p
+                className="text-sm font-medium"
+                style={{ color: '#E8E8ED' }}
+              >
                 Humble, TX
               </p>
               <p className="text-xs mt-1" style={{ color: '#6B6B7B' }}>
@@ -519,15 +687,105 @@ export default function MapSection() {
           </div>
         )}
 
-        {/* Holographic beacon at Humble TX — visible after landing */}
-        {phase === 'landed' && loaded && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="lumina-beacon" />
-          </div>
-        )}
+        {/* ═══════════════════════════════════════
+            LUMINA ERP LANDING PANEL
+            Glassmorphism card — appears after flythrough
+            ═══════════════════════════════════════ */}
+        <AnimatePresence>
+          {phase === 'landed' && loaded && (
+            <motion.div
+              key="landing-panel"
+              className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-auto md:right-6 md:w-[320px] pointer-events-none z-10"
+              initial={{ opacity: 0, y: 30, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.5,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <div
+                className="rounded-2xl p-5 relative overflow-hidden"
+                style={{
+                  background: 'rgba(10, 10, 18, 0.82)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  boxShadow:
+                    '0 8px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.08)',
+                }}
+              >
+                {/* Left accent stripe */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-[3px]"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, #3B82F6, #8B5CF6)',
+                  }}
+                />
 
-        {/* Frosted glass bottom bar — always present when loaded */}
-        {loaded && (
+                <div className="pl-3">
+                  {/* Brand */}
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    LUMINA
+                    <span style={{ color: '#3B82F6' }}> ERP</span>
+                  </h3>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="lumina-reveal-dot" />
+                    <span
+                      className="text-sm font-medium"
+                      style={{ color: 'rgba(255, 255, 255, 0.65)' }}
+                    >
+                      Humble, TX
+                    </span>
+                  </div>
+
+                  {/* Tagline */}
+                  <p
+                    className="text-sm mt-3 leading-relaxed"
+                    style={{ color: 'rgba(255, 255, 255, 0.45)' }}
+                  >
+                    Serving distributors nationwide
+                  </p>
+
+                  {/* Divider + response promise */}
+                  <div
+                    className="mt-4 pt-3"
+                    style={{
+                      borderTop:
+                        '1px solid rgba(255, 255, 255, 0.08)',
+                    }}
+                  >
+                    <p
+                      className="text-xs flex items-center gap-2"
+                      style={{ color: 'rgba(255, 255, 255, 0.35)' }}
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      We'll be in touch within 24 hours
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Frosted glass bottom bar — visible during globe/flying phases only */}
+        {loaded && phase !== 'landed' && (
           <div className="absolute bottom-0 left-0 right-0 pointer-events-none p-3 md:p-4">
             <div
               className="flex items-center justify-between px-4 py-2.5 rounded-lg"
@@ -547,14 +805,6 @@ export default function MapSection() {
                   Humble, TX &mdash; Serving distributors nationwide
                 </span>
               </div>
-              {phase === 'landed' && (
-                <span
-                  className="text-[10px] tracking-wider uppercase hidden sm:block"
-                  style={{ color: '#6B6B7B' }}
-                >
-                  3D View
-                </span>
-              )}
             </div>
           </div>
         )}
@@ -590,41 +840,6 @@ export default function MapSection() {
           @keyframes reveal-dot-pulse {
             0%, 100% { opacity: 0.6; box-shadow: 0 0 4px rgba(59, 130, 246, 0.3); }
             50%      { opacity: 1;   box-shadow: 0 0 12px rgba(59, 130, 246, 0.7); }
-          }
-        }
-
-        /* Holographic beacon — CSS-only 3D-style marker */
-        .lumina-beacon {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(139, 92, 246, 0.9) 0%, rgba(59, 130, 246, 0.4) 40%, transparent 70%);
-          box-shadow:
-            0 0 20px rgba(139, 92, 246, 0.8),
-            0 0 60px rgba(59, 130, 246, 0.4),
-            0 0 120px rgba(139, 92, 246, 0.15);
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-          .lumina-beacon {
-            animation: beacon-pulse 2s ease-in-out infinite;
-          }
-
-          @keyframes beacon-pulse {
-            0%, 100% {
-              transform: scale(1);
-              box-shadow:
-                0 0 16px rgba(139, 92, 246, 0.6),
-                0 0 48px rgba(59, 130, 246, 0.3),
-                0 0 96px rgba(139, 92, 246, 0.1);
-            }
-            50% {
-              transform: scale(1.3);
-              box-shadow:
-                0 0 24px rgba(139, 92, 246, 1),
-                0 0 80px rgba(59, 130, 246, 0.5),
-                0 0 160px rgba(139, 92, 246, 0.2);
-            }
           }
         }
 
