@@ -60,6 +60,15 @@ export default function MapSection() {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [landed, setLanded] = useState(false);
+  const beaconRef = useRef<HTMLDivElement | null>(null);
+
+  // Show beacon label after landing
+  useEffect(() => {
+    if (landed && beaconRef.current) {
+      beaconRef.current.classList.add('show-label');
+    }
+  }, [landed]);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -95,16 +104,17 @@ export default function MapSection() {
         if (!mapContainer.current || mapRef.current) return;
         mapboxgl.accessToken = MAPBOX_TOKEN;
 
-        const finalZoom = isMobile ? 14.5 : 15.5;
+        const finalZoom = isMobile ? 15 : 16;
+        const finalPitch = 65;
         const skipAnimation = prefersReducedMotion;
 
-        // Phase 1: Create map with Standard style config applied at init
+        // Phase 1: Create map with Standard style — use 'dusk' for warm, visible 3D buildings
         const map = new mapboxgl.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/standard',
           center: skipAnimation ? HUMBLE_TX : US_CENTER,
           zoom: skipAnimation ? finalZoom : 3.5,
-          pitch: skipAnimation ? 60 : 0,
+          pitch: skipAnimation ? finalPitch : 0,
           bearing: skipAnimation ? -30 : 0,
           antialias: true,
           attributionControl: false,
@@ -112,8 +122,8 @@ export default function MapSection() {
           scrollZoom: false,
           config: {
             basemap: {
-              theme: 'monochrome',
-              lightPreset: 'night',
+              theme: 'default',
+              lightPreset: 'dusk',
               showPlaceLabels: false,
               showPointOfInterestLabels: false,
               showTransitLabels: false,
@@ -157,8 +167,7 @@ export default function MapSection() {
             data: { type: 'FeatureCollection', features: endpointFeatures },
           });
 
-          // Background arcs (faint, always visible at wide zoom)
-          // Use slot: 'top' so layers render above Standard basemap
+          // Background arcs — slightly thicker and more visible
           map.addLayer({
             id: 'arcs-bg',
             type: 'line',
@@ -167,8 +176,8 @@ export default function MapSection() {
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: {
               'line-color': '#3B82F6',
-              'line-width': 1.5,
-              'line-opacity': skipAnimation ? 0 : 0.12,
+              'line-width': 2,
+              'line-opacity': skipAnimation ? 0 : 0.18,
             },
           });
 
@@ -182,8 +191,8 @@ export default function MapSection() {
               layout: { 'line-cap': 'round', 'line-join': 'round' },
               paint: {
                 'line-color': '#3B82F6',
-                'line-width': 1.5,
-                'line-opacity': 0.45,
+                'line-width': 2,
+                'line-opacity': 0.5,
                 'line-dasharray': [0, 4, 3],
               },
             });
@@ -196,12 +205,12 @@ export default function MapSection() {
             source: 'endpoints',
             slot: 'top',
             paint: {
-              'circle-radius': 3,
+              'circle-radius': 3.5,
               'circle-color': '#3B82F6',
-              'circle-opacity': skipAnimation ? 0 : 0.6,
+              'circle-opacity': skipAnimation ? 0 : 0.7,
               'circle-stroke-width': 1,
               'circle-stroke-color': '#3B82F6',
-              'circle-stroke-opacity': skipAnimation ? 0 : 0.2,
+              'circle-stroke-opacity': skipAnimation ? 0 : 0.3,
             },
           });
 
@@ -244,16 +253,20 @@ export default function MapSection() {
             dashRef.current = requestAnimationFrame(animateDash);
           }
 
-          // Pulsing origin beacon marker
+          // Premium beacon marker with vertical beam
           const markerEl = document.createElement('div');
           markerEl.className = 'lumina-beacon';
           markerEl.innerHTML = `
+            <div class="beacon-beam"></div>
             <div class="beacon-ring beacon-ring-1"></div>
             <div class="beacon-ring beacon-ring-2"></div>
             <div class="beacon-ring beacon-ring-3"></div>
+            <div class="beacon-glow-outer"></div>
             <div class="beacon-glow"></div>
             <div class="beacon-core"></div>
+            <div class="beacon-label">Humble, TX</div>
           `;
+          beaconRef.current = markerEl;
 
           new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
             .setLngLat(HUMBLE_TX)
@@ -265,31 +278,31 @@ export default function MapSection() {
             if (zoom > 5) {
               const fade = Math.max(0, 1 - (zoom - 5) / 5);
               if (map.getLayer('arcs-bg')) {
-                map.setPaintProperty('arcs-bg', 'line-opacity', 0.12 * fade);
+                map.setPaintProperty('arcs-bg', 'line-opacity', 0.18 * fade);
               }
               if (map.getLayer('arcs-animated')) {
                 map.setPaintProperty(
                   'arcs-animated',
                   'line-opacity',
-                  0.45 * fade
+                  0.5 * fade
                 );
               }
               if (map.getLayer('endpoint-dots')) {
                 map.setPaintProperty(
                   'endpoint-dots',
                   'circle-opacity',
-                  0.6 * fade
+                  0.7 * fade
                 );
                 map.setPaintProperty(
                   'endpoint-dots',
                   'circle-stroke-opacity',
-                  0.2 * fade
+                  0.3 * fade
                 );
               }
             }
           });
 
-          // Phase 2: Flythrough (triggered on scroll into view)
+          // Phase 2: Cinematic flythrough (triggered on scroll into view)
           if (!prefersReducedMotion && containerRef.current) {
             let triggered = false;
 
@@ -299,20 +312,28 @@ export default function MapSection() {
                   triggered = true;
                   observerRef.current?.disconnect();
 
-                  // Brief pause so the wide-shot registers visually
+                  // Long pause so US wide-shot registers visually
                   setTimeout(() => {
                     map.flyTo({
                       center: HUMBLE_TX,
                       zoom: finalZoom,
-                      pitch: 60,
+                      pitch: finalPitch,
                       bearing: -30,
-                      duration: 4000,
-                      curve: 1.5,
+                      duration: 8000,
+                      curve: 1.2,
                       essential: true,
+                      easing: (t: number) => {
+                        // Smooth ease-in-out cubic for cinematic feel
+                        return t < 0.5
+                          ? 4 * t * t * t
+                          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                      },
                     });
 
-                    // Phase 3: Landing -> slow orbit
+                    // Phase 3: Landing -> slow orbit + show label
                     map.once('moveend', () => {
+                      setLanded(true);
+
                       // Stop dash animation -- arcs are faded out
                       if (dashRef.current) {
                         cancelAnimationFrame(dashRef.current);
@@ -321,19 +342,22 @@ export default function MapSection() {
 
                       let bearing = -30;
                       function orbit() {
-                        bearing += 0.015;
+                        bearing += 0.006;
                         map.setBearing(bearing);
                         orbitRef.current = requestAnimationFrame(orbit);
                       }
                       orbitRef.current = requestAnimationFrame(orbit);
                     });
-                  }, 1200);
+                  }, 2500);
                 }
               },
               { threshold: 0.3 }
             );
 
             observerRef.current.observe(containerRef.current);
+          } else {
+            // Reduced motion or mobile skip — show label immediately
+            setLanded(true);
           }
         });
       })
@@ -358,8 +382,9 @@ export default function MapSection() {
       <div
         className="relative overflow-hidden rounded-xl md:rounded-2xl"
         style={{
-          border: '1px solid #2A2A36',
+          border: '1px solid rgba(59, 130, 246, 0.15)',
           background: '#0A0A0F',
+          boxShadow: '0 0 40px rgba(59, 130, 246, 0.06)',
         }}
       >
         {/* Map container */}
@@ -432,19 +457,20 @@ export default function MapSection() {
         {loaded && (
           <div className="absolute bottom-0 left-0 right-0 pointer-events-none p-4 md:p-6">
             <div
-              className="px-4 py-3 rounded-lg"
+              className="px-5 py-3.5 rounded-xl"
               style={{
-                background: 'rgba(18, 18, 26, 0.7)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(42, 42, 54, 0.5)',
+                background: 'rgba(10, 10, 15, 0.65)',
+                backdropFilter: 'blur(16px) saturate(1.8)',
+                WebkitBackdropFilter: 'blur(16px) saturate(1.8)',
+                border: '1px solid rgba(59, 130, 246, 0.12)',
+                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
               }}
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <span className="lumina-overlay-dot" />
                 <span
-                  className="text-xs md:text-sm font-medium"
-                  style={{ color: '#A0A0B0' }}
+                  className="text-xs md:text-sm font-medium tracking-wide"
+                  style={{ color: '#B0B0C0' }}
                 >
                   Humble, TX &mdash; Serving distributors nationwide
                 </span>
@@ -466,63 +492,158 @@ export default function MapSection() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        /* Beacon marker */
+        /* ===== Premium Beacon Marker ===== */
         .lumina-beacon {
           position: relative;
-          width: 60px;
-          height: 60px;
+          width: 100px;
+          height: 100px;
           cursor: default;
         }
+
+        /* Vertical light beam rising from beacon */
+        .beacon-beam {
+          position: absolute;
+          bottom: 50%;
+          left: 50%;
+          width: 4px;
+          margin-left: -2px;
+          height: 80px;
+          background: linear-gradient(
+            to top,
+            rgba(59, 130, 246, 0.6) 0%,
+            rgba(59, 130, 246, 0.2) 40%,
+            rgba(59, 130, 246, 0.05) 70%,
+            transparent 100%
+          );
+          border-radius: 2px;
+          z-index: 1;
+          pointer-events: none;
+        }
+
+        /* Core dot — larger and more prominent */
         .beacon-core {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 14px;
-          height: 14px;
-          margin: -7px 0 0 -7px;
-          background: #3B82F6;
-          border: 2px solid #E8E8ED;
+          width: 18px;
+          height: 18px;
+          margin: -9px 0 0 -9px;
+          background: radial-gradient(circle at 35% 35%, #60A5FA, #3B82F6 60%, #2563EB);
+          border: 2.5px solid rgba(255, 255, 255, 0.9);
           border-radius: 50%;
           box-shadow:
-            0 0 20px rgba(59,130,246,0.8),
-            0 0 40px rgba(59,130,246,0.4);
-          z-index: 4;
+            0 0 12px rgba(59, 130, 246, 1),
+            0 0 28px rgba(59, 130, 246, 0.7),
+            0 0 56px rgba(59, 130, 246, 0.3);
+          z-index: 5;
         }
+
+        /* Inner glow halo */
         .beacon-glow {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 28px;
-          height: 28px;
-          margin: -14px 0 0 -14px;
+          width: 36px;
+          height: 36px;
+          margin: -18px 0 0 -18px;
           background: radial-gradient(
             circle,
-            rgba(59,130,246,0.35) 0%,
+            rgba(59, 130, 246, 0.4) 0%,
+            rgba(59, 130, 246, 0.1) 50%,
+            transparent 70%
+          );
+          border-radius: 50%;
+          z-index: 4;
+        }
+
+        /* Outer glow field */
+        .beacon-glow-outer {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 60px;
+          height: 60px;
+          margin: -30px 0 0 -30px;
+          background: radial-gradient(
+            circle,
+            rgba(59, 130, 246, 0.15) 0%,
+            rgba(59, 130, 246, 0.05) 50%,
             transparent 70%
           );
           border-radius: 50%;
           z-index: 3;
         }
 
+        /* Label that appears after landing */
+        .beacon-label {
+          position: absolute;
+          top: calc(50% + 22px);
+          left: 50%;
+          transform: translateX(-50%);
+          white-space: nowrap;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          color: rgba(255, 255, 255, 0.85);
+          text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(59, 130, 246, 0.4);
+          opacity: 0;
+          transition: opacity 1.2s ease-in 0.5s;
+          z-index: 6;
+          pointer-events: none;
+        }
+
+        .lumina-beacon.show-label .beacon-label {
+          opacity: 1;
+        }
+
         @media (prefers-reduced-motion: no-preference) {
+          /* Pulsing expanding rings — more visible */
           .beacon-ring {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
             border-radius: 50%;
-            border: 1.5px solid rgba(59,130,246,0.5);
+            border: 2px solid rgba(59, 130, 246, 0.6);
             z-index: 2;
           }
-          .beacon-ring-1 { animation: beacon-expand 3s ease-out infinite; }
-          .beacon-ring-2 { animation: beacon-expand 3s ease-out infinite 1s; }
-          .beacon-ring-3 { animation: beacon-expand 3s ease-out infinite 2s; }
+          .beacon-ring-1 { animation: beacon-expand 3.5s ease-out infinite; }
+          .beacon-ring-2 { animation: beacon-expand 3.5s ease-out infinite 1.15s; }
+          .beacon-ring-3 { animation: beacon-expand 3.5s ease-out infinite 2.3s; }
 
           @keyframes beacon-expand {
-            0%   { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(4);   opacity: 0; }
+            0%   { transform: scale(0.8); opacity: 0.9; }
+            100% { transform: scale(5);   opacity: 0; }
+          }
+
+          /* Beam subtle pulse */
+          .beacon-beam {
+            animation: beam-pulse 3s ease-in-out infinite;
+          }
+          @keyframes beam-pulse {
+            0%, 100% { opacity: 0.7; }
+            50%      { opacity: 1; }
+          }
+
+          /* Core subtle breathing */
+          .beacon-core {
+            animation: core-breathe 2.5s ease-in-out infinite;
+          }
+          @keyframes core-breathe {
+            0%, 100% {
+              box-shadow:
+                0 0 12px rgba(59, 130, 246, 1),
+                0 0 28px rgba(59, 130, 246, 0.7),
+                0 0 56px rgba(59, 130, 246, 0.3);
+            }
+            50% {
+              box-shadow:
+                0 0 16px rgba(59, 130, 246, 1),
+                0 0 36px rgba(59, 130, 246, 0.8),
+                0 0 72px rgba(59, 130, 246, 0.4);
+            }
           }
 
           .lumina-overlay-dot {
@@ -531,26 +652,29 @@ export default function MapSection() {
             height: 8px;
             border-radius: 50%;
             background: #3B82F6;
-            box-shadow: 0 0 8px rgba(59,130,246,0.6);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
             flex-shrink: 0;
             animation: overlay-pulse 2s ease-in-out infinite;
           }
 
           @keyframes overlay-pulse {
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 6px rgba(59,130,246,0.4); }
-            50%      { opacity: 1;   box-shadow: 0 0 12px rgba(59,130,246,0.8); }
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
+            50%      { opacity: 1;   box-shadow: 0 0 14px rgba(59, 130, 246, 0.8); }
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .beacon-ring { display: none; }
+          .beacon-beam { animation: none; opacity: 0.7; }
+          .beacon-core { animation: none; }
+          .beacon-label { opacity: 1; transition: none; }
           .lumina-overlay-dot {
             display: inline-block;
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: #3B82F6;
-            box-shadow: 0 0 8px rgba(59,130,246,0.6);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
             flex-shrink: 0;
           }
         }

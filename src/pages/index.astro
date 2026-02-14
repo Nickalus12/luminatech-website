@@ -5,9 +5,7 @@ import Section from '../components/ui/Section.astro';
 import Card from '../components/ui/Card.astro';
 import Button from '../components/ui/Button.astro';
 import GlowText from '../components/ui/GlowText.astro';
-import Counter from '../components/ui/Counter.astro';
 import Badge from '../components/ui/Badge.astro';
-import AnimatedCounter from '../components/ui/AnimatedCounter';
 import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
 import MetricsGrid from '../components/ui/MetricsGrid';
 import { homepage } from '../content/copy';
@@ -407,7 +405,7 @@ import { homepage } from '../content/copy';
        FEATURED PROJECTS SECTION
        Real P21 achievements with before/after metrics
   ═══════════════════════════════════════════════════════════════════════════ -->
-  <Section background="base" padding="md">
+  <Section background="surface-1" padding="md">
     <Container>
       <div class="max-w-3xl mx-auto text-center mb-12 md:mb-16 scroll-reveal">
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
@@ -436,7 +434,7 @@ import { homepage } from '../content/copy';
             </div>
 
             <div class="mt-auto">
-              <div class="bg-bg-surface-1 rounded-lg p-4 mb-4">
+              <div class="bg-bg-surface-2 rounded-lg p-4 mb-4">
                 <p class="text-accent-primary text-xs font-semibold uppercase tracking-wider mb-3">Results</p>
                 <div class="space-y-2">
                   {project.results.map((result) => (

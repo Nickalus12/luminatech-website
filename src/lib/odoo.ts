@@ -1,8 +1,7 @@
 /**
- * Form Submission Utilities
+ * Odoo CRM Integration Utilities
  *
- * Primary: Odoo CRM via Cloudflare Worker proxy
- * Worker: https://odoo-worker.nbrewer.workers.dev
+ * Cloudflare Worker proxy: https://odoo-worker.nbrewer.workers.dev
  * Odoo instance: lumina-erp.odoo.com
  *
  * Endpoints:
@@ -24,12 +23,15 @@ export interface ContactFormData {
   email: string;
   helpType?: string;
   message?: string;
+  source?: string;
+  sourcePage?: string;
 }
 
 export interface SubscribeFormData {
   name?: string;
   email: string;
   company?: string;
+  source?: string;
 }
 
 const WORKER_BASE = 'https://odoo-worker.nbrewer.workers.dev';

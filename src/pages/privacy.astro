@@ -43,7 +43,7 @@ import Container from '../components/ui/Container.astro';
             <li>Any additional information you include in your message</li>
           </ul>
           <p class="mt-4">
-            Contact form submissions are processed through Formspree, a third-party form handling service. We do not store form data on our own servers.
+            Contact form submissions are processed through Odoo CRM via a secure Cloudflare Worker proxy. Data is stored in our Odoo CRM instance for lead management and follow-up.
           </p>
 
           <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Information Collected Automatically</h3>
@@ -95,7 +95,7 @@ import Container from '../components/ui/Container.astro';
         <div>
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Data Retention</h2>
           <p>
-            Contact form submissions are retained by Formspree according to their data retention policies. We retain any personal information you provide via email or other communications for as long as necessary to fulfill the purpose for which it was collected, or as required by law.
+            Contact form submissions are retained in our Odoo CRM instance for lead management purposes. We retain any personal information you provide via email or other communications for as long as necessary to fulfill the purpose for which it was collected, or as required by law.
           </p>
         </div>
 

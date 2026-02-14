@@ -145,9 +145,9 @@ export default function BeforeAfterSlider({
       {/* Main comparison container */}
       <div
         ref={containerRef}
-        className="relative rounded-2xl overflow-hidden border border-[var(--border)]"
+        className="relative rounded-2xl overflow-hidden border border-[var(--color-border)]"
         style={{
-          background: 'var(--bg-surface-1)',
+          background: 'var(--color-bg-surface-1)',
           boxShadow: '0 0 40px rgba(59,130,246,0.06), 0 8px 32px rgba(0,0,0,0.3)',
         }}
         onPointerDown={onPointerDown}
@@ -168,7 +168,7 @@ export default function BeforeAfterSlider({
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
             backgroundImage:
-              'linear-gradient(var(--text-primary) 1px, transparent 1px), linear-gradient(90deg, var(--text-primary) 1px, transparent 1px)',
+              'linear-gradient(var(--color-text-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-text-primary) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
           }}
         />
@@ -179,18 +179,18 @@ export default function BeforeAfterSlider({
             className="absolute inset-0 overflow-hidden"
             style={{ clipPath: useTransform(beforeClip, (v) => `inset(0 ${100 - parseFloat(v)}% 0 0)`) }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-error)]/[0.08] via-transparent to-[var(--accent-error)]/[0.04]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent-error)]/[0.08] via-transparent to-[var(--color-accent-error)]/[0.04]" />
             {/* Diagonal lines pattern for "before" */}
             <div
               className="absolute inset-0 opacity-[0.03] pointer-events-none"
               style={{
                 backgroundImage:
-                  'repeating-linear-gradient(-45deg, var(--accent-error), var(--accent-error) 1px, transparent 1px, transparent 16px)',
+                  'repeating-linear-gradient(-45deg, var(--color-accent-error), var(--color-accent-error) 1px, transparent 1px, transparent 16px)',
               }}
             />
             <div className="relative h-full flex flex-col items-center justify-center px-8">
               <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-widest bg-[var(--accent-error)]/10 text-[var(--accent-error)] border border-[var(--accent-error)]/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-widest bg-[var(--color-accent-error)]/10 text-[var(--color-accent-error)] border border-[var(--color-accent-error)]/20">
                   <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
                     <circle cx="8" cy="8" r="4" />
                   </svg>
@@ -201,14 +201,14 @@ export default function BeforeAfterSlider({
                 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3"
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--accent-error)',
+                  color: 'var(--color-accent-error)',
                   textShadow: '0 0 30px rgba(248,113,113,0.2)',
                 }}
               >
                 {before.value}
               </div>
               {before.description && (
-                <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-xs text-center leading-relaxed">
+                <p className="text-sm md:text-base text-[var(--color-text-secondary)] max-w-xs text-center leading-relaxed">
                   {before.description}
                 </p>
               )}
@@ -220,18 +220,18 @@ export default function BeforeAfterSlider({
             className="absolute inset-0 overflow-hidden"
             style={{ clipPath: useTransform(afterClip, (v) => `inset(0 0 0 ${100 - parseFloat(v)}%)`) }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-success)]/[0.08] via-transparent to-[var(--accent-success)]/[0.04]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent-success)]/[0.08] via-transparent to-[var(--color-accent-success)]/[0.04]" />
             {/* Dot pattern for "after" - cleaner feel */}
             <div
               className="absolute inset-0 opacity-[0.04] pointer-events-none"
               style={{
-                backgroundImage: 'radial-gradient(var(--accent-success) 1px, transparent 1px)',
+                backgroundImage: 'radial-gradient(var(--color-accent-success) 1px, transparent 1px)',
                 backgroundSize: '20px 20px',
               }}
             />
             <div className="relative h-full flex flex-col items-center justify-center px-8">
               <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-widest bg-[var(--accent-success)]/10 text-[var(--accent-success)] border border-[var(--accent-success)]/20">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-widest bg-[var(--color-accent-success)]/10 text-[var(--color-accent-success)] border border-[var(--color-accent-success)]/20">
                   <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
                   </svg>
@@ -242,14 +242,14 @@ export default function BeforeAfterSlider({
                 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3"
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--accent-success)',
+                  color: 'var(--color-accent-success)',
                   textShadow: '0 0 30px rgba(16,185,129,0.2)',
                 }}
               >
                 {after.value}
               </div>
               {after.description && (
-                <p className="text-sm md:text-base text-[var(--text-secondary)] max-w-xs text-center leading-relaxed">
+                <p className="text-sm md:text-base text-[var(--color-text-secondary)] max-w-xs text-center leading-relaxed">
                   {after.description}
                 </p>
               )}
@@ -272,7 +272,7 @@ export default function BeforeAfterSlider({
               style={{
                 opacity: handleGlow,
                 boxShadow: '0 0 12px 4px rgba(59,130,246,0.4)',
-                background: 'var(--accent-primary)',
+                background: 'var(--color-accent-primary)',
               }}
             />
 
@@ -305,9 +305,9 @@ export default function BeforeAfterSlider({
                 <div
                   className="relative w-11 h-11 rounded-full flex items-center justify-center border-2"
                   style={{
-                    background: 'linear-gradient(135deg, var(--bg-surface-2) 0%, var(--bg-surface-1) 100%)',
+                    background: 'linear-gradient(135deg, var(--color-bg-surface-2) 0%, var(--color-bg-surface-1) 100%)',
                     borderColor: isDragging
-                      ? 'var(--accent-primary)'
+                      ? 'var(--color-accent-primary)'
                       : isHovering
                         ? 'rgba(59,130,246,0.6)'
                         : 'rgba(255,255,255,0.25)',
@@ -323,7 +323,7 @@ export default function BeforeAfterSlider({
                     height="20"
                     viewBox="0 0 20 20"
                     fill="none"
-                    stroke={isDragging ? 'var(--accent-primary)' : 'var(--text-secondary)'}
+                    stroke={isDragging ? 'var(--color-accent-primary)' : 'var(--color-text-secondary)'}
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -353,7 +353,7 @@ export default function BeforeAfterSlider({
                 style={{
                   background: 'rgba(18,18,26,0.85)',
                   borderColor: 'rgba(59,130,246,0.3)',
-                  color: 'var(--text-secondary)',
+                  color: 'var(--color-text-secondary)',
                 }}
                 animate={{ x: [0, 8, -8, 0] }}
                 transition={{
@@ -380,13 +380,13 @@ export default function BeforeAfterSlider({
       <div className="flex justify-between mt-3 px-1">
         <span
           className="text-xs font-medium uppercase tracking-wider"
-          style={{ color: 'var(--accent-error)', opacity: 0.7 }}
+          style={{ color: 'var(--color-accent-error)', opacity: 0.7 }}
         >
           {before.label}
         </span>
         <span
           className="text-xs font-medium uppercase tracking-wider"
-          style={{ color: 'var(--accent-success)', opacity: 0.7 }}
+          style={{ color: 'var(--color-accent-success)', opacity: 0.7 }}
         >
           {after.label}
         </span>

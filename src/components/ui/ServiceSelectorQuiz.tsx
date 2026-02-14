@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const CONTACT_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/contact';
 
 // ── Question Data ───────────────────────────────────────────────
 
@@ -179,6 +181,10 @@ export default function ServiceSelectorQuiz({ className = '' }: ServiceSelectorQ
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
+  const [quizEmail, setQuizEmail] = useState('');
+  const [quizName, setQuizName] = useState('');
+  const [quizCompany, setQuizCompany] = useState('');
+  const [quizLeadStatus, setQuizLeadStatus] = useState<'idle' | 'submitting' | 'sent'>('idle');
 
   const currentQuestion = questions[step];
   const progress = ((step + 1) / questions.length) * 100;
@@ -338,16 +344,14 @@ export default function ServiceSelectorQuiz({ className = '' }: ServiceSelectorQ
                           <button
                             onClick={() => {
                               setIsOpen(false);
-                              // Scroll to and expand the recommended service
                               const el = document.getElementById(recommendation.primary);
                               if (el) {
                                 el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                // Click the service card to expand it
                                 const btn = el.querySelector('button');
                                 if (btn) setTimeout(() => btn.click(), 400);
                               }
                             }}
-                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3B82F6] text-white text-sm font-semibold rounded-lg hover:bg-[#2563EB] transition-colors"
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3B82F6] text-white text-sm font-semibold rounded-lg hover:bg-[#2563EB] transition-colors cursor-pointer"
                           >
                             View Service Details
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -361,6 +365,52 @@ export default function ServiceSelectorQuiz({ className = '' }: ServiceSelectorQ
                             Schedule Consultation
                           </a>
                         </div>
+
+                        {/* Quick lead capture */}
+                        {quizLeadStatus === 'sent' ? (
+                          <div className="pt-4 border-t border-[#2A2A36] text-center">
+                            <p className="text-sm text-[#10B981] font-medium">We'll follow up with a tailored proposal!</p>
+                          </div>
+                        ) : (
+                          <div className="pt-4 border-t border-[#2A2A36]">
+                            <p className="text-xs text-[#A0A0B0] mb-3">Want a tailored proposal? Drop your info:</p>
+                            <form
+                              onSubmit={async (e: FormEvent) => {
+                                e.preventDefault();
+                                if (!quizEmail || !quizName || !quizCompany) return;
+                                setQuizLeadStatus('submitting');
+                                try {
+                                  await fetch(CONTACT_ENDPOINT, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      name: quizName,
+                                      company: quizCompany,
+                                      email: quizEmail,
+                                      helpType: serviceNames[recommendation.primary],
+                                      message: `Service Quiz Results:\n- Challenge: ${answers.challenge}\n- Size: ${answers.size}\n- Technical: ${answers.technical}\n- Timeline: ${answers.timeline}\n- Budget: ${answers.budget}\n- Recommended: ${serviceNames[recommendation.primary]}\n- Also Consider: ${serviceNames[recommendation.secondary]}`,
+                                      source: 'service-quiz',
+                                      sourcePage: window.location.pathname,
+                                    }),
+                                  });
+                                  setQuizLeadStatus('sent');
+                                } catch {
+                                  setQuizLeadStatus('idle');
+                                }
+                              }}
+                              className="flex flex-col gap-2"
+                            >
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <input type="text" placeholder="Name" value={quizName} onChange={(e) => setQuizName(e.target.value)} required className="bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-xs text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]" />
+                                <input type="email" placeholder="Email" value={quizEmail} onChange={(e) => setQuizEmail(e.target.value)} required className="bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-xs text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]" />
+                                <input type="text" placeholder="Company" value={quizCompany} onChange={(e) => setQuizCompany(e.target.value)} required className="bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-xs text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]" />
+                              </div>
+                              <button type="submit" disabled={quizLeadStatus === 'submitting'} className="px-4 py-2 bg-[#3B82F6] text-white text-xs font-semibold rounded-lg hover:bg-[#2563EB] transition-colors disabled:opacity-50 cursor-pointer">
+                                {quizLeadStatus === 'submitting' ? 'Sending...' : 'Get My Proposal'}
+                              </button>
+                            </form>
+                          </div>
+                        )}
 
                         {/* Also Consider */}
                         <div className="pt-4 border-t border-[#2A2A36]">
@@ -383,7 +433,7 @@ export default function ServiceSelectorQuiz({ className = '' }: ServiceSelectorQ
 
                         <button
                           onClick={handleReset}
-                          className="text-xs text-[#6B6B7B] hover:text-[#A0A0B0] transition-colors"
+                          className="text-xs text-[#6B6B7B] hover:text-[#A0A0B0] transition-colors cursor-pointer"
                         >
                           Retake Quiz
                         </button>

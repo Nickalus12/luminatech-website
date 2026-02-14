@@ -45,7 +45,7 @@ function Toast({ name, onClose }: { name: string; onClose: () => void }) {
     <div
       role="status"
       aria-live="polite"
-      className="fixed top-6 right-6 z-[9999] max-w-sm animate-[slideDown_0.5s_cubic-bezier(0.16,1,0.3,1)] pointer-events-auto"
+      className="fixed top-4 left-4 right-4 sm:left-auto sm:top-6 sm:right-6 z-[9999] sm:max-w-sm animate-[slideDown_0.5s_cubic-bezier(0.16,1,0.3,1)] pointer-events-auto"
     >
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur-xl">
         {/* Gradient accent line */}
@@ -149,6 +149,8 @@ export default function ContactForm() {
           email: formData.email,
           helpType: formData.helpType,
           message: formData.message,
+          source: 'contact-form',
+          sourcePage: window.location.pathname,
         }),
       });
 

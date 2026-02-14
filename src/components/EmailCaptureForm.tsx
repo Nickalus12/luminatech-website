@@ -92,6 +92,8 @@ export default function EmailCaptureForm({
           email: formData.email,
           helpType: resourceType,
           message: `Resource requested: ${resourceTitle} (${resourceType})`,
+          source: 'resource-gate',
+          sourcePage: window.location.pathname,
         }),
       });
 

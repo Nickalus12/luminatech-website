@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type FormEvent } from 'react';
+
+const CONTACT_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/contact';
 
 interface InteractiveROICalculatorProps {
   className?: string;
@@ -13,6 +15,11 @@ export default function InteractiveROICalculator({ className = '' }: Interactive
   const [employees, setEmployees] = useState(10);
   const [hoursSaved, setHoursSaved] = useState(20);
   const [hourlyRate, setHourlyRate] = useState(35);
+  const [showCapture, setShowCapture] = useState(false);
+  const [captureEmail, setCaptureEmail] = useState('');
+  const [captureName, setCaptureName] = useState('');
+  const [captureCompany, setCaptureCompany] = useState('');
+  const [captureStatus, setCaptureStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const monthlyLaborSavings = employees * hoursSaved * hourlyRate;
   const annualLaborSavings = monthlyLaborSavings * 12;
@@ -174,12 +181,86 @@ export default function InteractiveROICalculator({ className = '' }: Interactive
             </span>
           </div>
 
-          <a
-            href="/contact"
-            className="block w-full text-center px-6 py-3 bg-[#3B82F6] text-white text-sm font-semibold rounded-lg hover:bg-[#2563EB] transition-colors duration-200"
-          >
-            Get Your Custom Analysis
-          </a>
+          {!showCapture ? (
+            <button
+              onClick={() => setShowCapture(true)}
+              className="block w-full text-center px-6 py-3 bg-[#3B82F6] text-white text-sm font-semibold rounded-lg hover:bg-[#2563EB] transition-colors duration-200 cursor-pointer"
+            >
+              Get Your Custom Analysis
+            </button>
+          ) : captureStatus === 'success' ? (
+            <div className="text-center py-3">
+              <div className="flex items-center justify-center gap-2 text-[#10B981] text-sm font-semibold mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                Sent! We'll be in touch soon.
+              </div>
+              <p className="text-xs text-[#6B6B7B]">Check your inbox for your personalized ROI report.</p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e: FormEvent) => {
+                e.preventDefault();
+                if (!captureEmail || !captureName || !captureCompany) return;
+                setCaptureStatus('submitting');
+                try {
+                  const res = await fetch(CONTACT_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      name: captureName,
+                      company: captureCompany,
+                      email: captureEmail,
+                      helpType: 'ROI Analysis',
+                      message: `ROI Calculator Results:\n- Employees: ${employees}\n- Hours Saved/Mo: ${hoursSaved}h\n- Hourly Rate: $${hourlyRate}\n- Annual Savings: ${formatCurrency(totalAnnualSavings)}\n- ROI: ${formatPercent(netROI)}\n- Breakeven: ${breakeven.toFixed(1)} months`,
+                      source: 'roi-calculator',
+                      sourcePage: window.location.pathname,
+                    }),
+                  });
+                  const result = await res.json();
+                  setCaptureStatus(result.success ? 'success' : 'error');
+                } catch {
+                  setCaptureStatus('error');
+                }
+              }}
+              className="space-y-2"
+            >
+              <input
+                type="text"
+                placeholder="Your name"
+                value={captureName}
+                onChange={(e) => setCaptureName(e.target.value)}
+                required
+                className="w-full bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-sm text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]"
+              />
+              <input
+                type="email"
+                placeholder="you@company.com"
+                value={captureEmail}
+                onChange={(e) => setCaptureEmail(e.target.value)}
+                required
+                className="w-full bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-sm text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]"
+              />
+              <input
+                type="text"
+                placeholder="Company name"
+                value={captureCompany}
+                onChange={(e) => setCaptureCompany(e.target.value)}
+                required
+                className="w-full bg-[#1A1A24] border border-[#2A2A36] rounded-lg px-3 py-2 text-sm text-[#E8E8ED] placeholder-[#6B6B7B] focus:outline-none focus:border-[#3B82F6]"
+              />
+              <button
+                type="submit"
+                disabled={captureStatus === 'submitting'}
+                className="w-full px-6 py-2.5 bg-[#3B82F6] text-white text-sm font-semibold rounded-lg hover:bg-[#2563EB] transition-colors duration-200 disabled:opacity-50 cursor-pointer"
+              >
+                {captureStatus === 'submitting' ? 'Sending...' : 'Send My ROI Report'}
+              </button>
+              {captureStatus === 'error' && (
+                <p className="text-xs text-red-400 text-center">Something went wrong. Try again.</p>
+              )}
+              <p className="text-xs text-[#6B6B7B] text-center">No spam. We'll send your personalized analysis.</p>
+            </form>
+          )}
         </div>
       </div>
     </div>

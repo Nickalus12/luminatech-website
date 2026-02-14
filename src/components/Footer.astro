@@ -1,4 +1,6 @@
 ---
+import FooterNewsletter from './FooterNewsletter';
+
 const currentYear = new Date().getFullYear();
 
 const serviceLinks = [
@@ -126,7 +128,14 @@ const resourceLinks = [
             </a>
           </li>
         </ul>
-        <div class="mt-6 pt-4 border-t border-border/50">
+
+        <!-- Newsletter signup -->
+        <div class="mt-5 pt-4 border-t border-border/50">
+          <p class="text-text-secondary text-sm mb-3">P21 tips & updates</p>
+          <FooterNewsletter client:idle />
+        </div>
+
+        <div class="mt-4">
           <a
             href="/contact"
             class="inline-flex items-center gap-2 text-sm font-medium text-accent-primary hover:text-accent-primary-hover transition-colors duration-fast no-underline"

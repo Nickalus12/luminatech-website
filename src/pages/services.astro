@@ -354,18 +354,18 @@ const retainerTiers = [
       </div>
 
       <!-- Trust Metrics -->
-      <div class="grid grid-cols-3 gap-6 max-w-xl mx-auto mb-10 scroll-reveal" style="animation-delay: 100ms;">
+      <div class="grid grid-cols-3 gap-3 sm:gap-6 max-w-xl mx-auto mb-10 scroll-reveal" style="animation-delay: 100ms;">
         <div class="text-center">
-          <p class="text-3xl md:text-4xl font-mono font-bold text-accent-primary">150x</p>
-          <p class="text-xs text-text-tertiary mt-1">Performance Boost</p>
+          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">150x</p>
+          <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Performance Boost</p>
         </div>
         <div class="text-center">
-          <p class="text-3xl md:text-4xl font-mono font-bold text-accent-primary">280K</p>
-          <p class="text-xs text-text-tertiary mt-1">Products Synced</p>
+          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">280K</p>
+          <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Products Synced</p>
         </div>
         <div class="text-center">
-          <p class="text-3xl md:text-4xl font-mono font-bold text-accent-primary">140x</p>
-          <p class="text-xs text-text-tertiary mt-1">Fewer API Calls</p>
+          <p class="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary">140x</p>
+          <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Fewer API Calls</p>
         </div>
       </div>
 
@@ -531,9 +531,9 @@ const retainerTiers = [
         {retainerTiers.map((tier) => (
           <div
             class:list={[
-              "relative bg-bg-surface-1 rounded-xl p-8 border transition-all duration-normal scroll-reveal",
+              "relative bg-bg-surface-1 rounded-xl p-6 sm:p-8 border transition-all duration-normal scroll-reveal",
               tier.highlight
-                ? "border-accent-primary shadow-glow scale-[1.02]"
+                ? "border-accent-primary shadow-glow md:scale-[1.02]"
                 : "border-border hover:border-accent-primary/50",
             ]}
           >
