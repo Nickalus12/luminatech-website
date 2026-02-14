@@ -1411,7 +1411,7 @@ const downloadables = [
 
       <div class="grid grid-cols-1 gap-8">
         {n8nWorkflows.map((workflow) => (
-          <Card hover={false} padding="none" class="overflow-hidden">
+          <Card hover={false} padding="none" class="overflow-hidden code-card">
             <div class="bg-gradient-to-r from-accent-primary/10 to-accent-secondary/10 px-6 py-5 border-b border-border">
               <div class="flex items-start justify-between gap-4 mb-3">
                 <div class="grow">
@@ -1626,8 +1626,11 @@ const downloadables = [
   <!-- Advanced SQL Patterns -->
   <Section id="advanced-sql" background="base" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Advanced SQL Patterns</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Advanced SQL Patterns</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-violet/10 text-accent-violet border border-accent-violet/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Complex SQL queries for P21 database including CTEs, window functions, pivots, and performance optimization.
         </p>
@@ -1635,7 +1638,7 @@ const downloadables = [
 
       <div class="grid grid-cols-1 gap-8">
         {advancedSQLPatterns.map((pattern) => (
-          <Card hover={false} padding="none" class="overflow-hidden">
+          <Card hover={false} padding="none" class="overflow-hidden code-card">
             <div class="bg-gradient-to-r from-purple-500/10 to-blue-500/10 px-6 py-5 border-b border-border">
               <div class="flex items-start justify-between gap-4 mb-2">
                 <h3 class="text-xl font-bold text-text-primary">{pattern.pattern}</h3>
@@ -1672,8 +1675,11 @@ const downloadables = [
   <!-- Common Gotchas -->
   <Section id="gotchas" background="surface-1" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Common Gotchas & Pitfalls</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Common Gotchas & Pitfalls</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-warning/10 text-accent-warning border border-accent-warning/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Critical issues discovered through production troubleshooting. Learn from mistakes before making them.
         </p>
@@ -1737,8 +1743,11 @@ const downloadables = [
   <!-- Performance Benchmarks -->
   <Section id="performance" background="base" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Performance Benchmarking Data</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Performance Benchmarking Data</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-success/10 text-accent-success border border-accent-success/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Real-world performance data from P21 production environments. Baseline vs optimized timings with specific strategies.
         </p>
@@ -1792,8 +1801,11 @@ const downloadables = [
   <!-- Performance Optimization Tips -->
   <Section id="performance-tips" background="surface-1" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Performance Optimization Tips</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Performance Optimization Tips</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-success/10 text-accent-success border border-accent-success/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Battle-tested strategies for batching, pagination, indexing, and query optimization in P21.
         </p>
@@ -1815,8 +1827,11 @@ const downloadables = [
   <!-- Troubleshooting Flowcharts -->
   <Section id="troubleshooting" background="base" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Troubleshooting Flowcharts</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Troubleshooting Flowcharts</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-error/10 text-accent-error border border-accent-error/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Step-by-step diagnostic flows for common P21 issues. Follow the checks to identify and resolve problems quickly.
         </p>
@@ -1878,8 +1893,11 @@ const downloadables = [
   <!-- Version-Specific Gotchas -->
   <Section id="version-gotchas" background="surface-1" padding="lg">
     <Container>
-      <div class="mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Version-Specific Gotchas</h2>
+      <div class="mb-12 scroll-reveal section-header-accent">
+        <div class="flex items-center gap-3 mb-4">
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight">Version-Specific Gotchas</h2>
+          <span class="inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/20">Premium</span>
+        </div>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-3xl">
           Critical differences between P21 versions. Breaking changes, new features, and migration considerations.
         </p>
