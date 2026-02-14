@@ -23,7 +23,7 @@ import { contact, brand } from '../content/copy';
     <Container narrow>
       <div class="text-center scroll-reveal">
         <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
-          {contact.hero.headline}
+          Let's Talk <span class="p21-hero-text">P21</span>
         </h1>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
           {contact.hero.subheadline}
@@ -119,7 +119,7 @@ import { contact, brand } from '../content/copy';
               {contact.sidebar.scheduling.description}
             </p>
             <p class="text-xs text-text-tertiary mb-4">
-              30 minutes, no obligation. We'll discuss your P21 setup, current challenges, and where we see opportunities.
+              30 minutes, no obligation. We'll discuss your <span class="text-accent-primary font-semibold">P21</span> setup, current challenges, and where we see opportunities.
             </p>
             <a
               href="https://calendar.app.google/xSALCT4tFji7kyMq6"
@@ -171,4 +171,32 @@ import { contact, brand } from '../content/copy';
 
 </BaseLayout>
 
+<style>
+  /* ── Hero "P21" gradient glow treatment ── */
+  .p21-hero-text {
+    position: relative;
+    background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 40%, #A78BFA 70%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 24px rgba(59, 130, 246, 0.35)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.15));
+  }
 
+  @media (prefers-reduced-motion: no-preference) {
+    .p21-hero-text {
+      background-size: 200% 200%;
+      animation: p21-shimmer 6s ease-in-out infinite;
+    }
+
+    @keyframes p21-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .p21-hero-text {
+      animation: none;
+    }
+  }
+</style>

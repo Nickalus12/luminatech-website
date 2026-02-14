@@ -9,18 +9,34 @@ import Button from '../components/ui/Button.astro';
   title="Page Not Found"
   description="The page you're looking for doesn't exist. Let's get you back on track."
 >
-  <Section background="base" padding="lg" class="pt-28 md:pt-32">
+  <Section background="base" padding="lg" class="pt-28 md:pt-32 relative overflow-hidden not-found-section">
+    <!-- Animated gradient orbs -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent-primary/5 rounded-full blur-[120px] nf-orb-1"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-accent-violet/5 rounded-full blur-[100px] nf-orb-2"></div>
+    </div>
+
+    <!-- Subtle grid background -->
+    <div class="absolute inset-0 pointer-events-none nf-grid" aria-hidden="true"></div>
+
     <Container narrow>
-      <div class="text-center">
-        <p class="text-8xl font-bold font-mono text-accent-primary/20 mb-6" aria-hidden="true">404</p>
-        <h1 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+      <div class="text-center relative z-10">
+        <!-- Animated 404 number -->
+        <div class="relative inline-block mb-8">
+          <p class="text-[120px] md:text-[160px] font-bold font-mono leading-none select-none nf-number" aria-hidden="true">404</p>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-20 h-20 rounded-full bg-accent-primary/10 blur-xl nf-center-glow" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <h1 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4 scroll-reveal">
           Page Not Found
         </h1>
-        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-lg mx-auto leading-relaxed mb-8">
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-lg mx-auto leading-relaxed mb-8 scroll-reveal" style="animation-delay: 100ms;">
           The page you're looking for doesn't exist or has been moved. Let's get you back on track.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/" variant="primary" size="lg" arrow>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center scroll-reveal" style="animation-delay: 200ms;">
+          <Button href="/" variant="primary" size="lg" arrow glow>
             Back to Home
           </Button>
           <Button href="/contact" variant="outline" size="lg" arrow>
@@ -28,16 +44,101 @@ import Button from '../components/ui/Button.astro';
           </Button>
         </div>
 
-        <div class="mt-16 pt-8 border-t border-border max-w-sm mx-auto">
-          <p class="text-text-tertiary text-sm mb-4">Looking for something specific?</p>
-          <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-            <li><a href="/services" class="text-accent-primary hover:underline">Services</a></li>
-            <li><a href="/case-studies" class="text-accent-primary hover:underline">Case Studies</a></li>
-            <li><a href="/blog" class="text-accent-primary hover:underline">Blog</a></li>
-            <li><a href="/about" class="text-accent-primary hover:underline">About</a></li>
-          </ul>
+        <!-- Quick links -->
+        <div class="mt-16 pt-8 border-t border-border max-w-md mx-auto scroll-reveal" style="animation-delay: 300ms;">
+          <p class="text-text-tertiary text-sm mb-5">Looking for something specific?</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: 'Services', href: '/services', icon: 'code' },
+              { label: 'Case Studies', href: '/case-studies', icon: 'chart' },
+              { label: 'Blog', href: '/blog', icon: 'book' },
+              { label: 'About', href: '/about', icon: 'user' },
+            ].map((link) => (
+              <a
+                href={link.href}
+                class="nf-quick-link group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/50 bg-bg-surface-1/50 text-sm text-text-secondary no-underline transition-all duration-200 hover:border-accent-primary/30 hover:bg-bg-surface-1 hover:text-text-primary hover:-translate-y-1"
+              >
+                {link.icon === 'code' && (
+                  <svg class="w-5 h-5 text-text-tertiary group-hover:text-accent-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                )}
+                {link.icon === 'chart' && (
+                  <svg class="w-5 h-5 text-text-tertiary group-hover:text-accent-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 002 2h16"/><path d="M7 16l4-8 4 4 6-8"/></svg>
+                )}
+                {link.icon === 'book' && (
+                  <svg class="w-5 h-5 text-text-tertiary group-hover:text-accent-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                )}
+                {link.icon === 'user' && (
+                  <svg class="w-5 h-5 text-text-tertiary group-hover:text-accent-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                )}
+                <span class="font-medium">{link.label}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </Container>
   </Section>
 </BaseLayout>
+
+<style>
+  /* 404 number gradient text */
+  .nf-number {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: nf-number-pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes nf-number-pulse {
+    0%, 100% {
+      background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+    }
+    50% {
+      background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.25));
+    }
+  }
+
+  .nf-center-glow {
+    animation: nf-glow-breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes nf-glow-breathe {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+  }
+
+  .nf-orb-1 {
+    animation: nf-drift 12s ease-in-out infinite;
+  }
+
+  .nf-orb-2 {
+    animation: nf-drift 10s ease-in-out infinite reverse;
+  }
+
+  @keyframes nf-drift {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(30px, -20px); }
+    66% { transform: translate(-20px, 15px); }
+  }
+
+  .nf-grid {
+    background-image:
+      linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  }
+
+  .nf-quick-link:hover {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-number { animation: none; }
+    .nf-center-glow { animation: none; }
+    .nf-orb-1, .nf-orb-2 { animation: none; }
+    .nf-quick-link:hover { transform: none; }
+  }
+</style>
