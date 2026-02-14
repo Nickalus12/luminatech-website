@@ -125,27 +125,6 @@ function createPulsingDot(
   };
 }
 
-/* ─────────────────────────────────────────────
-   ANIMATED COUNTER HOOK
-   ───────────────────────────────────────────── */
-function useAnimatedCounter(target: number, duration = 1200, active = false) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    const start = performance.now();
-    let raf: number;
-    function tick(now: number) {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) raf = requestAnimationFrame(tick);
-    }
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [active, target, duration]);
-  return value;
-}
-
 /* ═════════════════════════════════════════════
    MAP SECTION COMPONENT
    ═════════════════════════════════════════════ */
@@ -161,8 +140,6 @@ export default function MapSection() {
   const [error, setError] = useState(false);
   const [phase, setPhase] = useState<'globe' | 'flying' | 'network' | 'landed'>('globe');
   const [arcsRevealed, setArcsRevealed] = useState(0);
-
-  const connectionCount = useAnimatedCounter(10, 1500, phase === 'landed');
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -825,7 +802,7 @@ export default function MapSection() {
                     className="text-[10px] font-semibold tracking-[0.2em] uppercase"
                     style={{ color: '#10B981', fontFamily: 'var(--font-mono, monospace)' }}
                   >
-                    System Online
+                    Humble, TX
                   </span>
                 </motion.div>
 
@@ -868,30 +845,6 @@ export default function MapSection() {
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 1.0, duration: 0.6 }}
                 />
-
-                {/* Connection counter */}
-                <motion.div
-                  className="text-center"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.1, duration: 0.5 }}
-                >
-                  <span
-                    className="text-xl md:text-2xl font-bold"
-                    style={{
-                      color: '#60A5FA',
-                      fontFamily: 'var(--font-mono, monospace)',
-                    }}
-                  >
-                    {connectionCount}
-                  </span>
-                  <span
-                    className="text-xs ml-2 tracking-[0.15em] uppercase"
-                    style={{ color: 'rgba(255, 255, 255, 0.4)' }}
-                  >
-                    Active Nodes
-                  </span>
-                </motion.div>
 
                 {/* Tagline */}
                 <motion.p
@@ -950,7 +903,7 @@ export default function MapSection() {
                       fontFamily: 'var(--font-mono, monospace)',
                     }}
                   >
-                    {phase === 'globe' ? 'Locating network...' : 'Connecting to HQ...'}
+                    {phase === 'globe' ? 'Exploring our reach...' : 'Heading to headquarters...'}
                   </span>
                 </div>
               </div>
@@ -986,7 +939,7 @@ export default function MapSection() {
                       fontFamily: 'var(--font-mono, monospace)',
                     }}
                   >
-                    Mapping {arcsRevealed}/{WAREHOUSE_CITIES.length} nodes...
+                    Connecting {arcsRevealed} of {WAREHOUSE_CITIES.length} regions...
                   </span>
                 </div>
               </div>
