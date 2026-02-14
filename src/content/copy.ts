@@ -164,6 +164,26 @@ export const services = {
     subheadline:
       "Production-tested P21 solutions backed by real code, proven performance metrics, and deep technical expertise. From DynaChange business rules to API integrations -- we build solutions that work in the real world.",
   },
+  transparency: {
+    badge: "Radically Transparent",
+    headline: "We Publish Our Prices. Every Single One.",
+    subheadline:
+      "In an industry where every consultant hides behind \"Contact Us for Pricing,\" we put our rates right here on this page. Your budget shouldn't be a guessing game.",
+    comparisonHeadline: "See the Difference",
+    comparisonItems: [
+      { them: "\"Contact us for a custom quote\"", us: "$1,500 - $8,000 per business rule" },
+      { them: "\"Pricing varies by engagement\"", us: "$2,000 - $15,000 per integration" },
+      { them: "\"Let's schedule a call to discuss\"", us: "$625 - $3,600/mo support plans" },
+      { them: "\"Depends on complexity\"", us: "$2,500 - $15,000 database optimization" },
+    ],
+    trustSignals: [
+      { icon: "lock", label: "No Hidden Fees", detail: "The price we quote is the price you pay" },
+      { icon: "calendar", label: "No Long-Term Contracts", detail: "Month-to-month on all support plans" },
+      { icon: "shield", label: "Fixed-Price Projects", detail: "Scope creep? That's on us, not you" },
+      { icon: "refresh", label: "Satisfaction Guaranteed", detail: "30-90 day warranty on all deliverables" },
+    ],
+    pullQuote: "We believe if you can't tell someone what it costs before they sign, you're not confident in your value. We are.",
+  },
   anchors: [
     { label: "Extensions", href: "#extensions" },
     { label: "Integrations", href: "#integrations" },
@@ -454,8 +474,8 @@ export const services = {
   },
   bottomCta: {
     heading: "Not Sure Where to Start?",
-    subheading:
-      "Book a free 30-minute discovery call. We'll listen to your challenges and tell you what we'd recommend -- even if the answer is 'you don't need a consultant for this.'",
+    subheadline:
+      "You've seen our prices. No surprises left. Book a free 30-minute call and we'll tell you exactly which service fits your situation -- even if the answer is 'you don't need a consultant for this.'",
     cta: { label: "Book a Discovery Call", href: "/contact" },
   },
 } as const;

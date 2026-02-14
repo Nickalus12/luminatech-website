@@ -4,18 +4,21 @@ const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
 const US_CENTER: [number, number] = [-96.5, 38.5];
 
-// 10 major US distribution hubs -- destinations for animated arcs
-const DESTINATION_CITIES: [number, number][] = [
-  [-122.33, 47.61],  // Seattle, WA
-  [-122.42, 37.77],  // San Francisco, CA
-  [-118.24, 34.05],  // Los Angeles, CA
-  [-112.07, 33.45],  // Phoenix, AZ
-  [-104.99, 39.74],  // Denver, CO
-  [-87.63, 41.88],   // Chicago, IL
-  [-93.27, 44.98],   // Minneapolis, MN
-  [-84.39, 33.75],   // Atlanta, GA
-  [-80.19, 25.76],   // Miami, FL
-  [-74.01, 40.71],   // New York, NY
+// Houston metro area — the fly-to destination (NOT street level)
+const HOUSTON_METRO: [number, number] = [-95.37, 29.76];
+
+// 10 major US distribution hubs — destinations for animated arcs
+const DESTINATION_CITIES: { coords: [number, number]; name: string }[] = [
+  { coords: [-122.33, 47.61], name: 'Seattle' },
+  { coords: [-122.42, 37.77], name: 'San Francisco' },
+  { coords: [-118.24, 34.05], name: 'Los Angeles' },
+  { coords: [-112.07, 33.45], name: 'Phoenix' },
+  { coords: [-104.99, 39.74], name: 'Denver' },
+  { coords: [-87.63, 41.88], name: 'Chicago' },
+  { coords: [-93.27, 44.98], name: 'Minneapolis' },
+  { coords: [-84.39, 33.75], name: 'Atlanta' },
+  { coords: [-80.19, 25.76], name: 'Miami' },
+  { coords: [-74.01, 40.71], name: 'New York' },
 ];
 
 /**
@@ -25,7 +28,7 @@ const DESTINATION_CITIES: [number, number][] = [
 function generateArc(
   origin: [number, number],
   destination: [number, number],
-  numPoints = 50
+  numPoints = 60
 ): [number, number][] {
   const [lng1, lat1] = origin;
   const [lng2, lat2] = destination;
@@ -37,9 +40,9 @@ function generateArc(
   const perpLen = Math.sqrt(dy * dy + dx * dx);
   const perpX = -dy / perpLen;
   const perpY = dx / perpLen;
-  const curvature = dist * 0.15;
+  const curvature = dist * 0.18;
   const controlLng = midLng + perpX * curvature * (perpY >= 0 ? 1 : -1);
-  const controlLat = midLat + Math.abs(perpY) * curvature + curvature * 0.3;
+  const controlLat = midLat + Math.abs(perpY) * curvature + curvature * 0.35;
   const points: [number, number][] = [];
   for (let i = 0; i <= numPoints; i++) {
     const t = i / numPoints;
@@ -51,24 +54,22 @@ function generateArc(
   return points;
 }
 
+// Branded overlay stats
+const BRAND_STATS = [
+  { value: 'Nationwide', label: 'Service Coverage' },
+  { value: '150x', label: 'Performance Gains' },
+  { value: '24hr', label: 'Response Time' },
+];
+
 export default function MapSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
-  const orbitRef = useRef<number | null>(null);
   const dashRef = useRef<number | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const [landed, setLanded] = useState(false);
-  const beaconRef = useRef<HTMLDivElement | null>(null);
-
-  // Show beacon label after landing
-  useEffect(() => {
-    if (landed && beaconRef.current) {
-      beaconRef.current.classList.add('show-label');
-    }
-  }, [landed]);
+  const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -99,23 +100,26 @@ export default function MapSection() {
       });
     };
 
+    // Final zoom level — metro/regional, NOT street level
+    const finalZoom = isMobile ? 7.5 : 8.5;
+    const finalPitch = isMobile ? 25 : 35;
+    const finalBearing = -15;
+
     loadMapbox()
       .then((mapboxgl) => {
         if (!mapContainer.current || mapRef.current) return;
         mapboxgl.accessToken = MAPBOX_TOKEN;
 
-        const finalZoom = isMobile ? 15 : 16;
-        const finalPitch = 65;
         const skipAnimation = prefersReducedMotion;
 
-        // Phase 1: Create map with Standard style — use 'dusk' for warm, visible 3D buildings
+        // Create map with dark Standard style
         const map = new mapboxgl.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/standard',
-          center: skipAnimation ? HUMBLE_TX : US_CENTER,
+          center: skipAnimation ? HOUSTON_METRO : US_CENTER,
           zoom: skipAnimation ? finalZoom : 3.5,
           pitch: skipAnimation ? finalPitch : 0,
-          bearing: skipAnimation ? -30 : 0,
+          bearing: skipAnimation ? finalBearing : 0,
           antialias: true,
           attributionControl: false,
           interactive: false,
@@ -123,12 +127,12 @@ export default function MapSection() {
           config: {
             basemap: {
               theme: 'default',
-              lightPreset: 'dusk',
+              lightPreset: 'night',
               showPlaceLabels: false,
               showPointOfInterestLabels: false,
               showTransitLabels: false,
               showRoadLabels: false,
-              show3dObjects: true,
+              show3dObjects: false,
             },
           },
         });
@@ -144,16 +148,26 @@ export default function MapSection() {
             properties: {},
             geometry: {
               type: 'LineString' as const,
-              coordinates: generateArc(HUMBLE_TX, dest),
+              coordinates: generateArc(HUMBLE_TX, dest.coords),
             },
           }));
 
-          const endpointFeatures = DESTINATION_CITIES.map((dest) => ({
+          // Origin point (Humble TX)
+          const originFeature = {
             type: 'Feature' as const,
-            properties: {},
+            properties: { isOrigin: true },
             geometry: {
               type: 'Point' as const,
-              coordinates: dest,
+              coordinates: HUMBLE_TX,
+            },
+          };
+
+          const endpointFeatures = DESTINATION_CITIES.map((dest) => ({
+            type: 'Feature' as const,
+            properties: { name: dest.name },
+            geometry: {
+              type: 'Point' as const,
+              coordinates: dest.coords,
             },
           }));
 
@@ -167,21 +181,41 @@ export default function MapSection() {
             data: { type: 'FeatureCollection', features: endpointFeatures },
           });
 
-          // Background arcs — slightly thicker and more visible
+          map.addSource('origin', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [originFeature] },
+          });
+
+          // === ARC LAYER 1: Wide soft glow (outermost) ===
           map.addLayer({
-            id: 'arcs-bg',
+            id: 'arcs-glow',
             type: 'line',
             source: 'arcs',
             slot: 'top',
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: {
               'line-color': '#3B82F6',
-              'line-width': 2,
-              'line-opacity': skipAnimation ? 0 : 0.18,
+              'line-width': 10,
+              'line-opacity': skipAnimation ? 0.08 : 0.08,
+              'line-blur': 6,
             },
           });
 
-          // Animated dash arcs
+          // === ARC LAYER 2: Medium bright core ===
+          map.addLayer({
+            id: 'arcs-bright',
+            type: 'line',
+            source: 'arcs',
+            slot: 'top',
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: {
+              'line-color': '#60A5FA',
+              'line-width': 3,
+              'line-opacity': skipAnimation ? 0.3 : 0.3,
+            },
+          });
+
+          // === ARC LAYER 3: Animated dash (topmost) ===
           if (!prefersReducedMotion) {
             map.addLayer({
               id: 'arcs-animated',
@@ -190,27 +224,71 @@ export default function MapSection() {
               slot: 'top',
               layout: { 'line-cap': 'round', 'line-join': 'round' },
               paint: {
-                'line-color': '#3B82F6',
+                'line-color': '#93C5FD',
                 'line-width': 2,
-                'line-opacity': 0.5,
+                'line-opacity': 0.6,
                 'line-dasharray': [0, 4, 3],
               },
             });
           }
 
-          // Destination endpoint dots
+          // === ENDPOINT GLOW (outer ring) ===
+          map.addLayer({
+            id: 'endpoint-glow',
+            type: 'circle',
+            source: 'endpoints',
+            slot: 'top',
+            paint: {
+              'circle-radius': 8,
+              'circle-color': '#3B82F6',
+              'circle-opacity': 0.15,
+              'circle-blur': 1,
+            },
+          });
+
+          // === ENDPOINT DOTS (inner) ===
           map.addLayer({
             id: 'endpoint-dots',
             type: 'circle',
             source: 'endpoints',
             slot: 'top',
             paint: {
-              'circle-radius': 3.5,
-              'circle-color': '#3B82F6',
-              'circle-opacity': skipAnimation ? 0 : 0.7,
-              'circle-stroke-width': 1,
+              'circle-radius': 4,
+              'circle-color': '#60A5FA',
+              'circle-opacity': 0.8,
+              'circle-stroke-width': 1.5,
               'circle-stroke-color': '#3B82F6',
-              'circle-stroke-opacity': skipAnimation ? 0 : 0.3,
+              'circle-stroke-opacity': 0.5,
+            },
+          });
+
+          // === ORIGIN GLOW (Humble TX — larger) ===
+          map.addLayer({
+            id: 'origin-glow',
+            type: 'circle',
+            source: 'origin',
+            slot: 'top',
+            paint: {
+              'circle-radius': 14,
+              'circle-color': '#8B5CF6',
+              'circle-opacity': 0.12,
+              'circle-blur': 1,
+            },
+          });
+
+          // === ORIGIN DOT (Humble TX) ===
+          map.addLayer({
+            id: 'origin-dot',
+            type: 'circle',
+            source: 'origin',
+            slot: 'top',
+            paint: {
+              'circle-radius': 6,
+              'circle-color': '#A78BFA',
+              'circle-opacity': 0.9,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#8B5CF6',
+              'circle-stroke-opacity': 0.6,
             },
           });
 
@@ -253,55 +331,6 @@ export default function MapSection() {
             dashRef.current = requestAnimationFrame(animateDash);
           }
 
-          // Premium beacon marker with vertical beam
-          const markerEl = document.createElement('div');
-          markerEl.className = 'lumina-beacon';
-          markerEl.innerHTML = `
-            <div class="beacon-beam"></div>
-            <div class="beacon-ring beacon-ring-1"></div>
-            <div class="beacon-ring beacon-ring-2"></div>
-            <div class="beacon-ring beacon-ring-3"></div>
-            <div class="beacon-glow-outer"></div>
-            <div class="beacon-glow"></div>
-            <div class="beacon-core"></div>
-            <div class="beacon-label">Humble, TX</div>
-          `;
-          beaconRef.current = markerEl;
-
-          new mapboxgl.Marker({ element: markerEl, anchor: 'center' })
-            .setLngLat(HUMBLE_TX)
-            .addTo(map);
-
-          // Fade arcs during flythrough
-          map.on('zoom', () => {
-            const zoom = map.getZoom();
-            if (zoom > 5) {
-              const fade = Math.max(0, 1 - (zoom - 5) / 5);
-              if (map.getLayer('arcs-bg')) {
-                map.setPaintProperty('arcs-bg', 'line-opacity', 0.18 * fade);
-              }
-              if (map.getLayer('arcs-animated')) {
-                map.setPaintProperty(
-                  'arcs-animated',
-                  'line-opacity',
-                  0.5 * fade
-                );
-              }
-              if (map.getLayer('endpoint-dots')) {
-                map.setPaintProperty(
-                  'endpoint-dots',
-                  'circle-opacity',
-                  0.7 * fade
-                );
-                map.setPaintProperty(
-                  'endpoint-dots',
-                  'circle-stroke-opacity',
-                  0.3 * fade
-                );
-              }
-            }
-          });
-
           // Phase 2: Cinematic flythrough (triggered on scroll into view)
           if (!prefersReducedMotion && containerRef.current) {
             let triggered = false;
@@ -312,41 +341,27 @@ export default function MapSection() {
                   triggered = true;
                   observerRef.current?.disconnect();
 
-                  // Long pause so US wide-shot registers visually
+                  // Phase 1 holds for 2.5s (wide shot registers visually)
                   setTimeout(() => {
                     map.flyTo({
-                      center: HUMBLE_TX,
+                      center: HOUSTON_METRO,
                       zoom: finalZoom,
                       pitch: finalPitch,
-                      bearing: -30,
-                      duration: 8000,
-                      curve: 1.2,
+                      bearing: finalBearing,
+                      duration: 7000,
+                      curve: 1.3,
                       essential: true,
                       easing: (t: number) => {
-                        // Smooth ease-in-out cubic for cinematic feel
+                        // Smooth ease-in-out for cinematic feel
                         return t < 0.5
                           ? 4 * t * t * t
                           : 1 - Math.pow(-2 * t + 2, 3) / 2;
                       },
                     });
 
-                    // Phase 3: Landing -> slow orbit + show label
+                    // Phase 3: The Reveal — dim map, show branded overlay
                     map.once('moveend', () => {
-                      setLanded(true);
-
-                      // Stop dash animation -- arcs are faded out
-                      if (dashRef.current) {
-                        cancelAnimationFrame(dashRef.current);
-                        dashRef.current = null;
-                      }
-
-                      let bearing = -30;
-                      function orbit() {
-                        bearing += 0.006;
-                        map.setBearing(bearing);
-                        orbitRef.current = requestAnimationFrame(orbit);
-                      }
-                      orbitRef.current = requestAnimationFrame(orbit);
+                      setRevealed(true);
                     });
                   }, 2500);
                 }
@@ -356,8 +371,8 @@ export default function MapSection() {
 
             observerRef.current.observe(containerRef.current);
           } else {
-            // Reduced motion or mobile skip — show label immediately
-            setLanded(true);
+            // Reduced motion — show overlay immediately
+            setRevealed(true);
           }
         });
       })
@@ -369,7 +384,6 @@ export default function MapSection() {
     return () => {
       observerRef.current?.disconnect();
       if (dashRef.current) cancelAnimationFrame(dashRef.current);
-      if (orbitRef.current) cancelAnimationFrame(orbitRef.current);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
@@ -383,21 +397,25 @@ export default function MapSection() {
         className="relative overflow-hidden rounded-xl md:rounded-2xl"
         style={{
           border: '1px solid rgba(59, 130, 246, 0.15)',
-          background: '#0A0A0F',
-          boxShadow: '0 0 40px rgba(59, 130, 246, 0.06)',
+          background: '#060610',
+          boxShadow: '0 0 60px rgba(59, 130, 246, 0.06)',
         }}
       >
         {/* Map container */}
         <div
           ref={mapContainer}
           className="w-full h-[350px] md:h-[480px]"
+          style={{
+            transition: 'filter 1.5s ease',
+            filter: revealed ? 'brightness(0.55)' : 'brightness(1)',
+          }}
         />
 
         {/* Loading skeleton */}
         {!loaded && !error && (
           <div
             className="absolute inset-0 flex items-center justify-center"
-            style={{ background: '#0A0A0F' }}
+            style={{ background: '#060610' }}
           >
             <div className="flex flex-col items-center gap-3">
               <div
@@ -418,7 +436,7 @@ export default function MapSection() {
         {error && (
           <div
             className="absolute inset-0 flex items-center justify-center"
-            style={{ background: '#0A0A0F' }}
+            style={{ background: '#060610' }}
           >
             <div className="text-center px-6">
               <div
@@ -453,26 +471,135 @@ export default function MapSection() {
           </div>
         )}
 
-        {/* Frosted glass overlay */}
+        {/* === THE REVEAL: Branded overlay === */}
         {loaded && (
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none p-4 md:p-6">
+          <div
+            className="absolute inset-0 flex items-center justify-center p-4 md:p-8"
+            style={{
+              opacity: revealed ? 1 : 0,
+              transition: 'opacity 1.8s ease 0.3s',
+              pointerEvents: revealed ? 'auto' : 'none',
+            }}
+          >
+            {/* Scrim gradient for readability */}
             <div
-              className="px-5 py-3.5 rounded-xl"
+              className="absolute inset-0"
               style={{
-                background: 'rgba(10, 10, 15, 0.65)',
-                backdropFilter: 'blur(16px) saturate(1.8)',
-                WebkitBackdropFilter: 'blur(16px) saturate(1.8)',
-                border: '1px solid rgba(59, 130, 246, 0.12)',
-                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
+                background:
+                  'radial-gradient(ellipse at center, rgba(6,6,16,0.5) 0%, rgba(6,6,16,0.3) 60%, transparent 100%)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Glassmorphism card */}
+            <div
+              className="relative z-10 w-full max-w-lg text-center px-6 py-8 md:px-10 md:py-10 rounded-2xl"
+              style={{
+                background: 'rgba(10, 10, 20, 0.6)',
+                backdropFilter: 'blur(20px) saturate(1.6)',
+                WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
+                border: '1px solid rgba(139, 92, 246, 0.15)',
+                boxShadow:
+                  '0 8px 40px rgba(0, 0, 0, 0.4), 0 0 80px rgba(59, 130, 246, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04)',
               }}
             >
-              <div className="flex items-center gap-3">
-                <span className="lumina-overlay-dot" />
+              {/* Location badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+                style={{
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                }}
+              >
+                <span className="lumina-reveal-dot" />
                 <span
-                  className="text-xs md:text-sm font-medium tracking-wide"
-                  style={{ color: '#B0B0C0' }}
+                  className="text-xs font-medium tracking-wider uppercase"
+                  style={{ color: '#93C5FD' }}
                 >
-                  Humble, TX &mdash; Serving distributors nationwide
+                  Humble, TX
+                </span>
+              </div>
+
+              {/* Company name */}
+              <h3
+                className="text-2xl md:text-3xl font-bold mb-2"
+                style={{
+                  background: 'linear-gradient(135deg, #E8E8ED 0%, #93C5FD 50%, #C4B5FD 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Lumina ERP
+              </h3>
+
+              {/* Tagline */}
+              <p
+                className="text-sm md:text-base mb-6 md:mb-8"
+                style={{ color: '#A0A0B8' }}
+              >
+                Illuminate your ERP potential.
+              </p>
+
+              {/* Divider */}
+              <div
+                className="w-12 h-px mx-auto mb-6 md:mb-8"
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent)',
+                }}
+              />
+
+              {/* Stats row */}
+              <div className="grid grid-cols-3 gap-3 md:gap-6">
+                {BRAND_STATS.map((stat, i) => (
+                  <div key={i} className="text-center">
+                    <div
+                      className="text-lg md:text-xl font-bold mb-0.5"
+                      style={{
+                        color:
+                          i === 1
+                            ? '#A78BFA'
+                            : '#60A5FA',
+                      }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div
+                      className="text-[10px] md:text-xs tracking-wide uppercase"
+                      style={{ color: '#6B6B7B' }}
+                    >
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom bar — always present when loaded */}
+        {loaded && (
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none p-3 md:p-4">
+            <div
+              className="flex items-center justify-between px-4 py-2.5 rounded-lg"
+              style={{
+                background: 'rgba(10, 10, 15, 0.5)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(59, 130, 246, 0.08)',
+                opacity: revealed ? 0 : 1,
+                transition: 'opacity 1s ease',
+                pointerEvents: 'none',
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <span className="lumina-reveal-dot" />
+                <span
+                  className="text-xs font-medium tracking-wide"
+                  style={{ color: '#8B8BA0' }}
+                >
+                  Connecting distributors coast to coast
                 </span>
               </div>
             </div>
@@ -488,194 +615,28 @@ export default function MapSection() {
         Map &copy; Mapbox &copy; OpenStreetMap
       </p>
 
-      {/* Beacon & overlay styles */}
+      {/* Styles */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        /* ===== Premium Beacon Marker ===== */
-        .lumina-beacon {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          cursor: default;
-        }
-
-        /* Vertical light beam rising from beacon */
-        .beacon-beam {
-          position: absolute;
-          bottom: 50%;
-          left: 50%;
-          width: 4px;
-          margin-left: -2px;
-          height: 80px;
-          background: linear-gradient(
-            to top,
-            rgba(59, 130, 246, 0.6) 0%,
-            rgba(59, 130, 246, 0.2) 40%,
-            rgba(59, 130, 246, 0.05) 70%,
-            transparent 100%
-          );
-          border-radius: 2px;
-          z-index: 1;
-          pointer-events: none;
-        }
-
-        /* Core dot — larger and more prominent */
-        .beacon-core {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 18px;
-          height: 18px;
-          margin: -9px 0 0 -9px;
-          background: radial-gradient(circle at 35% 35%, #60A5FA, #3B82F6 60%, #2563EB);
-          border: 2.5px solid rgba(255, 255, 255, 0.9);
+        .lumina-reveal-dot {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
-          box-shadow:
-            0 0 12px rgba(59, 130, 246, 1),
-            0 0 28px rgba(59, 130, 246, 0.7),
-            0 0 56px rgba(59, 130, 246, 0.3);
-          z-index: 5;
-        }
-
-        /* Inner glow halo */
-        .beacon-glow {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 36px;
-          height: 36px;
-          margin: -18px 0 0 -18px;
-          background: radial-gradient(
-            circle,
-            rgba(59, 130, 246, 0.4) 0%,
-            rgba(59, 130, 246, 0.1) 50%,
-            transparent 70%
-          );
-          border-radius: 50%;
-          z-index: 4;
-        }
-
-        /* Outer glow field */
-        .beacon-glow-outer {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 60px;
-          height: 60px;
-          margin: -30px 0 0 -30px;
-          background: radial-gradient(
-            circle,
-            rgba(59, 130, 246, 0.15) 0%,
-            rgba(59, 130, 246, 0.05) 50%,
-            transparent 70%
-          );
-          border-radius: 50%;
-          z-index: 3;
-        }
-
-        /* Label that appears after landing */
-        .beacon-label {
-          position: absolute;
-          top: calc(50% + 22px);
-          left: 50%;
-          transform: translateX(-50%);
-          white-space: nowrap;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          color: rgba(255, 255, 255, 0.85);
-          text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(59, 130, 246, 0.4);
-          opacity: 0;
-          transition: opacity 1.2s ease-in 0.5s;
-          z-index: 6;
-          pointer-events: none;
-        }
-
-        .lumina-beacon.show-label .beacon-label {
-          opacity: 1;
+          background: #3B82F6;
+          box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+          flex-shrink: 0;
         }
 
         @media (prefers-reduced-motion: no-preference) {
-          /* Pulsing expanding rings — more visible */
-          .beacon-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;
-            height: 24px;
-            margin: -12px 0 0 -12px;
-            border-radius: 50%;
-            border: 2px solid rgba(59, 130, 246, 0.6);
-            z-index: 2;
-          }
-          .beacon-ring-1 { animation: beacon-expand 3.5s ease-out infinite; }
-          .beacon-ring-2 { animation: beacon-expand 3.5s ease-out infinite 1.15s; }
-          .beacon-ring-3 { animation: beacon-expand 3.5s ease-out infinite 2.3s; }
-
-          @keyframes beacon-expand {
-            0%   { transform: scale(0.8); opacity: 0.9; }
-            100% { transform: scale(5);   opacity: 0; }
+          .lumina-reveal-dot {
+            animation: reveal-dot-pulse 2.5s ease-in-out infinite;
           }
 
-          /* Beam subtle pulse */
-          .beacon-beam {
-            animation: beam-pulse 3s ease-in-out infinite;
-          }
-          @keyframes beam-pulse {
-            0%, 100% { opacity: 0.7; }
-            50%      { opacity: 1; }
-          }
-
-          /* Core subtle breathing */
-          .beacon-core {
-            animation: core-breathe 2.5s ease-in-out infinite;
-          }
-          @keyframes core-breathe {
-            0%, 100% {
-              box-shadow:
-                0 0 12px rgba(59, 130, 246, 1),
-                0 0 28px rgba(59, 130, 246, 0.7),
-                0 0 56px rgba(59, 130, 246, 0.3);
-            }
-            50% {
-              box-shadow:
-                0 0 16px rgba(59, 130, 246, 1),
-                0 0 36px rgba(59, 130, 246, 0.8),
-                0 0 72px rgba(59, 130, 246, 0.4);
-            }
-          }
-
-          .lumina-overlay-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #3B82F6;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-            flex-shrink: 0;
-            animation: overlay-pulse 2s ease-in-out infinite;
-          }
-
-          @keyframes overlay-pulse {
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
-            50%      { opacity: 1;   box-shadow: 0 0 14px rgba(59, 130, 246, 0.8); }
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .beacon-ring { display: none; }
-          .beacon-beam { animation: none; opacity: 0.7; }
-          .beacon-core { animation: none; }
-          .beacon-label { opacity: 1; transition: none; }
-          .lumina-overlay-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #3B82F6;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-            flex-shrink: 0;
+          @keyframes reveal-dot-pulse {
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 4px rgba(59, 130, 246, 0.3); }
+            50%      { opacity: 1;   box-shadow: 0 0 12px rgba(59, 130, 246, 0.7); }
           }
         }
 

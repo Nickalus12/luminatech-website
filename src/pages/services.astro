@@ -8,6 +8,7 @@ import Badge from '../components/ui/Badge.astro';
 import InteractiveROICalculator from '../components/ui/InteractiveROICalculator';
 import ServiceCardGrid from '../components/ui/ServiceCardGrid';
 import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
+import GlowText from '../components/ui/GlowText.astro';
 import { services, brand } from '../content/copy';
 
 const description = "Comprehensive Prophet 21 consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support for wholesale distributors.";
@@ -370,7 +371,7 @@ const retainerTiers = [
       </div>
 
       <!-- ROI Calculator -->
-      <div class="max-w-4xl mx-auto scroll-reveal min-h-[320px]" style="animation-delay: 200ms;">
+      <div class="max-w-5xl mx-auto scroll-reveal min-h-[480px]" style="animation-delay: 200ms;">
         <InteractiveROICalculator client:visible />
       </div>
 
@@ -380,8 +381,106 @@ const retainerTiers = [
     </Container>
   </Section>
 
+  <!-- TRANSPARENCY DIFFERENTIATOR -->
+  <Section background="surface-1" padding="lg" class="relative overflow-hidden">
+    <!-- Decorative glow -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent-success/5 rounded-full blur-[150px] pointer-events-none" aria-hidden="true"></div>
+
+    <Container class="relative">
+      <!-- Badge + Headline -->
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          {services.transparency.badge}
+        </Badge>
+        <h2 class="text-[length:var(--font-size-h2)] md:text-4xl lg:text-5xl font-bold text-text-primary leading-tight mb-4">
+          {services.transparency.headline}
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          {services.transparency.subheadline}
+        </p>
+      </div>
+
+      <!-- Comparison: Them vs Us -->
+      <div class="max-w-3xl mx-auto mb-14 scroll-reveal" style="animation-delay: 100ms;">
+        <div class="grid grid-cols-2 gap-0 rounded-xl overflow-hidden border border-border">
+          <!-- Header row -->
+          <div class="bg-accent-error/10 px-4 py-3 sm:px-6 sm:py-4 border-b border-border">
+            <p class="text-sm font-semibold text-accent-error uppercase tracking-wider">Other Consultants</p>
+          </div>
+          <div class="bg-accent-success/10 px-4 py-3 sm:px-6 sm:py-4 border-b border-border">
+            <p class="text-sm font-semibold text-accent-success uppercase tracking-wider">Lumina ERP</p>
+          </div>
+          <!-- Comparison rows -->
+          {services.transparency.comparisonItems.map((item, index) => (
+            <>
+              <div class:list={["px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 bg-bg-surface-2/50", index < services.transparency.comparisonItems.length - 1 ? "border-b border-border/50" : ""]}>
+                <svg class="w-4 h-4 text-accent-error/60 shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" /><path d="M8 12h8" />
+                </svg>
+                <span class="text-sm text-text-tertiary italic">{item.them}</span>
+              </div>
+              <div class:list={["px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-2 bg-accent-success/[0.03]", index < services.transparency.comparisonItems.length - 1 ? "border-b border-border/50" : ""]}>
+                <svg class="w-4 h-4 text-accent-success shrink-0 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span class="text-sm text-text-primary font-medium">{item.us}</span>
+              </div>
+            </>
+          ))}
+        </div>
+      </div>
+
+      <!-- Trust Signal Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14 scroll-reveal" style="animation-delay: 200ms;">
+        {services.transparency.trustSignals.map((signal) => (
+          <div class="text-center p-5 rounded-xl bg-bg-surface-2/50 border border-border/50 hover:border-accent-primary/30 transition-colors duration-normal">
+            <div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+              {signal.icon === "lock" && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
+              {signal.icon === "calendar" && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              )}
+              {signal.icon === "shield" && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              )}
+              {signal.icon === "refresh" && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+                </svg>
+              )}
+            </div>
+            <h4 class="text-sm font-semibold text-text-primary mb-1">{signal.label}</h4>
+            <p class="text-xs text-text-tertiary leading-relaxed">{signal.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Pull Quote -->
+      <div class="max-w-2xl mx-auto text-center scroll-reveal" style="animation-delay: 300ms;">
+        <blockquote class="relative">
+          <svg class="w-8 h-8 text-accent-primary/20 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.998 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.986z" />
+          </svg>
+          <p class="text-lg md:text-xl text-text-primary font-medium italic leading-relaxed">
+            {services.transparency.pullQuote}
+          </p>
+        </blockquote>
+      </div>
+    </Container>
+  </Section>
+
   <!-- SERVICE SELECTOR QUIZ -->
-  <Section id="service-quiz" background="surface-1" padding="sm" class="py-8">
+  <Section id="service-quiz" background="base" padding="sm" class="py-8">
     <Container>
       <div class="min-h-[200px]">
         <ServiceSelectorQuiz client:visible className="max-w-3xl mx-auto" />
@@ -410,10 +509,10 @@ const retainerTiers = [
     <Container>
       <div class="text-center mb-10 scroll-reveal">
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
-          Our Services
+          Our Services — With Published Pricing
         </h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
-          Click any service to explore details, ROI models, tech stack, and implementation timelines.
+          Every service includes upfront pricing, timelines, and deliverables. Click any card to explore ROI models, tech stack, and implementation details.
         </p>
       </div>
 
@@ -518,13 +617,42 @@ const retainerTiers = [
   </Section>
 
   <!-- RETAINER PRICING TIERS -->
-  <Section background="base" padding="lg">
-    <Container>
-      <div class="text-center mb-16 scroll-reveal">
+  <Section background="base" padding="lg" class="relative overflow-hidden">
+    <!-- Subtle glow behind pricing -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent-primary/5 rounded-full blur-[120px] pointer-events-none" aria-hidden="true"></div>
+
+    <Container class="relative">
+      <div class="text-center mb-6 scroll-reveal">
+        <Badge variant="success" class="mb-4">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+          </svg>
+          Transparent Pricing
+        </Badge>
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Ongoing Support Plans</h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
-          Predictable monthly support with guaranteed response times. Pick the plan that fits your needs -- upgrade or adjust anytime.
+          Predictable monthly support with guaranteed response times. No contracts, no lock-in -- upgrade, downgrade, or cancel anytime.
         </p>
+      </div>
+
+      <!-- No-contract promise bar -->
+      <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mb-14 scroll-reveal" style="animation-delay: 50ms;">
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          No long-term contracts
+        </div>
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          Cancel anytime
+        </div>
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          Overage requires your approval
+        </div>
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          Transparent hourly tracking
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
@@ -575,6 +703,31 @@ const retainerTiers = [
         ))}
       </div>
 
+      <!-- What's NOT included - for extra transparency -->
+      <div class="mt-12 max-w-2xl mx-auto scroll-reveal">
+        <div class="bg-bg-surface-2/50 rounded-xl border border-border/50 p-6">
+          <h4 class="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+            What's Not Included (Because We Believe in Full Disclosure)
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+            <div class="flex items-center gap-2 text-sm text-text-tertiary">
+              <span class="text-text-disabled">--</span> Third-party software licenses
+            </div>
+            <div class="flex items-center gap-2 text-sm text-text-tertiary">
+              <span class="text-text-disabled">--</span> Server or hosting infrastructure
+            </div>
+            <div class="flex items-center gap-2 text-sm text-text-tertiary">
+              <span class="text-text-disabled">--</span> Epicor license or subscription fees
+            </div>
+            <div class="flex items-center gap-2 text-sm text-text-tertiary">
+              <span class="text-text-disabled">--</span> On-site travel (billed separately if needed)
+            </div>
+          </div>
+          <p class="text-xs text-text-disabled mt-4">Hours beyond your plan require written approval before we begin. No surprise invoices.</p>
+        </div>
+      </div>
+
       <p class="text-center text-sm text-text-tertiary mt-8">
         All plans include 5-25% hourly discount vs. standard rates. Need something custom? <a href="/contact" class="text-accent-primary hover:underline no-underline">Let's talk.</a>
       </p>
@@ -585,9 +738,15 @@ const retainerTiers = [
   <Section background="surface-1" padding="md">
     <Container>
       <div class="text-center mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+          </svg>
+          No Surprises
+        </Badge>
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">{services.process.heading}</h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
-          A straightforward process built on transparency and results. No surprises, no scope creep, no disappearing acts.
+          You know what it costs before we start. You know what you're getting before we build. And you see progress every step of the way.
         </p>
       </div>
 
