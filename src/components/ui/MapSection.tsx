@@ -4,22 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
 const HUMBLE_TX: [number, number] = [-95.2622, 29.9988];
 
-// 10 major US distribution hubs with relative building heights (meters, exaggerated for viz)
+// 10 major US distribution hubs
 const WAREHOUSE_CITIES: {
   coords: [number, number];
   name: string;
-  height: number;
 }[] = [
-  { coords: [-122.33, 47.61], name: 'Seattle', height: 200000 },
-  { coords: [-122.42, 37.77], name: 'San Francisco', height: 180000 },
-  { coords: [-118.24, 34.05], name: 'Los Angeles', height: 250000 },
-  { coords: [-112.07, 33.45], name: 'Phoenix', height: 150000 },
-  { coords: [-104.99, 39.74], name: 'Denver', height: 160000 },
-  { coords: [-87.63, 41.88], name: 'Chicago', height: 280000 },
-  { coords: [-93.27, 44.98], name: 'Minneapolis', height: 140000 },
-  { coords: [-84.39, 33.75], name: 'Atlanta', height: 220000 },
-  { coords: [-80.19, 25.76], name: 'Miami', height: 180000 },
-  { coords: [-74.01, 40.71], name: 'New York', height: 300000 },
+  { coords: [-122.33, 47.61], name: 'Seattle' },
+  { coords: [-122.42, 37.77], name: 'San Francisco' },
+  { coords: [-118.24, 34.05], name: 'Los Angeles' },
+  { coords: [-112.07, 33.45], name: 'Phoenix' },
+  { coords: [-104.99, 39.74], name: 'Denver' },
+  { coords: [-87.63, 41.88], name: 'Chicago' },
+  { coords: [-93.27, 44.98], name: 'Minneapolis' },
+  { coords: [-84.39, 33.75], name: 'Atlanta' },
+  { coords: [-80.19, 25.76], name: 'Miami' },
+  { coords: [-74.01, 40.71], name: 'New York' },
 ];
 
 /**
@@ -55,23 +54,6 @@ function generateArc(
   return points;
 }
 
-/**
- * Create a small rectangular polygon at a coordinate for fill-extrusion.
- */
-function createBuildingPolygon(
-  center: [number, number],
-  sizeDegs = 0.35
-): number[][] {
-  const [lng, lat] = center;
-  const h = sizeDegs / 2;
-  return [
-    [lng - h, lat - h],
-    [lng + h, lat - h],
-    [lng + h, lat + h],
-    [lng - h, lat + h],
-    [lng - h, lat - h],
-  ];
-}
 
 export default function MapSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -220,44 +202,6 @@ export default function MapSection() {
           });
 
           // ──────────────────────────────────
-          // 3D WAREHOUSE BUILDING DATA
-          // ──────────────────────────────────
-          const buildingFeatures = WAREHOUSE_CITIES.map((city) => ({
-            type: 'Feature' as const,
-            properties: {
-              name: city.name,
-              height: city.height,
-              isHQ: false,
-            },
-            geometry: {
-              type: 'Polygon' as const,
-              coordinates: [createBuildingPolygon(city.coords, 0.35)],
-            },
-          }));
-
-          // HQ building — tallest and largest footprint
-          buildingFeatures.push({
-            type: 'Feature' as const,
-            properties: {
-              name: 'Lumina ERP HQ',
-              height: 420000,
-              isHQ: true,
-            },
-            geometry: {
-              type: 'Polygon' as const,
-              coordinates: [createBuildingPolygon(HUMBLE_TX, 0.45)],
-            },
-          });
-
-          map.addSource('warehouse-buildings', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: buildingFeatures,
-            },
-          });
-
-          // ──────────────────────────────────
           // ARC LAYERS (visible on globe, fade during zoom)
           // ──────────────────────────────────
 
@@ -381,58 +325,6 @@ export default function MapSection() {
               'circle-opacity-transition': { duration: 1200, delay: 0 },
               'circle-stroke-opacity-transition': {
                 duration: 1200,
-                delay: 0,
-              },
-            },
-          });
-
-          // ──────────────────────────────────
-          // 3D WAREHOUSE BUILDINGS (fill-extrusion)
-          // Visible at landing zoom as illuminated pillars
-          // ──────────────────────────────────
-
-          // Building glow base — wider, shorter, translucent
-          map.addLayer({
-            id: 'buildings-glow',
-            type: 'fill-extrusion',
-            source: 'warehouse-buildings',
-            slot: 'top',
-            paint: {
-              'fill-extrusion-color': [
-                'case',
-                ['get', 'isHQ'],
-                '#8B5CF6',
-                '#3B82F6',
-              ],
-              'fill-extrusion-height': ['*', ['get', 'height'], 0.5],
-              'fill-extrusion-base': 0,
-              'fill-extrusion-opacity': 0.12,
-              'fill-extrusion-opacity-transition': {
-                duration: 2000,
-                delay: 0,
-              },
-            },
-          });
-
-          // Building core — taller, brighter
-          map.addLayer({
-            id: 'buildings-core',
-            type: 'fill-extrusion',
-            source: 'warehouse-buildings',
-            slot: 'top',
-            paint: {
-              'fill-extrusion-color': [
-                'case',
-                ['get', 'isHQ'],
-                '#A78BFA',
-                '#60A5FA',
-              ],
-              'fill-extrusion-height': ['get', 'height'],
-              'fill-extrusion-base': 0,
-              'fill-extrusion-opacity': 0.6,
-              'fill-extrusion-vertical-gradient': true,
-              'fill-extrusion-opacity-transition': {
-                duration: 2000,
                 delay: 0,
               },
             },
@@ -695,7 +587,7 @@ export default function MapSection() {
           {phase === 'landed' && loaded && (
             <motion.div
               key="landing-panel"
-              className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-auto md:right-6 md:w-[320px] pointer-events-none z-10"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] md:w-[320px] pointer-events-none z-10"
               initial={{ opacity: 0, y: 30, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{
