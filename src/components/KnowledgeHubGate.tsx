@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SUBSCRIBE_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/subscribe';
@@ -8,12 +8,41 @@ function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+/* ── Inject Siri glow keyframes once ── */
+let stylesInjected = false;
+function useSiriGlowStyles() {
+  useEffect(() => {
+    if (stylesInjected) return;
+    stylesInjected = true;
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes hub-siri-rotate {
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
+}
+
+/* ── What's inside content list ── */
+const gatedSections = [
+  { icon: '{}', label: 'Code Snippets & SQL Patterns', color: '#3B82F6' },
+  { icon: '⚡', label: 'N8N Automation Workflows', color: '#8B5CF6' },
+  { icon: '🔗', label: 'API Integration Guide', color: '#06B6D4' },
+  { icon: '📊', label: 'Performance Benchmarks', color: '#10B981' },
+  { icon: '⚠️', label: 'Common Gotchas & Fixes', color: '#F59E0B' },
+  { icon: '🔧', label: 'Troubleshooting Resources', color: '#F87171' },
+];
+
 export default function KnowledgeHubGate({ children }: { children?: React.ReactNode }) {
   const [unlocked, setUnlocked] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'returning' | 'error'>('idle');
   const [emailError, setEmailError] = useState('');
   const [mounted, setMounted] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useSiriGlowStyles();
 
   useEffect(() => {
     setMounted(true);
@@ -64,18 +93,17 @@ export default function KnowledgeHubGate({ children }: { children?: React.ReactN
     }
   }
 
-  // Before hydration, show the gate by default (SSR-safe)
+  // Before hydration — show the gate barrier (SSR-safe)
   if (!mounted) {
     return (
-      <div className="relative">
-        <div id="hub-gated-content" style={{ filter: 'blur(6px)', pointerEvents: 'none' as const, userSelect: 'none' as const }}>
-          {children}
-        </div>
-        <div className="hub-gate-overlay" />
+      <div>
+        <div className="hub-gate-barrier" />
+        <div style={{ display: 'none' }}>{children}</div>
       </div>
     );
   }
 
+  // Unlocked — show content
   if (unlocked) {
     return (
       <motion.div
@@ -89,235 +117,227 @@ export default function KnowledgeHubGate({ children }: { children?: React.ReactN
     );
   }
 
+  // Locked — show prestigious gate card (NO blurred content behind)
   return (
-    <div className="relative">
-      {/* Blurred content preview */}
-      <div
-        id="hub-gated-content"
-        style={{
-          filter: 'blur(6px)',
-          pointerEvents: 'none' as const,
-          userSelect: 'none' as const,
-          maxHeight: '600px',
-          overflow: 'hidden',
-        }}
-        aria-hidden="true"
-      >
-        {children}
-      </div>
-
-      {/* Gradient fade overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: '100%',
-          background: 'linear-gradient(to bottom, transparent 0%, var(--color-bg-base, #0a0f1a) 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* Gate card */}
-      <div
-        className="absolute inset-x-0 flex items-center justify-center px-4"
-        style={{ top: '120px' }}
-      >
+    <div className="py-12 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto">
+        {/* Siri glow wrapper */}
         <motion.div
-          className="w-full max-w-xl rounded-2xl border p-8 md:p-10 text-center"
-          style={{
-            background: 'rgba(15, 23, 42, 0.85)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            borderColor: 'rgba(59, 130, 246, 0.25)',
-            boxShadow: '0 0 60px rgba(59, 130, 246, 0.12), 0 0 120px rgba(139, 92, 246, 0.06)',
-          }}
-          initial={{ opacity: 0, scale: 0.92, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="relative rounded-2xl p-[2px] overflow-hidden"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Lock icon with floating animation */}
-          <motion.div
-            className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
+          {/* Rotating gradient border */}
+          <div
+            className="absolute"
             style={{
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
+              inset: '-50%',
+              background: 'conic-gradient(from 0deg, #3B82F6, #8B5CF6, #06B6D4, transparent 40%, #3B82F6)',
+              animation: 'hub-siri-rotate 3s linear infinite',
+              borderRadius: 'inherit',
             }}
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#3B82F6"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </motion.div>
+            aria-hidden="true"
+          />
 
-          <motion.h3
-            className="text-2xl md:text-3xl font-bold text-white mb-3"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-          >
-            Unlock the Full Knowledge Hub
-          </motion.h3>
-          <motion.p
-            className="text-sm md:text-base mb-6"
-            style={{ color: 'rgba(255,255,255,0.65)' }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
-          >
-            Get instant access to our exclusive P21 code snippets, API guides, N8N workflows,
-            advanced SQL patterns, benchmarks, and troubleshooting resources used by top distributors.
-          </motion.p>
+          {/* Ambient glow */}
+          <div
+            className="absolute inset-0 rounded-2xl"
+            style={{
+              boxShadow: '0 0 40px rgba(59, 130, 246, 0.2), 0 0 80px rgba(139, 92, 246, 0.1)',
+            }}
+            aria-hidden="true"
+          />
 
-          <AnimatePresence mode="wait">
-            {(status === 'success' || status === 'returning') ? (
+          {/* Inner card */}
+          <div className="relative rounded-[14px] bg-[#0f1520] p-8 md:p-10">
+            {/* Header */}
+            <div className="text-center mb-8">
               <motion.div
-                key="success"
-                className="py-6"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                }}
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </motion.div>
+
+              <motion.h3
+                className="text-2xl md:text-3xl font-bold text-white mb-3"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                Unlock the Full Knowledge Hub
+              </motion.h3>
+              <motion.p
+                className="text-sm md:text-base leading-relaxed max-w-md mx-auto"
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                Enter your email to get instant access to our exclusive P21 resources — used by top distributors daily.
+              </motion.p>
+            </div>
+
+            {/* What's inside grid */}
+            <motion.div
+              className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.25 }}
+            >
+              {gatedSections.map((section, i) => (
                 <motion.div
-                  className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
-                  style={{ background: status === 'returning' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(34, 197, 94, 0.15)' }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.1 }}
+                  key={section.label}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                  }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={status === 'returning' ? '#3B82F6' : '#22c55e'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <motion.path
-                      d="M20 6 9 17l-5-5"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 0.4, delay: 0.3 }}
-                    />
-                  </svg>
+                  <span className="text-sm shrink-0" style={{ filter: 'grayscale(0.3)' }}>{section.icon}</span>
+                  <span className="text-xs text-[#A0A0B0] leading-tight">{section.label}</span>
                 </motion.div>
-                <motion.p
-                  className="text-lg font-semibold text-white"
+              ))}
+            </motion.div>
+
+            {/* Email form or success state */}
+            <AnimatePresence mode="wait">
+              {(status === 'success' || status === 'returning') ? (
+                <motion.div
+                  key="success"
+                  className="text-center py-4"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <motion.div
+                    className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full"
+                    style={{ background: status === 'returning' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(34, 197, 94, 0.15)' }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.1 }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={status === 'returning' ? '#3B82F6' : '#22c55e'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <motion.path
+                        d="M20 6 9 17l-5-5"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                      />
+                    </svg>
+                  </motion.div>
+                  <p className="text-lg font-semibold text-white">
+                    {status === 'returning' ? 'Welcome back!' : "You're in!"}
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    {status === 'returning' ? 'You already have access. Loading now...' : 'Unlocking your resources now...'}
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  className="space-y-3"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.35 }}
+                  transition={{ duration: 0.4, delay: 0.35 }}
                 >
-                  {status === 'returning' ? 'Welcome back!' : "You're in!"}
-                </motion.p>
-                <motion.p
-                  className="text-sm mt-1"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.45 }}
-                >
-                  {status === 'returning' ? 'You already have access. Loading now...' : 'Unlocking your resources now...'}
-                </motion.p>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                onSubmit={handleSubmit}
-                className="space-y-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-              >
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 text-left">
-                    <input
-                      type="email"
-                      placeholder="you@company.com"
-                      value={email}
-                      onChange={(e) => { setEmail(e.target.value); setEmailError(''); if (status === 'error') setStatus('idle'); }}
-                      className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1 text-left">
+                      <input
+                        ref={inputRef}
+                        type="email"
+                        placeholder="you@company.com"
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setEmailError(''); if (status === 'error') setStatus('idle'); }}
+                        className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          border: emailError ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
+                        }}
+                        aria-label="Email address"
+                        aria-invalid={!!emailError}
+                      />
+                      {emailError && (
+                        <motion.p
+                          className="mt-1 text-xs text-red-400"
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {emailError}
+                        </motion.p>
+                      )}
+                    </div>
+                    <motion.button
+                      type="submit"
+                      disabled={status === 'submitting'}
+                      className="shrink-0 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
                       style={{
-                        background: 'rgba(255, 255, 255, 0.06)',
-                        border: emailError ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.12)',
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
+                        boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
                       }}
-                      aria-label="Email address"
-                      aria-invalid={!!emailError}
-                    />
-                    {emailError && (
-                      <motion.p
-                        className="mt-1 text-xs text-red-400"
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {emailError}
-                      </motion.p>
-                    )}
+                      whileHover={{ scale: 1.04, boxShadow: '0 6px 28px rgba(59, 130, 246, 0.45)' }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      {status === 'submitting' ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Unlocking...
+                        </>
+                      ) : (
+                        <>
+                          Unlock Access
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                          </svg>
+                        </>
+                      )}
+                    </motion.button>
                   </div>
-                  <motion.button
-                    type="submit"
-                    disabled={status === 'submitting'}
-                    className="shrink-0 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
-                    style={{
-                      background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
-                      boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
-                    }}
-                    whileHover={{ scale: 1.04, boxShadow: '0 6px 28px rgba(59, 130, 246, 0.45)' }}
-                    whileTap={{ scale: 0.97 }}
-                  >
-                    {status === 'submitting' ? (
-                      <>
-                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Unlocking...
-                      </>
-                    ) : (
-                      <>
-                        Unlock Access
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                          <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-                        </svg>
-                      </>
-                    )}
-                  </motion.button>
-                </div>
 
-                {status === 'error' && (
-                  <motion.p
-                    className="text-sm text-red-400"
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    Something went wrong. Please try again or email Support@Lumina-ERP.com.
-                  </motion.p>
-                )}
+                  {status === 'error' && (
+                    <motion.p
+                      className="text-sm text-red-400"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      Something went wrong. Please try again or email Support@Lumina-ERP.com.
+                    </motion.p>
+                  )}
 
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                  No spam. Unsubscribe anytime. Join P21 professionals who already have access.
-                </p>
-              </motion.form>
-            )}
-          </AnimatePresence>
+                  <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    No spam, ever. Unsubscribe anytime.
+                  </p>
+                </motion.form>
+              )}
+            </AnimatePresence>
 
-          {/* Social proof */}
-          <motion.div
-            className="mt-6 pt-5"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.45 }}
-          >
-            <div className="flex items-center justify-center gap-3">
+            {/* Social proof */}
+            <motion.div
+              className="mt-6 pt-5 flex items-center justify-center gap-3"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.45 }}
+            >
               <div className="flex -space-x-2">
                 {[
                   { bg: '#3B82F6', letter: 'N' },
@@ -330,7 +350,7 @@ export default function KnowledgeHubGate({ children }: { children?: React.ReactN
                     className="h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{
                       backgroundColor: item.bg,
-                      boxShadow: '0 0 0 2px rgba(15, 23, 42, 0.85)',
+                      boxShadow: '0 0 0 2px #0f1520',
                     }}
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -340,11 +360,11 @@ export default function KnowledgeHubGate({ children }: { children?: React.ReactN
                   </motion.div>
                 ))}
               </div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 Trusted by P21 teams at 50+ distributors
               </p>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </div>
