@@ -9,7 +9,6 @@ import InteractiveROICalculator from '../components/ui/InteractiveROICalculator'
 import ServiceCardGrid from '../components/ui/ServiceCardGrid';
 import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
 import GlowText from '../components/ui/GlowText.astro';
-import SocialProofToast from '../components/ui/SocialProofToast';
 import TextReveal from '../components/ui/TextReveal';
 import ScrollCounter from '../components/ui/ScrollCounter';
 import { services, brand } from '../content/copy';
@@ -82,7 +81,7 @@ const roiModels = {
     calculation: "3 emergencies * 4 hrs * $300/hr = $3,600/yr avoided",
     breakeven: "Immediate (vs. emergency rates)",
     yearOneROI: "227% (Standard tier)",
-    competitiveEdge: "Big firms: $15K/mo minimums. We start at $625/mo with no lock-in contracts.",
+    competitiveEdge: "Big firms: $15K/mo minimums. We start at $625/mo with flexible terms.",
   },
 };
 
@@ -240,7 +239,7 @@ const competitiveAdvantages = {
     "Competitive differentiation: Give customers a reason to choose you over Amazon",
   ],
   support: [
-    "No minimums: Start at $625/mo vs. $15K/mo enterprise contracts",
+    "Affordable: Start at $625/mo vs. $15K/mo enterprise firms",
     "Real P21 operator: We use the system daily, not just consult on it",
     "Transparent pricing: Hourly tracking, overage approval required",
     "99.2% SLA compliance: Proven track record on response times",
@@ -637,19 +636,19 @@ const retainerTiers = [
         </Badge>
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">Ongoing Support Plans</h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
-          Predictable monthly support with guaranteed response times. No contracts, no lock-in -- upgrade, downgrade, or cancel anytime.
+          Predictable monthly support with guaranteed response times. Flexible plans that scale with your needs.
         </p>
       </div>
 
-      <!-- No-contract promise bar -->
+      <!-- Promise bar -->
       <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mb-14 scroll-reveal" style="animation-delay: 50ms;">
         <div class="flex items-center gap-2 text-sm text-text-secondary">
           <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-          No long-term contracts
+          Flexible plans
         </div>
         <div class="flex items-center gap-2 text-sm text-text-secondary">
           <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-          Cancel anytime
+          Scale up or down anytime
         </div>
         <div class="flex items-center gap-2 text-sm text-text-secondary">
           <svg class="w-4 h-4 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
@@ -793,8 +792,6 @@ const retainerTiers = [
     </Container>
   </Section>
 
-  <!-- Social proof toast notifications -->
-  <SocialProofToast client:idle />
 </BaseLayout>
 
 <style>

@@ -1,22 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect, type ComponentType } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContactForm from './ContactForm';
 
-type Phase = 'form' | 'celebration';
+type Phase = 'form' | 'celebration' | 'map';
 
 export default function ConsultationExperience() {
   const [phase, setPhase] = useState<Phase>('form');
   const [submittedName, setSubmittedName] = useState('');
+  const [MapComp, setMapComp] = useState<ComponentType | null>(null);
+  const [showPreparing, setShowPreparing] = useState(false);
 
-  // Handle form success: transition to celebration phase
+  // Handle form success: transition to celebration phase and begin loading the map
   function handleFormSuccess(name: string) {
     setSubmittedName(name);
     setPhase('celebration');
+
+    // Start dynamically importing MapSection during the celebration
+    import('./ui/MapSection').then((mod) => {
+      setMapComp(() => mod.default);
+    });
   }
+
+  // Celebration phase timer: transition to map after delay
+  useEffect(() => {
+    if (phase !== 'celebration') return;
+
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    const celebrationDuration = prefersReducedMotion ? 2000 : 3500;
+    const preparingDelay = prefersReducedMotion ? 800 : 2000;
+
+    // Show the "Preparing something special..." hint
+    const preparingTimer = setTimeout(() => {
+      setShowPreparing(true);
+    }, preparingDelay);
+
+    // Transition to map phase
+    const mapTimer = setTimeout(() => {
+      setPhase('map');
+      setShowPreparing(false);
+    }, celebrationDuration);
+
+    return () => {
+      clearTimeout(preparingTimer);
+      clearTimeout(mapTimer);
+    };
+  }, [phase]);
 
   // Reset to form phase
   function handleBackToForm() {
     setPhase('form');
+    setMapComp(null);
+    setShowPreparing(false);
   }
 
   return (
@@ -130,17 +166,99 @@ export default function ConsultationExperience() {
               We'll review your inquiry and respond within 24 hours.
             </motion.p>
 
-            {/* Back to form link */}
-            <motion.button
-              onClick={handleBackToForm}
-              className="mt-8 text-sm text-text-tertiary hover:text-accent-primary transition-colors cursor-pointer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 }}
-            >
-              &larr; Send another message
-            </motion.button>
+            {/* "Preparing something special..." with animated dots */}
+            <AnimatePresence>
+              {showPreparing && (
+                <motion.p
+                  className="mt-8 text-sm text-text-tertiary flex items-center gap-1"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  Preparing something special
+                  <span className="inline-flex w-6">
+                    <motion.span
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    >
+                      .
+                    </motion.span>
+                    <motion.span
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 0.2,
+                      }}
+                    >
+                      .
+                    </motion.span>
+                    <motion.span
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 0.4,
+                      }}
+                    >
+                      .
+                    </motion.span>
+                  </span>
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
+        </motion.div>
+      )}
+
+      {/* ── MAP PHASE ── */}
+      {phase === 'map' && (
+        <motion.div
+          key="map-phase"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {MapComp ? (
+            <MapComp />
+          ) : (
+            /* Loading skeleton while MapSection is still importing */
+            <div
+              className="w-full h-[350px] md:h-[480px] rounded-xl md:rounded-2xl flex items-center justify-center"
+              style={{
+                background: '#060610',
+                border: '1px solid rgba(59, 130, 246, 0.15)',
+              }}
+            >
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
+                  style={{
+                    borderColor: '#3B82F6',
+                    borderTopColor: 'transparent',
+                  }}
+                />
+                <span className="text-sm" style={{ color: '#6B6B7B' }}>
+                  Loading map...
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Back to form link */}
+          <button
+            onClick={handleBackToForm}
+            className="mt-4 text-sm text-text-tertiary hover:text-accent-primary transition-colors mx-auto block cursor-pointer"
+          >
+            &larr; Send another message
+          </button>
         </motion.div>
       )}
     </AnimatePresence>

@@ -730,7 +730,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           )}
         </motion.button>
         <p className="text-center text-xs text-text-tertiary mt-3">
-          Free 30-minute call. No contracts. No obligations.
+          Free 30-minute call. No obligations.
         </p>
       </motion.form>
       )}

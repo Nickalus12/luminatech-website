@@ -77,7 +77,7 @@ export default function StickyCTA() {
                   Ready to optimize your P21?
                 </p>
                 <p className="text-xs text-white/50 hidden sm:block">
-                  Free 30-min call. No contracts. No obligations.
+                  Free 30-min call. No obligations.
                 </p>
               </div>
 

@@ -213,7 +213,7 @@ export const services = {
     ],
     trustSignals: [
       { icon: "lock", label: "No Hidden Fees", detail: "The price we quote is the price you pay" },
-      { icon: "calendar", label: "No Long-Term Contracts", detail: "Month-to-month on all support plans" },
+      { icon: "calendar", label: "Flexible Plans", detail: "Support plans that scale with your needs" },
       { icon: "shield", label: "Fixed-Price Projects", detail: "Scope creep? That's on us, not you" },
       { icon: "refresh", label: "Satisfaction Guaranteed", detail: "30-90 day warranty on all deliverables" },
     ],

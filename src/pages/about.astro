@@ -6,7 +6,6 @@ import Card from '../components/ui/Card.astro';
 import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
 import TextReveal from '../components/ui/TextReveal';
-import ScrollCounter from '../components/ui/ScrollCounter';
 import { about, brand } from '../content/copy';
 ---
 
@@ -64,11 +63,9 @@ import { about, brand } from '../content/copy';
         <div class="lg:col-span-2 space-y-6" data-stagger-group>
           {about.credentials.map((credential, i) => (
             <div class="about-credential-card stagger-item bg-bg-surface-1 border border-border rounded-xl p-6">
-              <ScrollCounter
-                value={credential.metric}
-                className="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary block mb-1 about-metric-value"
-                client:visible
-              />
+              <span class="text-[length:var(--font-size-metric)] font-mono font-bold text-accent-primary block mb-1 about-metric-value">
+                {credential.metric}
+              </span>
               <h3 class="text-lg font-semibold text-text-primary mb-2">{credential.label}</h3>
               <p class="text-sm text-text-secondary leading-relaxed">{credential.detail}</p>
             </div>

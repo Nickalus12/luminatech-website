@@ -205,7 +205,7 @@ export default function ExitIntent() {
                 className="text-center text-[10px] mt-3"
                 style={{ color: 'rgba(255, 255, 255, 0.35)' }}
               >
-                Free 30-min consultation — no contracts, no obligations
+                Free 30-min consultation — no obligations
               </p>
             </div>
           </div>
