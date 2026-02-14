@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
-import ContactForm from '../components/ContactForm';
+import ConsultationExperience from '../components/ConsultationExperience';
 import FAQTicker from '../components/ui/FAQTicker';
 import { contact, brand } from '../content/copy';
 ---
@@ -37,11 +37,9 @@ import { contact, brand } from '../content/copy';
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
 
-        <!-- Form (left, wider) -->
+        <!-- Form → Celebration → Map Experience (left, wider) -->
         <div class="lg:col-span-3 scroll-reveal">
-          <div class="bg-bg-surface-1 border border-border rounded-xl p-6 md:p-8">
-            <ContactForm client:idle />
-          </div>
+          <ConsultationExperience client:idle />
         </div>
 
         <!-- Sidebar (right) -->

@@ -239,7 +239,11 @@ function SuccessCelebration({ name }: { name: string }) {
   );
 }
 
-export default function ContactForm() {
+interface ContactFormProps {
+  onSuccess?: (name: string) => void;
+}
+
+export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     company: '',
@@ -346,17 +350,20 @@ export default function ContactForm() {
       const result = await response.json();
       if (result.success) {
         const firstName = formData.name.split(' ')[0];
-        setSubmittedName(firstName);
-        setShowToast(true);
-        setStatus('success');
-        setFormData({ name: '', company: '', email: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
-        setErrors({});
 
-        // Reveal the cinematic map section
-        window.dispatchEvent(new CustomEvent('lumina:form-submitted'));
-
-        // Auto-dismiss toast after 8 seconds
-        setTimeout(() => setShowToast(false), 8000);
+        if (onSuccess) {
+          // Parent (ConsultationExperience) manages the transition
+          onSuccess(firstName);
+        } else {
+          // Standalone behavior
+          setSubmittedName(firstName);
+          setShowToast(true);
+          setStatus('success');
+          setFormData({ name: '', company: '', email: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
+          setErrors({});
+          window.dispatchEvent(new CustomEvent('lumina:form-submitted'));
+          setTimeout(() => setShowToast(false), 8000);
+        }
       } else {
         setStatus('error');
       }
