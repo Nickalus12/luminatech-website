@@ -9,6 +9,10 @@ import Badge from '../components/ui/Badge.astro';
 import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
 import MetricsGrid from '../components/ui/MetricsGrid';
 import SocialProof from '../components/ui/SocialProof';
+import AnimatedTrustBar from '../components/ui/AnimatedTrustBar';
+import SocialProofToast from '../components/ui/SocialProofToast';
+import OnboardingFlow from '../components/ui/OnboardingFlow';
+import ChatPrompt from '../components/ui/ChatPrompt';
 import { homepage } from '../content/copy';
 ---
 
@@ -40,6 +44,7 @@ import { homepage } from '../content/copy';
           <h1
             class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6 animate-slide-up"
             style="white-space: pre-line;"
+            transition:name="hero"
           >
             {homepage.hero.headline}
           </h1>
@@ -101,14 +106,7 @@ import { homepage } from '../content/copy';
   ═══════════════════════════════════════════════════════════════════════════ -->
   <div class="bg-bg-surface-1 border-y border-border/50 py-8">
     <Container>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12 md:gap-16">
-        {homepage.trustBar.metrics.map((metric) => (
-          <div class="flex items-center gap-3 text-center sm:text-left">
-            <span class="font-mono text-2xl font-bold text-accent-primary">{metric.value}</span>
-            <span class="text-text-secondary text-sm">{metric.label}</span>
-          </div>
-        ))}
-      </div>
+      <AnimatedTrustBar metrics={homepage.trustBar.metrics} client:visible />
     </Container>
   </div>
 
@@ -481,6 +479,16 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
+       CLIENT ONBOARDING FLOW
+       Interactive stepped timeline showing the engagement process
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <OnboardingFlow client:visible />
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
        BOTTOM CTA SECTION
        Strong closing CTA with gradient background
   ═══════════════════════════════════════════════════════════════════════════ -->
@@ -505,6 +513,8 @@ import { homepage } from '../content/copy';
       </div>
     </Container>
   </Section>
+  <!-- Social proof toast notifications -->
+  <SocialProofToast client:idle />
 </BaseLayout>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

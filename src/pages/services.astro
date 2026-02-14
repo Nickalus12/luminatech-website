@@ -9,6 +9,7 @@ import InteractiveROICalculator from '../components/ui/InteractiveROICalculator'
 import ServiceCardGrid from '../components/ui/ServiceCardGrid';
 import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
 import GlowText from '../components/ui/GlowText.astro';
+import SocialProofToast from '../components/ui/SocialProofToast';
 import { services, brand } from '../content/copy';
 
 const description = "Comprehensive Prophet 21 consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support for wholesale distributors.";
@@ -346,7 +347,7 @@ const retainerTiers = [
 
     <Container class="relative">
       <div class="max-w-3xl mx-auto text-center mb-10 scroll-reveal">
-        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
+        <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4" transition:name="hero">
           {services.hero.headline}
         </h1>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
@@ -787,6 +788,8 @@ const retainerTiers = [
     </Container>
   </Section>
 
+  <!-- Social proof toast notifications -->
+  <SocialProofToast client:idle />
 </BaseLayout>
 
 <style>
