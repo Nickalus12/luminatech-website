@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import ConsultationExperience from '../components/ConsultationExperience';
+import MapSection from '../components/ui/MapSection';
 import FAQTicker from '../components/ui/FAQTicker';
 import { contact, brand } from '../content/copy';
 ---
@@ -14,7 +15,7 @@ import { contact, brand } from '../content/copy';
   schemaFaqs={contact.faq.items}
 >
 
-  <!-- Prefetch Mapbox GL JS assets (loaded after form submission) -->
+  <!-- Prefetch Mapbox GL JS assets (loaded when map scrolls into view) -->
   <link rel="prefetch" href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js" as="script" />
   <link rel="prefetch" href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" as="style" />
 
@@ -37,7 +38,7 @@ import { contact, brand } from '../content/copy';
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
 
-        <!-- Form → Celebration → Map Experience (left, wider) -->
+        <!-- Form → Celebration (left, wider) -->
         <div class="lg:col-span-3 scroll-reveal">
           <ConsultationExperience client:idle />
         </div>
@@ -141,6 +142,13 @@ import { contact, brand } from '../content/copy';
           </div>
         </div>
       </div>
+    </Container>
+  </Section>
+
+  <!-- Cinematic Flythrough Map -->
+  <Section background="base" padding="md">
+    <Container>
+      <MapSection client:visible />
     </Container>
   </Section>
 
