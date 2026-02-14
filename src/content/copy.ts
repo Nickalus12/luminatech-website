@@ -7,7 +7,7 @@ export const brand = {
   name: "Lumina Erp",
   tagline: "Illuminate your ERP potential.",
   domain: "Lumina-ERP.com",
-  email: "Nickalus@Lumina-ERP.com",
+  email: "Discovery@Lumina-ERP.com",
   location: "Humble, TX",
   locationFull: "Based in Humble, TX. Serving distributors nationwide.",
   founder: "Nick Brewer",
@@ -103,14 +103,14 @@ export const homepage = {
         title: "Strategy & Advisory",
         description:
           "P21 health checks, migration planning, and configuration audits. We find what's slowing your system down and build a roadmap to fix it.",
-        link: { label: "Learn More", href: "/services#advisory" },
+        link: { label: "Learn More", href: "/services#service-quiz" },
       },
       {
         icon: "development",
         title: "Custom Development",
         description:
           "Business rules, SSRS reports, SQL optimization, and API integrations. Real code from someone who writes it daily in a production P21 environment.",
-        link: { label: "Learn More", href: "/services#development" },
+        link: { label: "Learn More", href: "/services#extensions" },
       },
       {
         icon: "cloud",
@@ -135,7 +135,7 @@ export const homepage = {
     before: { label: "Before", value: "45 min", detail: "per order" },
     after: { label: "After", value: "18 min", detail: "per order" },
     quote:
-      "Nick understood our P21 setup from day one. No ramp-up time, no hand-holding -- just results.",
+      "The Lumina team understood our P21 setup from day one. No ramp-up time, no hand-holding -- just results.",
     attribution: "Operations Manager, Regional HVAC Distributor",
     link: {
       label: "Read Full Case Study",
@@ -144,7 +144,7 @@ export const homepage = {
   },
   testimonial: {
     quote:
-      "We tried two other consulting firms before finding Lumina. Nick was the first person who actually understood how we use P21 day-to-day. He didn't just fix the problem -- he showed us three other things we didn't know we were doing wrong.",
+      "We tried two other consulting firms before finding Lumina. Lumina ERP was the first team that actually understood how we use P21 day-to-day. They didn't just fix the problem -- they showed us three other things we didn't know we were doing wrong.",
     name: "IT Director",
     company: "Multi-Branch Electrical Supply",
   },

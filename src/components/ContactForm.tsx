@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface FormData {
   name: string;
@@ -39,13 +40,17 @@ function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-/** Frosted glass toast notification */
+/** Frosted glass toast notification with enter/exit animation */
 function Toast({ name, onClose }: { name: string; onClose: () => void }) {
   return (
-    <div
+    <motion.div
       role="status"
       aria-live="polite"
-      className="fixed top-4 left-4 right-4 sm:left-auto sm:top-6 sm:right-6 z-[9999] sm:max-w-sm animate-[slideDown_0.5s_cubic-bezier(0.16,1,0.3,1)] pointer-events-auto"
+      className="fixed top-4 left-4 right-4 sm:left-auto sm:top-6 sm:right-6 z-[9999] sm:max-w-sm pointer-events-auto"
+      initial={{ opacity: 0, y: -16, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -12, scale: 0.96 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur-xl">
         {/* Gradient accent line */}
@@ -83,7 +88,7 @@ function Toast({ name, onClose }: { name: string; onClose: () => void }) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -175,9 +180,11 @@ export default function ContactForm() {
   return (
     <>
       {/* Frosted toast notification */}
-      {showToast && (
-        <Toast name={submittedName} onClose={() => setShowToast(false)} />
-      )}
+      <AnimatePresence>
+        {showToast && (
+          <Toast name={submittedName} onClose={() => setShowToast(false)} />
+        )}
+      </AnimatePresence>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         {/* Honeypot */}

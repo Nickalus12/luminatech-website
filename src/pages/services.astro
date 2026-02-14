@@ -411,7 +411,7 @@ const retainerTiers = [
             <p class="text-sm font-semibold text-accent-error uppercase tracking-wider">Other Consultants</p>
           </div>
           <div class="bg-accent-success/10 px-4 py-3 sm:px-6 sm:py-4 border-b border-border">
-            <p class="text-sm font-semibold text-accent-success uppercase tracking-wider">Lumina ERP</p>
+            <p class="text-sm font-semibold uppercase tracking-wider"><span class="text-accent-success">LUMINA</span> <span class="text-accent-primary">ERP</span></p>
           </div>
           <!-- Comparison rows -->
           {services.transparency.comparisonItems.map((item, index) => (
@@ -526,7 +526,7 @@ const retainerTiers = [
   </Section>
 
   <!-- CLOUD MIGRATION SPOTLIGHT -->
-  <Section background="surface-1" padding="lg" class="relative overflow-hidden">
+  <Section id="migration" background="surface-1" padding="lg" class="relative overflow-hidden">
     <div class="absolute top-0 right-0 w-96 h-96 bg-accent-primary/5 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-64 h-64 bg-accent-violet/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -800,6 +800,17 @@ const retainerTiers = [
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+  /* Scroll offset for anchor links so sticky header + nav don't cover content */
+  #extensions,
+  #integrations,
+  #database,
+  #warehouse,
+  #portals,
+  #support,
+  #migration,
+  #service-quiz {
+    scroll-margin-top: 8rem;
   }
 </style>
 
