@@ -74,6 +74,24 @@ function validatePhone(phone: string): boolean {
   return digits.length >= 7 && digits.length <= 15;
 }
 
+const US_STATES = new Set([
+  'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
+  'KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
+  'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT',
+  'VA','WA','WV','WI','WY','DC',
+]);
+
+function validateLocation(location: string): boolean {
+  const trimmed = location.trim();
+  if (!trimmed.includes(',')) return false;
+  const parts = trimmed.split(',').map((p) => p.trim());
+  if (parts.length < 2) return false;
+  const city = parts[0];
+  const state = parts[parts.length - 1].toUpperCase();
+  // City must be at least 2 chars, state must be a valid US abbreviation or full state name (2+ chars)
+  return city.length >= 2 && (US_STATES.has(state) || state.length >= 2);
+}
+
 /* Shake animation for invalid fields */
 const shakeVariants = {
   shake: {
@@ -353,21 +371,30 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     setGeoStatus('loading');
     trackLocationDetect('started');
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 300000,
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Try Mapbox reverse geocoding first, fall back to free Nominatim API
+      let locationStr = '';
+
+      if (MAPBOX_TOKEN) {
         try {
-          const { latitude, longitude } = position.coords;
-          const response = await fetch(
+          const res = await fetch(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place,region&limit=1&access_token=${MAPBOX_TOKEN}`
           );
-          const data = await response.json();
-
-          if (data.features && data.features.length > 0) {
+          const data = await res.json();
+          if (data.features?.length > 0) {
             const feature = data.features[0];
-            // Extract city and state from the context or place name
             let city = '';
             let state = '';
-
             if (feature.place_type?.includes('place')) {
               city = feature.text || '';
               const regionCtx = feature.context?.find((c: { id: string }) => c.id.startsWith('region'));
@@ -375,36 +402,63 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             } else if (feature.place_type?.includes('region')) {
               state = feature.text || '';
             }
-
-            const locationStr = city && state ? `${city}, ${state}` : feature.place_name || '';
-            if (locationStr) {
-              setFormData((prev) => ({ ...prev, location: locationStr }));
-              setErrors((prev) => {
-                const next = { ...prev };
-                delete next.location;
-                return next;
-              });
-              setGeoStatus('success');
-              trackLocationDetect('success', locationStr);
-            } else {
-              setGeoStatus('error');
-              trackLocationDetect('error');
-            }
-          } else {
-            setGeoStatus('error');
-            trackLocationDetect('error');
+            locationStr = city && state ? `${city}, ${state}` : '';
           }
         } catch {
-          setGeoStatus('error');
-          trackLocationDetect('error');
+          // Mapbox failed, try fallback
         }
-      },
-      () => {
+      }
+
+      // Fallback: OpenStreetMap Nominatim (free, no key needed)
+      if (!locationStr) {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            { headers: { 'User-Agent': 'LuminaERP-ContactForm/1.0' } }
+          );
+          const data = await res.json();
+          const addr = data.address;
+          if (addr) {
+            const city = addr.city || addr.town || addr.village || addr.county || '';
+            const state = addr.state || '';
+            // Convert full state name to abbreviation if possible
+            const stateAbbr = Object.entries({
+              'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+              'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+              'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+              'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+              'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+              'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+              'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+              'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+              'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+              'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+              'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
+            }).find(([name]) => name.toLowerCase() === state.toLowerCase())?.[1] || state;
+            if (city && stateAbbr) locationStr = `${city}, ${stateAbbr}`;
+          }
+        } catch {
+          // Both geocoding services failed
+        }
+      }
+
+      if (locationStr) {
+        setFormData((prev) => ({ ...prev, location: locationStr }));
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next.location;
+          return next;
+        });
+        setGeoStatus('success');
+        trackLocationDetect('success', locationStr);
+      } else {
         setGeoStatus('error');
-        trackLocationDetect('denied');
-      },
-      { enableHighAccuracy: false, timeout: 10000 }
-    );
+        trackLocationDetect('error');
+      }
+    } catch {
+      setGeoStatus('error');
+      trackLocationDetect('denied');
+    }
   }, []);
 
   // Reset geo error after a few seconds
@@ -433,7 +487,11 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     } else if (!validatePhone(formData.phone)) {
       errs.phone = 'Please enter a valid phone number';
     }
-    if (!formData.location.trim()) errs.location = 'Location is required';
+    if (!formData.location.trim()) {
+      errs.location = 'Location is required';
+    } else if (!validateLocation(formData.location)) {
+      errs.location = 'Please enter a valid City, State (e.g. Houston, TX)';
+    }
     if (!formData.helpType) errs.helpType = 'Please select an option';
     return errs;
   }
