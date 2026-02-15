@@ -36,8 +36,18 @@ interface FormErrors {
 }
 
 const API_ENDPOINT = 'https://odoo-worker.nbrewer.workers.dev/api/contact';
+const LINKEDIN_AUTH_URL = 'https://odoo-worker.nbrewer.workers.dev/api/linkedin/auth';
+const WORKER_ORIGIN = 'https://odoo-worker.nbrewer.workers.dev';
 
 const MAPBOX_TOKEN = import.meta.env.PUBLIC_MAPBOX_TOKEN || '';
+
+interface LinkedInProfile {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+const STORAGE_KEY = 'lumina-contact-draft';
 
 const helpOptions = [
   'P21 Health Check / Audit',
@@ -440,6 +450,151 @@ function SuccessCelebration({ name }: { name: string }) {
   );
 }
 
+/** Completion progress bar */
+function ProgressBar({ formData }: { formData: FormData }) {
+  const filled = [
+    formData.name.trim(),
+    formData.company.trim(),
+    formData.email.trim() && validateEmail(formData.email),
+    formData.phone.trim() && validatePhone(formData.phone),
+    formData.location.trim(),
+    formData.helpType,
+  ].filter(Boolean).length;
+  const pct = (filled / 6) * 100;
+
+  return (
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs text-text-tertiary">{filled}/6 fields complete</span>
+        {filled === 6 && (
+          <motion.span
+            className="text-xs text-emerald-400 font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Ready to submit
+          </motion.span>
+        )}
+      </div>
+      <div className="h-1 w-full rounded-full bg-bg-surface-2 overflow-hidden">
+        <motion.div
+          className="h-full rounded-full bg-gradient-to-r from-accent-primary to-emerald-400"
+          initial={false}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Express Lane card — LinkedIn quick-fill */
+function ExpressLane({
+  profile,
+  loading,
+  onConnect,
+  onDisconnect,
+}: {
+  profile: LinkedInProfile | null;
+  loading: boolean;
+  onConnect: () => void;
+  onDisconnect: () => void;
+}) {
+  if (profile) {
+    return (
+      <motion.div
+        className="mb-6 rounded-xl border border-[#0A66C2]/20 bg-[#0A66C2]/[0.04] p-4"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="flex items-center gap-3">
+          {profile.picture ? (
+            <img
+              src={profile.picture}
+              alt=""
+              className="w-10 h-10 rounded-full ring-2 ring-[#0A66C2]/30"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#0A66C2]/15 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-text-primary truncate">{profile.name}</span>
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-[#0A66C2]/15 text-[#0A66C2] border border-[#0A66C2]/20">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                Verified
+              </span>
+            </div>
+            <p className="text-xs text-text-tertiary truncate">{profile.email}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onDisconnect}
+            className="shrink-0 p-1.5 rounded-lg text-text-tertiary hover:text-text-secondary hover:bg-white/5 transition-colors cursor-pointer"
+            aria-label="Disconnect LinkedIn"
+            title="Disconnect"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="mb-6 rounded-xl border border-border bg-bg-surface-2/50 p-5 text-center"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+        <span className="text-sm font-semibold text-text-primary">Express Lane</span>
+      </div>
+      <p className="text-xs text-text-tertiary mb-4">Pre-fill your details instantly with LinkedIn</p>
+      <button
+        type="button"
+        onClick={onConnect}
+        disabled={loading}
+        className="inline-flex items-center justify-center gap-2.5 w-full max-w-xs mx-auto px-5 py-2.5 rounded-lg bg-[#0A66C2] text-white text-sm font-semibold hover:bg-[#004182] transition-all duration-200 disabled:opacity-60 disabled:cursor-wait cursor-pointer shadow-[0_0_20px_rgba(10,102,194,0.2)] hover:shadow-[0_0_30px_rgba(10,102,194,0.35)]"
+      >
+        {loading ? (
+          <>
+            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Connecting...
+          </>
+        ) : (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+            Continue with LinkedIn
+          </>
+        )}
+      </button>
+      <div className="flex items-center gap-3 mt-4">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-[11px] text-text-tertiary uppercase tracking-wider">or fill in manually</span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+    </motion.div>
+  );
+}
+
 interface ContactFormProps {
   onSuccess?: (name: string) => void;
 }
@@ -462,6 +617,10 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   const [showToast, setShowToast] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // LinkedIn Express Lane state
+  const [linkedInProfile, setLinkedInProfile] = useState<LinkedInProfile | null>(null);
+  const [linkedInLoading, setLinkedInLoading] = useState(false);
 
   // Cycling name placeholder state
   const [nameFocused, setNameFocused] = useState(false);
@@ -612,6 +771,90 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     }
   }, [geoStatus]);
 
+  // --- localStorage draft persistence ---
+  const draftLoaded = useRef(false);
+  useEffect(() => {
+    if (draftLoaded.current) return;
+    draftLoaded.current = true;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setFormData((prev) => ({ ...prev, ...parsed, _honeypot: '' }));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (status === 'success') return; // Don't save after submission
+    const timer = setTimeout(() => {
+      try {
+        const { _honeypot, ...rest } = formData;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      } catch { /* ignore */ }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [formData, status]);
+
+  // --- LinkedIn OAuth popup + postMessage ---
+  const handleLinkedInConnect = useCallback(() => {
+    setLinkedInLoading(true);
+    const origin = encodeURIComponent(window.location.origin);
+    const popup = window.open(
+      `${LINKEDIN_AUTH_URL}?origin=${origin}`,
+      'linkedin-auth',
+      'width=600,height=700,left=200,top=100,toolbar=no,menubar=no'
+    );
+
+    // Poll for popup close (in case user closes it manually)
+    const pollTimer = setInterval(() => {
+      if (popup && popup.closed) {
+        clearInterval(pollTimer);
+        setLinkedInLoading(false);
+      }
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== WORKER_ORIGIN) return;
+
+      if (event.data?.type === 'linkedin-profile') {
+        const profile = event.data.profile as LinkedInProfile;
+        setLinkedInProfile(profile);
+        setLinkedInLoading(false);
+
+        // Cascade-fill the form fields with slight delays
+        const updates: Partial<FormData> = {};
+        if (profile.name) updates.name = profile.name;
+        if (profile.email) updates.email = profile.email;
+        // Construct LinkedIn URL from name (user can edit)
+        updates.linkedin = '';
+
+        setFormData((prev) => ({ ...prev, ...updates }));
+
+        // Clear errors for auto-filled fields
+        setErrors((prev) => {
+          const next = { ...prev };
+          if (profile.name) delete next.name;
+          if (profile.email) delete next.email;
+          return next;
+        });
+      }
+
+      if (event.data?.type === 'linkedin-error') {
+        setLinkedInLoading(false);
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  const handleLinkedInDisconnect = useCallback(() => {
+    setLinkedInProfile(null);
+  }, []);
+
   function validate(): FormErrors {
     const errs: FormErrors = {};
     if (!formData.name.trim()) errs.name = 'Name is required';
@@ -746,6 +989,9 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         trackFormSubmit(true, formData.helpType);
         const firstName = formData.name.split(' ')[0];
 
+        // Clear saved draft
+        try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+
         if (onSuccess) {
           onSuccess(firstName);
         } else {
@@ -754,6 +1000,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           setStatus('success');
           setFormData({ name: '', company: '', email: '', linkedin: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
           setErrors({});
+          setLinkedInProfile(null);
           window.dispatchEvent(new CustomEvent('lumina:form-submitted'));
           setTimeout(() => setShowToast(false), 8000);
         }
@@ -780,6 +1027,18 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       {status === 'success' ? (
         <SuccessCelebration key="success" name={submittedName} />
       ) : (
+      <div key="form-wrapper">
+        {/* Express Lane — LinkedIn quick-fill */}
+        <ExpressLane
+          profile={linkedInProfile}
+          loading={linkedInLoading}
+          onConnect={handleLinkedInConnect}
+          onDisconnect={handleLinkedInDisconnect}
+        />
+
+        {/* Progress bar */}
+        <ProgressBar formData={formData} />
+
       <motion.form
         key="form"
         ref={formRef}
@@ -840,6 +1099,12 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         >
           <label htmlFor="contact-name" className={labelClass}>
             Name <span className="text-accent-error">*</span>
+            {linkedInProfile && formData.name === linkedInProfile.name && (
+              <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A66C2]">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                via LinkedIn
+              </span>
+            )}
           </label>
           <div className="relative">
             <input
@@ -972,6 +1237,12 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         >
           <label htmlFor="contact-email" className={labelClass}>
             Email <span className="text-accent-error">*</span>
+            {linkedInProfile && formData.email === linkedInProfile.email && (
+              <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A66C2]">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                via LinkedIn
+              </span>
+            )}
           </label>
           <input
             id="contact-email"
@@ -1357,6 +1628,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           Free 30-minute call. No obligations.
         </p>
       </motion.form>
+      </div>
       )}
       </AnimatePresence>
     </>
