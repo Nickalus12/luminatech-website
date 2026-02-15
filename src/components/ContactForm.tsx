@@ -463,20 +463,22 @@ function ProgressBar({ formData }: { formData: FormData }) {
   const pct = (filled / 6) * 100;
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-xs text-text-tertiary">{filled}/6 fields complete</span>
-        {filled === 6 && (
-          <motion.span
-            className="text-xs text-emerald-400 font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            Ready to submit
-          </motion.span>
-        )}
-      </div>
-      <div className="h-1 w-full rounded-full bg-bg-surface-2 overflow-hidden">
+    <div className="mb-4">
+      {filled > 0 && (
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-[11px] text-text-tertiary">{filled}/6 complete</span>
+          {filled === 6 && (
+            <motion.span
+              className="text-[11px] text-emerald-400 font-medium"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              Ready to submit
+            </motion.span>
+          )}
+        </div>
+      )}
+      <div className="h-0.5 w-full rounded-full bg-bg-surface-2 overflow-hidden">
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-accent-primary to-emerald-400"
           initial={false}
@@ -488,7 +490,7 @@ function ProgressBar({ formData }: { formData: FormData }) {
   );
 }
 
-/** Express Lane card — LinkedIn quick-fill */
+/** Express Lane — LinkedIn quick-fill (compact inline bar) */
 function ExpressLane({
   profile,
   loading,
@@ -503,95 +505,82 @@ function ExpressLane({
   if (profile) {
     return (
       <motion.div
-        className="mb-6 rounded-xl border border-[#0A66C2]/20 bg-[#0A66C2]/[0.04] p-4"
-        initial={{ opacity: 0, y: -8 }}
+        className="mb-4 flex items-center gap-2.5 rounded-lg border border-[#0A66C2]/15 bg-[#0A66C2]/[0.03] px-3 py-2"
+        initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="flex items-center gap-3">
-          {profile.picture ? (
-            <img
-              src={profile.picture}
-              alt=""
-              className="w-10 h-10 rounded-full ring-2 ring-[#0A66C2]/30"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-[#0A66C2]/15 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-text-primary truncate">{profile.name}</span>
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-[#0A66C2]/15 text-[#0A66C2] border border-[#0A66C2]/20">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                Verified
-              </span>
-            </div>
-            <p className="text-xs text-text-tertiary truncate">{profile.email}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onDisconnect}
-            className="shrink-0 p-1.5 rounded-lg text-text-tertiary hover:text-text-secondary hover:bg-white/5 transition-colors cursor-pointer"
-            aria-label="Disconnect LinkedIn"
-            title="Disconnect"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        {profile.picture ? (
+          <img
+            src={profile.picture}
+            alt=""
+            className="w-7 h-7 rounded-full ring-1 ring-[#0A66C2]/25 shrink-0"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-[#0A66C2]/10 flex items-center justify-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
             </svg>
-          </button>
-        </div>
+          </div>
+        )}
+        <span className="text-sm font-medium text-text-primary truncate">{profile.name}</span>
+        <span className="hidden sm:inline text-xs text-text-tertiary truncate">{profile.email}</span>
+        <span className="inline-flex items-center gap-0.5 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider rounded bg-[#0A66C2]/10 text-[#0A66C2] shrink-0">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+          Verified
+        </span>
+        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={onDisconnect}
+          className="shrink-0 p-1 rounded text-text-tertiary hover:text-text-secondary hover:bg-white/5 transition-colors cursor-pointer"
+          aria-label="Disconnect LinkedIn"
+          title="Disconnect"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </motion.div>
     );
   }
 
   return (
-    <motion.div
-      className="mb-6 rounded-xl border border-border bg-bg-surface-2/50 p-5 text-center"
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="flex items-center justify-center gap-2 mb-2">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
-        </svg>
-        <span className="text-sm font-semibold text-text-primary">Express Lane</span>
-      </div>
-      <p className="text-xs text-text-tertiary mb-4">Pre-fill your details instantly with LinkedIn</p>
-      <button
+    <div className="mb-4">
+      <motion.button
         type="button"
         onClick={onConnect}
         disabled={loading}
-        className="inline-flex items-center justify-center gap-2.5 w-full max-w-xs mx-auto px-5 py-2.5 rounded-lg bg-[#0A66C2] text-white text-sm font-semibold hover:bg-[#004182] transition-all duration-200 disabled:opacity-60 disabled:cursor-wait cursor-pointer shadow-[0_0_20px_rgba(10,102,194,0.2)] hover:shadow-[0_0_30px_rgba(10,102,194,0.35)]"
+        className="w-full flex items-center gap-3 rounded-lg border border-border bg-bg-surface-2/40 px-4 py-2.5 text-left hover:border-[#0A66C2]/30 hover:bg-[#0A66C2]/[0.03] transition-all duration-200 disabled:opacity-60 disabled:cursor-wait cursor-pointer group"
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
       >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#0A66C2" className="shrink-0">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+        <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
+          {loading ? 'Connecting...' : 'Pre-fill with LinkedIn'}
+        </span>
+        <div className="flex-1" />
         {loading ? (
-          <>
-            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            Connecting...
-          </>
+          <svg className="animate-spin h-3.5 w-3.5 text-text-tertiary shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
         ) : (
-          <>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-            </svg>
-            Continue with LinkedIn
-          </>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-tertiary group-hover:text-accent-primary transition-colors shrink-0">
+            <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+          </svg>
         )}
-      </button>
-      <div className="flex items-center gap-3 mt-4">
-        <div className="flex-1 h-px bg-border" />
-        <span className="text-[11px] text-text-tertiary uppercase tracking-wider">or fill in manually</span>
-        <div className="flex-1 h-px bg-border" />
+      </motion.button>
+      <div className="flex items-center gap-3 mt-3">
+        <div className="flex-1 h-px bg-border/60" />
+        <span className="text-[10px] text-text-tertiary/70 uppercase tracking-widest">or fill in manually</span>
+        <div className="flex-1 h-px bg-border/60" />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
