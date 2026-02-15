@@ -404,8 +404,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             }
             locationStr = city && state ? `${city}, ${state}` : '';
           }
-        } catch {
-          // Mapbox failed, try fallback
+        } catch (e) {
+          console.warn('Mapbox geocoding failed:', e);
         }
       }
 
@@ -413,8 +413,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
       if (!locationStr) {
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
-            { headers: { 'User-Agent': 'LuminaERP-ContactForm/1.0' } }
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`
           );
           const data = await res.json();
           const addr = data.address;
@@ -437,8 +436,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             }).find(([name]) => name.toLowerCase() === state.toLowerCase())?.[1] || state;
             if (city && stateAbbr) locationStr = `${city}, ${stateAbbr}`;
           }
-        } catch {
-          // Both geocoding services failed
+        } catch (e) {
+          console.warn('Nominatim geocoding failed:', e);
         }
       }
 
