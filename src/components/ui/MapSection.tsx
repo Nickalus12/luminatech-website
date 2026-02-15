@@ -684,7 +684,7 @@ export default function MapSection() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full relative" id="lumina-map">
+    <div ref={containerRef} className="w-full relative overflow-hidden" id="lumina-map">
       {/* Ambient glow behind the map container */}
       <div
         className="absolute inset-0 -m-6 md:-m-12 pointer-events-none"
@@ -802,7 +802,7 @@ export default function MapSection() {
                 >
                   <span className="hud-status-dot" />
                   <span
-                    className="text-[10px] font-semibold tracking-[0.2em] uppercase"
+                    className="text-[11px] sm:text-[10px] font-semibold tracking-[0.2em] uppercase"
                     style={{ color: '#10B981', fontFamily: 'var(--font-mono, monospace)' }}
                   >
                     Humble, TX
@@ -821,7 +821,7 @@ export default function MapSection() {
 
                 {/* Coordinates */}
                 <motion.p
-                  className="text-center mt-2"
+                  className="text-center mt-2 hidden sm:block"
                   style={{
                     color: 'rgba(160, 160, 184, 0.7)',
                     fontSize: '10px',
@@ -854,7 +854,7 @@ export default function MapSection() {
                   className="text-center mt-2"
                   style={{
                     color: 'rgba(255, 255, 255, 0.3)',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     letterSpacing: '0.2em',
                     textTransform: 'uppercase',
                   }}

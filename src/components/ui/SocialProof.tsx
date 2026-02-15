@@ -93,7 +93,7 @@ function AnimatedMetric({
 
   return (
     <span
-      className="font-mono font-bold text-4xl md:text-5xl tracking-tight"
+      className="font-mono font-bold text-3xl md:text-4xl lg:text-5xl tracking-tight"
       style={{ color, textShadow: `0 0 30px ${color}33` }}
     >
       {display}

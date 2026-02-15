@@ -209,6 +209,9 @@ export default function FAQTicker({ items, heading = 'Common Questions' }: FAQTi
       {/* ── Mobile: Horizontal pills + answer card ── */}
       <div className="md:hidden max-w-lg mx-auto px-1">
         {/* Scrolling question pills */}
+        <div className="relative">
+        <div className="absolute left-0 top-0 bottom-4 w-4 bg-gradient-to-r from-[var(--color-bg-base)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-4 w-4 bg-gradient-to-l from-[var(--color-bg-base)] to-transparent z-10 pointer-events-none" />
         <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none -mx-1 px-1">
           {items.map((item, i) => {
             const meta = questionMeta[item.question];
@@ -233,6 +236,7 @@ export default function FAQTicker({ items, heading = 'Common Questions' }: FAQTi
               </button>
             );
           })}
+        </div>
         </div>
 
         {/* Answer card */}

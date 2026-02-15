@@ -87,6 +87,7 @@ export default function ExitIntent() {
           key="exit-intent"
           {...slideIn}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          data-exit-intent
           className="fixed bottom-6 right-6 z-[9990] w-[340px] max-w-[calc(100vw-3rem)]"
           role="dialog"
           aria-label="Before you go"

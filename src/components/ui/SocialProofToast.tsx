@@ -44,6 +44,11 @@ export default function SocialProofToast() {
   const showToast = useCallback(() => {
     if (showCount.current >= maxShows) return;
 
+    // Don't show if StickyCTA or ExitIntent is visible
+    const stickyCta = document.querySelector('[data-sticky-cta]');
+    const exitIntent = document.querySelector('[data-exit-intent]');
+    if (stickyCta || exitIntent) return;
+
     const idx = showCount.current % messages.length;
     setCurrentIndex(idx);
     setVisible(true);
@@ -81,7 +86,7 @@ export default function SocialProofToast() {
     <AnimatePresence>
       {visible && msg && (
         <motion.div
-          className="fixed bottom-20 sm:bottom-6 left-4 z-[998] max-w-xs pointer-events-auto"
+          className="fixed bottom-24 sm:bottom-6 left-4 z-[998] max-w-xs pointer-events-auto"
           initial={{ opacity: 0, y: 16, x: -8 }}
           animate={{ opacity: 1, y: 0, x: 0 }}
           exit={{ opacity: 0, y: 10, x: -8 }}

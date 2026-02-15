@@ -869,7 +869,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                 type="button"
                 onClick={detectLocation}
                 disabled={geoStatus === 'loading'}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-text-tertiary hover:text-accent-primary hover:bg-accent-primary/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-md text-text-tertiary hover:text-accent-primary hover:bg-accent-primary/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-wait min-w-[44px] min-h-[44px] flex items-center justify-center"
                 title="Detect my location"
                 aria-label="Detect my location"
               >

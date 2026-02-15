@@ -28,7 +28,7 @@ import { homepage } from '../content/copy';
   ═══════════════════════════════════════════════════════════════════════════ -->
   <Section background="base" padding="lg" class="relative overflow-hidden">
     <!-- Animated gradient backdrop -->
-    <div class="absolute inset-0 pointer-events-none hero-gradient-wrap" aria-hidden="true">
+    <div class="absolute inset-0 pointer-events-none hero-gradient-wrap hidden md:block" aria-hidden="true">
       <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 hero-orb-1"></div>
       <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-violet/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4 hero-orb-2"></div>
       <div class="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-accent-primary/3 rounded-full blur-[140px] -translate-x-1/2 -translate-y-1/2 hero-orb-3"></div>
@@ -94,6 +94,9 @@ import { homepage } from '../content/copy';
       <p class="text-center text-xs uppercase tracking-[0.2em] font-medium text-text-tertiary mb-5">
         Technologies We Work With
       </p>
+      <div class="relative">
+      <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-bg-base to-transparent z-10 pointer-events-none md:hidden" aria-hidden="true"></div>
+      <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-base to-transparent z-10 pointer-events-none md:hidden" aria-hidden="true"></div>
       <div class="trust-badges-row flex items-center justify-center gap-6 md:gap-10 overflow-x-auto scrollbar-none px-2">
         <!-- Prophet 21 Expert -->
         <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="Prophet 21 Expert">
@@ -154,6 +157,7 @@ import { homepage } from '../content/copy';
           </div>
           <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">Cloudflare</span>
         </div>
+      </div>
       </div>
     </Container>
   </div>
@@ -379,9 +383,10 @@ import { homepage } from '../content/copy';
 
         <!-- Comparison card -->
         <div class="scroll-reveal" style="animation-delay: 200ms;">
-          <div class="bg-bg-surface-1 rounded-xl border border-border p-6 md:p-8">
+          <div class="bg-bg-surface-1 rounded-xl border border-border p-4 sm:p-6 md:p-8">
             <h3 class="text-lg font-semibold text-text-primary mb-6 text-center">How <span class="font-bold">LUMINA</span> <span class="text-accent-primary font-bold">ERP</span> Compares</h3>
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto -mx-2 px-2">
+            <table class="w-full text-sm min-w-[360px]">
               <thead>
                 <tr class="border-b border-border">
                   <th class="text-left text-text-tertiary font-medium pb-3 pr-4"></th>
@@ -423,6 +428,7 @@ import { homepage } from '../content/copy';
                 </tr>
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>

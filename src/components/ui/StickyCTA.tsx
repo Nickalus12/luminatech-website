@@ -51,6 +51,7 @@ export default function StickyCTA() {
     <AnimatePresence>
       {shouldShow && (
         <motion.div
+          data-sticky-cta
           className="fixed bottom-0 left-0 right-0 z-[999] pointer-events-none"
           initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
