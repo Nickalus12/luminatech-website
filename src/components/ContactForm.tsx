@@ -45,6 +45,7 @@ interface LinkedInProfile {
   name: string;
   email: string;
   picture: string;
+  linkedinUrl: string;
 }
 
 const STORAGE_KEY = 'lumina-contact-draft';
@@ -494,11 +495,13 @@ function ProgressBar({ formData }: { formData: FormData }) {
 function ExpressLane({
   profile,
   loading,
+  remainingCount,
   onConnect,
   onDisconnect,
 }: {
   profile: LinkedInProfile | null;
   loading: boolean;
+  remainingCount: number;
   onConnect: () => void;
   onDisconnect: () => void;
 }) {
@@ -530,6 +533,11 @@ function ExpressLane({
           <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           Verified
         </span>
+        {remainingCount > 0 && (
+          <span className="text-[10px] text-text-tertiary shrink-0">
+            {remainingCount} left
+          </span>
+        )}
         <div className="flex-1" />
         <button
           type="button"
@@ -610,6 +618,9 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   // LinkedIn Express Lane state
   const [linkedInProfile, setLinkedInProfile] = useState<LinkedInProfile | null>(null);
   const [linkedInLoading, setLinkedInLoading] = useState(false);
+
+  // Track fields recently filled by LinkedIn for highlight animation
+  const [linkedInFilledFields, setLinkedInFilledFields] = useState<Set<string>>(new Set());
 
   // Cycling name placeholder state
   const [nameFocused, setNameFocused] = useState(false);
@@ -813,14 +824,18 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         setLinkedInProfile(profile);
         setLinkedInLoading(false);
 
-        // Cascade-fill the form fields with slight delays
+        // Cascade-fill the form fields
         const updates: Partial<FormData> = {};
-        if (profile.name) updates.name = profile.name;
-        if (profile.email) updates.email = profile.email;
-        // Construct LinkedIn URL from name (user can edit)
-        updates.linkedin = '';
+        const filled = new Set<string>();
+        if (profile.name) { updates.name = profile.name; filled.add('name'); }
+        if (profile.email) { updates.email = profile.email; filled.add('email'); }
+        if (profile.linkedinUrl) { updates.linkedin = profile.linkedinUrl; filled.add('linkedin'); }
 
         setFormData((prev) => ({ ...prev, ...updates }));
+        setLinkedInFilledFields(filled);
+
+        // Clear highlight after animation
+        setTimeout(() => setLinkedInFilledFields(new Set()), 2000);
 
         // Clear errors for auto-filled fields
         setErrors((prev) => {
@@ -829,6 +844,38 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           if (profile.email) delete next.email;
           return next;
         });
+
+        // Use email domain to pre-search company via Clearbit
+        if (profile.email) {
+          const domain = profile.email.split('@')[1];
+          if (domain && !['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'aol.com', 'icloud.com', 'protonmail.com', 'live.com', 'msn.com'].includes(domain.toLowerCase())) {
+            const companyName = domain.split('.')[0];
+            searchClearbitCompanies(companyName).then((results) => {
+              if (results.length > 0) {
+                const match = results.find((r) => r.domain.toLowerCase() === domain.toLowerCase()) || results[0];
+                setFormData((prev) => prev.company ? prev : { ...prev, company: match.name });
+                setCompanyDomain(match.domain);
+                setLinkedInFilledFields((prev) => new Set([...prev, 'company']));
+                setErrors((prev) => { const next = { ...prev }; delete next.company; return next; });
+              }
+            });
+          }
+        }
+
+        // Auto-trigger location detection to reduce friction
+        setTimeout(() => detectLocation(), 300);
+
+        // Auto-focus first empty required field after a brief delay
+        setTimeout(() => {
+          const fieldOrder = ['contact-company', 'contact-phone', 'contact-location', 'contact-help'];
+          for (const id of fieldOrder) {
+            const el = document.getElementById(id);
+            if (el && !(el as HTMLInputElement | HTMLSelectElement).value) {
+              el.focus();
+              break;
+            }
+          }
+        }, 600);
       }
 
       if (event.data?.type === 'linkedin-error') {
@@ -1003,6 +1050,19 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     }
   }
 
+  // Compute remaining unfilled required fields for Express Lane display
+  const remainingRequired = [
+    !formData.name.trim(),
+    !formData.company.trim(),
+    !formData.email.trim() || !validateEmail(formData.email),
+    !formData.phone.trim() || !validatePhone(formData.phone),
+    !formData.location.trim(),
+    !formData.helpType,
+  ].filter(Boolean).length;
+
+  // Highlight class for fields recently filled by LinkedIn
+  const linkedInHighlight = 'ring-1 ring-[#0A66C2]/40 border-[#0A66C2]/30';
+
   return (
     <>
       {/* Frosted toast notification */}
@@ -1021,6 +1081,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         <ExpressLane
           profile={linkedInProfile}
           loading={linkedInLoading}
+          remainingCount={remainingRequired}
           onConnect={handleLinkedInConnect}
           onDisconnect={handleLinkedInDisconnect}
         />
@@ -1105,7 +1166,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
               onChange={(e) => handleChange('name', e.target.value)}
               onFocus={() => { setNameFocused(true); handleFieldFocus('name'); }}
               onBlur={() => { setNameFocused(false); handleFieldBlur('name', formData.name); }}
-              className={`${inputBase} ${errors.name ? inputError : ''}`}
+              className={`${inputBase} ${errors.name ? inputError : ''} ${linkedInFilledFields.has('name') ? linkedInHighlight : ''}`}
               aria-invalid={!!errors.name}
               aria-describedby={errors.name ? 'name-error' : undefined}
             />
@@ -1150,6 +1211,12 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         >
           <label htmlFor="contact-company" className={labelClass}>
             Company <span className="text-accent-error">*</span>
+            {linkedInFilledFields.has('company') && (
+              <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A66C2]">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                suggested
+              </span>
+            )}
           </label>
           <div className="relative">
             <input
@@ -1177,7 +1244,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                   trackAutocompleteDismiss('company');
                 }
               }}
-              className={`${inputBase} ${errors.company ? inputError : ''}`}
+              className={`${inputBase} ${errors.company ? inputError : ''} ${linkedInFilledFields.has('company') ? linkedInHighlight : ''}`}
               aria-invalid={!!errors.company}
               aria-describedby={errors.company ? 'company-error' : undefined}
               role="combobox"
@@ -1242,7 +1309,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             onChange={(e) => handleChange('email', e.target.value)}
             onFocus={() => handleFieldFocus('email')}
             onBlur={() => handleFieldBlur('email', formData.email)}
-            className={`${inputBase} ${errors.email ? inputError : ''}`}
+            className={`${inputBase} ${errors.email ? inputError : ''} ${linkedInFilledFields.has('email') ? linkedInHighlight : ''}`}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : emailHint ? 'email-hint' : undefined}
           />
@@ -1323,7 +1390,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                 formData.linkedin && isValidLinkedInUrl(formData.linkedin)
                   ? 'border-[#0A66C2]/30 focus:border-[#0A66C2] focus:ring-[#0A66C2]/40'
                   : ''
-              }`}
+              } ${linkedInFilledFields.has('linkedin') ? linkedInHighlight : ''}`}
             />
             {formData.linkedin && isValidLinkedInUrl(formData.linkedin) && (
               <motion.div

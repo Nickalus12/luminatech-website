@@ -146,6 +146,11 @@ export const homepage = {
     heading: "Results We've Delivered",
     subheading:
       "Real metrics from real P21 projects. No vague promises -- just measurable outcomes.",
+    footerCta: {
+      label: "See All Case Studies",
+      href: "/case-studies",
+      note: "These are just the highlights. We've solved dozens of P21 challenges across multiple distribution verticals.",
+    },
     stories: [
       {
         metric: { value: 150, suffix: "x", label: "Performance Improvement" },
@@ -714,6 +719,46 @@ export const contact = {
           "Yes. Epicor is discontinuing the Classic UI in Kinetic 2026.1 (May 2026). We help with compatibility testing, user retraining, and making sure your customizations work in the new browser-based interface.",
       },
     ],
+  },
+} as const;
+
+// ─── Case Studies Page ───────────────────────────────────────────────────────
+
+export const caseStudiesPage = {
+  hero: {
+    headline: "Real Results from\nReal Distributors",
+    subheadline:
+      "Every project below solved a real problem in a real P21 environment. No hypotheticals, no lab tests -- just measurable outcomes from production systems.",
+  },
+  aggregateMetrics: [
+    { value: "60%", label: "Avg. Process Time Reduction" },
+    { value: "150x", label: "Best Performance Gain" },
+    { value: "100%", label: "Client Satisfaction" },
+  ],
+  portfolioCta: {
+    heading: "These Are Just the Highlights",
+    subheading:
+      "Every distributor's P21 environment is unique -- different modules, different integrations, different pain points. We've solved dozens of challenges across HVAC, electrical, plumbing, and industrial supply. The projects above represent a sample of what we do.",
+    emphasis:
+      "Want to see how we've handled challenges similar to yours? Let's talk.",
+    cta: { label: "Discuss Your P21 Challenges", href: "/contact" },
+    secondaryCta: { label: "Or email us directly", href: "mailto:Discovery@Lumina-ERP.com" },
+  },
+  industryNote: {
+    heading: "We Work Across Distribution Verticals",
+    industries: [
+      "HVAC Distribution",
+      "Electrical Supply",
+      "Plumbing & Pipe",
+      "Industrial Supply",
+      "Fastener Distribution",
+      "Safety & Janitorial",
+    ],
+    note: "Each vertical has unique P21 challenges. Our hands-on experience means faster solutions with fewer surprises.",
+  },
+  midPageCta: {
+    text: "Seeing results you want for your operation?",
+    cta: { label: "Schedule a Free Consultation", href: "/contact" },
   },
 } as const;
 

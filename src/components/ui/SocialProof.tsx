@@ -21,10 +21,17 @@ interface Story {
   readonly accent: 'primary' | 'violet' | 'success';
 }
 
+interface SocialProofCTA {
+  readonly label: string;
+  readonly href: string;
+  readonly note?: string;
+}
+
 interface SocialProofProps {
   heading: string;
   subheading: string;
   stories: readonly Story[];
+  footerCta?: SocialProofCTA;
 }
 
 /* ── Accent color map ──────────────────────────────────────── */
@@ -255,6 +262,7 @@ export default function SocialProof({
   heading,
   subheading,
   stories,
+  footerCta,
 }: SocialProofProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-80px' });
@@ -291,6 +299,49 @@ export default function SocialProof({
           <StoryCard key={i} story={story} index={i} inView={isInView} />
         ))}
       </div>
+
+      {/* Footer CTA — drives to case studies or contact */}
+      {footerCta && (
+        <motion.div
+          className="max-w-2xl mx-auto text-center mt-12"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <a
+            href={footerCta.href}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold no-underline transition-all duration-200 hover:scale-[1.02] border"
+            style={{
+              color: 'var(--color-accent-primary)',
+              borderColor: 'rgba(59, 130, 246, 0.25)',
+              background: 'rgba(59, 130, 246, 0.06)',
+            }}
+          >
+            {footerCta.label}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+          {footerCta.note && (
+            <p
+              className="text-xs mt-3"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              {footerCta.note}
+            </p>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 }

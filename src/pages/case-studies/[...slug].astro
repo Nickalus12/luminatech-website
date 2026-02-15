@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
 import Badge from '../../components/ui/Badge.astro';
+import CaseStudyCTA from '../../components/ui/CaseStudyCTA';
 
 export async function getStaticPaths() {
   const studies = await getCollection('caseStudies');
@@ -22,6 +23,13 @@ const formattedDate = study.data.date.toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
 });
+
+// Get other case studies for "related" section
+const allStudies = await getCollection('caseStudies');
+const relatedStudies = allStudies
+  .filter(s => s.data.slug !== study.data.slug)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
 ---
 
 <BaseLayout
@@ -68,7 +76,7 @@ const formattedDate = study.data.date.toLocaleDateString('en-US', {
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 p-6 rounded-xl bg-bg-surface-1 border border-border">
         {metricEntries.map(([key, metric]) => (
           <div class="text-center p-4">
-            <div class="text-accent-primary font-bold text-2xl md:text-3xl mb-1">{metric.improvement}</div>
+            <div class="text-accent-primary font-bold text-2xl md:text-3xl font-mono mb-1">{metric.improvement}</div>
             <div class="text-text-secondary text-sm font-medium capitalize mb-2">
               {key.replace(/([A-Z])/g, ' $1').trim()}
             </div>
@@ -84,21 +92,80 @@ const formattedDate = study.data.date.toLocaleDateString('en-US', {
         <Content />
       </div>
 
-      <!-- CTA -->
-      <div class="mt-12 p-8 rounded-lg bg-bg-surface-1 border border-border text-center">
-        <h3 class="text-[length:var(--font-size-h4)] font-semibold mb-2">Ready to see results like these?</h3>
-        <p class="text-text-secondary mb-6">
-          Every distributor's P21 setup is different. Let's talk about what's possible for yours.
-        </p>
-        <a
-          href="/contact"
-          class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white font-semibold rounded-lg transition-all duration-fast shadow-glow hover:shadow-glow-lg no-underline"
-        >
-          Schedule a Free Consultation
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
-          </svg>
-        </a>
+      <!-- Mid-article CTA — After reading the full case study -->
+      <div class="mt-10 mb-10">
+        <CaseStudyCTA
+          client:visible
+          variant="inline"
+          heading=""
+          subheading="Facing similar challenges in your P21 environment? Every distributor's setup is different, but the patterns often rhyme."
+          ctaLabel="Let's Discuss Your Situation"
+          ctaHref="/contact"
+        />
+      </div>
+
+      <!-- Related case studies -->
+      {relatedStudies.length > 0 && (
+        <div class="mt-12 pt-10 border-t border-border">
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-6">
+            More Success Stories
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {relatedStudies.map((related) => {
+              const relatedMetrics = Object.entries(related.data.metrics).slice(0, 2);
+              return (
+                <a
+                  href={`/case-studies/${related.data.slug}/`}
+                  class="group block bg-bg-surface-1 rounded-xl border border-border p-5 hover:border-accent-primary/50 hover:-translate-y-0.5 transition-all duration-fast no-underline"
+                >
+                  <div class="flex items-center gap-2 mb-3">
+                    <Badge variant="primary">{related.data.industry}</Badge>
+                  </div>
+                  <h4 class="text-sm font-semibold text-text-primary group-hover:text-accent-primary transition-colors duration-fast mb-2 leading-snug">
+                    {related.data.title}
+                  </h4>
+                  <div class="flex gap-4">
+                    {relatedMetrics.map(([, metric]) => (
+                      <div>
+                        <span class="text-accent-primary font-bold text-sm font-mono">{metric.improvement}</span>
+                        <span class="text-text-tertiary text-xs ml-1">{metric.before} &rarr; {metric.after}</span>
+                      </div>
+                    ))}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <!-- Bottom CTA — The closer -->
+      <div class="mt-12 p-8 md:p-10 rounded-xl bg-bg-surface-1 border border-accent-primary/15 text-center relative overflow-hidden">
+        <!-- Subtle glow -->
+        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-accent-primary/6 rounded-full blur-[60px]"></div>
+        </div>
+
+        <div class="relative z-10">
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">
+            Want Results Like These?
+          </h3>
+          <p class="text-text-secondary mb-3 max-w-lg mx-auto">
+            Every distributor's P21 setup is different. Let's talk about what's possible for yours -- we'll tell you exactly where the opportunities are.
+          </p>
+          <p class="text-text-tertiary text-sm mb-6">
+            Free 30-minute call. No sales pitch, just straight talk from a fellow P21 practitioner.
+          </p>
+          <a
+            href="/contact"
+            class="inline-flex items-center gap-2 px-7 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white font-semibold rounded-lg transition-all duration-fast shadow-glow hover:shadow-glow-lg no-underline"
+          >
+            Schedule a Free Consultation
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+        </div>
       </div>
     </Container>
   </article>
