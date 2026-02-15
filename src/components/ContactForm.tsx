@@ -371,74 +371,74 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     setGeoStatus('loading');
     trackLocationDetect('started');
 
+    const STATE_MAP: Record<string, string> = {
+      'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR', 'california': 'CA',
+      'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'florida': 'FL', 'georgia': 'GA',
+      'hawaii': 'HI', 'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA',
+      'kansas': 'KS', 'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+      'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+      'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+      'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+      'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+      'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+      'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT',
+      'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY',
+    };
+
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: false,
-          timeout: 10000,
-          maximumAge: 300000,
+          timeout: 15000,
+          maximumAge: 600000,
         });
       });
 
       const { latitude, longitude } = position.coords;
-
-      // Try Mapbox reverse geocoding first, fall back to free Nominatim API
       let locationStr = '';
 
+      // Try Mapbox first (if token available)
       if (MAPBOX_TOKEN) {
         try {
           const res = await fetch(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=place,region&limit=1&access_token=${MAPBOX_TOKEN}`
           );
-          const data = await res.json();
-          if (data.features?.length > 0) {
-            const feature = data.features[0];
-            let city = '';
-            let state = '';
-            if (feature.place_type?.includes('place')) {
-              city = feature.text || '';
-              const regionCtx = feature.context?.find((c: { id: string }) => c.id.startsWith('region'));
-              state = regionCtx?.short_code?.replace('US-', '') || regionCtx?.text || '';
-            } else if (feature.place_type?.includes('region')) {
-              state = feature.text || '';
+          if (res.ok) {
+            const data = await res.json();
+            if (data.features?.length > 0) {
+              const feature = data.features[0];
+              let city = '';
+              let state = '';
+              if (feature.place_type?.includes('place')) {
+                city = feature.text || '';
+                const regionCtx = feature.context?.find((c: { id: string }) => c.id.startsWith('region'));
+                state = regionCtx?.short_code?.replace('US-', '') || regionCtx?.text || '';
+              } else if (feature.place_type?.includes('region')) {
+                state = feature.text || '';
+              }
+              if (city && state) locationStr = `${city}, ${state}`;
             }
-            locationStr = city && state ? `${city}, ${state}` : '';
           }
-        } catch (e) {
-          console.warn('Mapbox geocoding failed:', e);
-        }
+        } catch { /* fall through to Nominatim */ }
       }
 
-      // Fallback: OpenStreetMap Nominatim (free, no key needed)
+      // Fallback: OpenStreetMap Nominatim
       if (!locationStr) {
         try {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`
           );
-          const data = await res.json();
-          const addr = data.address;
-          if (addr) {
-            const city = addr.city || addr.town || addr.village || addr.county || '';
-            const state = addr.state || '';
-            // Convert full state name to abbreviation if possible
-            const stateAbbr = Object.entries({
-              'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-              'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-              'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-              'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-              'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
-              'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
-              'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
-              'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
-              'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-              'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-              'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
-            }).find(([name]) => name.toLowerCase() === state.toLowerCase())?.[1] || state;
-            if (city && stateAbbr) locationStr = `${city}, ${stateAbbr}`;
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.address;
+            if (addr) {
+              const city = addr.city || addr.town || addr.village || addr.hamlet || addr.county || '';
+              const state = addr.state || '';
+              const stateAbbr = STATE_MAP[state.toLowerCase()] || state;
+              if (city && stateAbbr) locationStr = `${city}, ${stateAbbr}`;
+            }
           }
-        } catch (e) {
-          console.warn('Nominatim geocoding failed:', e);
-        }
+        } catch { /* both failed */ }
       }
 
       if (locationStr) {
@@ -454,9 +454,14 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         setGeoStatus('error');
         trackLocationDetect('error');
       }
-    } catch {
+    } catch (err: any) {
       setGeoStatus('error');
       trackLocationDetect('denied');
+      // Log for debugging
+      if (err?.code === 1) console.warn('Location: permission denied');
+      else if (err?.code === 2) console.warn('Location: position unavailable');
+      else if (err?.code === 3) console.warn('Location: timeout');
+      else console.warn('Location detection failed:', err);
     }
   }, []);
 
@@ -900,7 +905,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.2 }}
                 >
-                  Could not detect location. Please type it in.
+                  Allow location access in your browser, or type it in.
                 </motion.p>
               )}
             </AnimatePresence>
