@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Access Denied | Lumina ERP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0A0A0F;
+      color: #E8E8ED;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.5rem;
+    }
+    .container {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 2rem;
+    }
+    .shield {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #E8E8ED;
+    }
+    .description {
+      font-size: 1rem;
+      color: #A0A0B0;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .info-box {
+      background: #12121A;
+      border: 1px solid #2A2A36;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+    .info-box h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6B6B7B;
+      margin-bottom: 0.75rem;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(42, 42, 54, 0.5);
+      font-size: 0.8125rem;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #6B6B7B; }
+    .info-value { color: #A0A0B0; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.75rem; }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #3B82F6;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+    }
+    .btn-primary:hover {
+      background: #2563EB;
+      transform: scale(1.03);
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+    }
+    .btn-secondary {
+      background: #12121A;
+      color: #A0A0B0;
+      border: 1px solid #2A2A36;
+    }
+    .btn-secondary:hover {
+      background: #1A1A24;
+      color: #E8E8ED;
+    }
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+      margin: 0 auto 2rem;
+      border-radius: 2px;
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.25rem; }
+      .actions { flex-direction: column; }
+      .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#0A0A0F"/>
+      <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient></defs>
+      <path d="M10 6v18h12" stroke="url(#fg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="10" cy="5" r="2.5" fill="url(#fg)"/>
+    </svg>
+
+    <div class="shield">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+
+    <h1>Access Denied</h1>
+    <p class="description">Our security system blocked this request. If you believe this is an error, please contact us with the details below.</p>
+
+    <div class="divider"></div>
+
+    <div class="info-box">
+      <h2>Request Details</h2>
+      <div class="info-row">
+        <span class="info-label">Ray ID</span>
+        <span class="info-value">::RAY_ID::</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Your IP</span>
+        <span class="info-value">::CLIENT_IP::</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Region</span>
+        <span class="info-value">::GEO::</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="/" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Back to Home
+      </a>
+      <a href="mailto:Support@Lumina-ERP.com?subject=Access%20Denied%20-%20Ray%20ID" class="btn btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Contact Support
+      </a>
+    </div>
+  </div>
+</body>
+</html>

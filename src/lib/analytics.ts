@@ -63,6 +63,39 @@ export function trackFormValidationError(errorCount: number, fields: string[]) {
   });
 }
 
+/* ── Autocomplete Events ── */
+
+export function trackAutocompleteSelect(field: string, value: string) {
+  track('autocomplete_select', {
+    field_name: field,
+    selected_value: value,
+    form_name: 'contact',
+  });
+}
+
+export function trackAutocompleteDismiss(field: string) {
+  track('autocomplete_dismiss', {
+    field_name: field,
+    form_name: 'contact',
+  });
+}
+
+/* ── Smart Field Events ── */
+
+export function trackEmailHintShown(suggestion: string) {
+  track('email_hint_shown', {
+    suggested_domain: suggestion,
+    form_name: 'contact',
+  });
+}
+
+export function trackEmailHintAccepted(suggestion: string) {
+  track('email_hint_accepted', {
+    suggested_domain: suggestion,
+    form_name: 'contact',
+  });
+}
+
 /* ── Navigation & Engagement Events ── */
 
 export function trackCtaClick(ctaName: string, location: string) {

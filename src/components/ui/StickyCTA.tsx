@@ -10,6 +10,9 @@ export default function StickyCTA() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    // Don't show on contact page — user is already there
+    if (window.location.pathname.startsWith('/contact')) return;
+
     // Check if already dismissed this session
     if (sessionStorage.getItem('sticky-cta-dismissed') === '1') {
       setDismissed(true);

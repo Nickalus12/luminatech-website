@@ -7,7 +7,12 @@ import {
   trackLocationDetect,
   trackFormSubmit,
   trackFormValidationError,
+  trackAutocompleteSelect,
+  trackAutocompleteDismiss,
+  trackEmailHintShown,
+  trackEmailHintAccepted,
 } from '../lib/analytics';
+import { AutocompleteDropdown, useAutocomplete } from './AutocompleteDropdown';
 
 interface FormData {
   name: string;
@@ -90,6 +95,92 @@ function validateLocation(location: string): boolean {
   const state = parts[parts.length - 1].toUpperCase();
   // City must be at least 2 chars, state must be a valid US abbreviation or full state name (2+ chars)
   return city.length >= 2 && (US_STATES.has(state) || state.length >= 2);
+}
+
+/* ── Phone auto-formatting ── */
+function formatPhoneNumber(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  // Handle +1 prefix
+  const national = digits.startsWith('1') && digits.length > 10 ? digits.slice(1) : digits;
+  if (national.length <= 3) return national;
+  if (national.length <= 6) return `(${national.slice(0, 3)}) ${national.slice(3)}`;
+  return `(${national.slice(0, 3)}) ${national.slice(3, 6)}-${national.slice(6, 10)}`;
+}
+
+/* ── Email domain typo detection ── */
+const COMMON_DOMAINS = [
+  'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'aol.com',
+  'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com', 'ymail.com',
+  'live.com', 'msn.com', 'comcast.net', 'att.net', 'sbcglobal.net',
+  'verizon.net', 'cox.net', 'charter.net', 'earthlink.net',
+];
+
+const DOMAIN_TYPOS: Record<string, string> = {
+  'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmai.com': 'gmail.com',
+  'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com', 'gmail.co': 'gmail.com',
+  'gmaill.com': 'gmail.com', 'gmil.com': 'gmail.com',
+  'yaho.com': 'yahoo.com', 'yahooo.com': 'yahoo.com', 'yahoo.co': 'yahoo.com',
+  'yahoocom': 'yahoo.com', 'yhaoo.com': 'yahoo.com',
+  'outllok.com': 'outlook.com', 'outlok.com': 'outlook.com', 'outlook.co': 'outlook.com',
+  'outloo.com': 'outlook.com', 'outlookk.com': 'outlook.com',
+  'hotmal.com': 'hotmail.com', 'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com',
+  'hotmail.co': 'hotmail.com', 'hotmaill.com': 'hotmail.com',
+  'icloud.co': 'icloud.com', 'iclud.com': 'icloud.com',
+};
+
+function suggestEmailDomain(email: string): string | null {
+  const atIndex = email.indexOf('@');
+  if (atIndex < 1) return null;
+  const domain = email.slice(atIndex + 1).toLowerCase();
+  if (!domain || domain.length < 3) return null;
+  // Direct typo match
+  if (DOMAIN_TYPOS[domain]) return DOMAIN_TYPOS[domain];
+  // Check close Levenshtein distance (simple approach: off-by-one)
+  for (const common of COMMON_DOMAINS) {
+    if (domain === common) return null; // Already correct
+    // Off by one char at end (e.g. "gmail.con" -> "gmail.com")
+    if (domain.length === common.length && domain.slice(0, -1) === common.slice(0, -1)) {
+      return common;
+    }
+  }
+  return null;
+}
+
+/* ── Mapbox location search ── */
+async function searchMapboxLocations(query: string): Promise<{ id: string; name: string; full: string }[]> {
+  if (!MAPBOX_TOKEN) return [];
+  const res = await fetch(
+    `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&access_token=${MAPBOX_TOKEN}&autocomplete=true&country=US&types=place,locality,neighborhood&limit=5&language=en`
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.features || []).map((f: any) => {
+    const props = f.properties || {};
+    const city = props.name || props.full_address || '';
+    const ctx = props.context || {};
+    const region = ctx.region?.region_code || ctx.region?.name || '';
+    const full = region ? `${city}, ${region}` : city;
+    return { id: f.id || crypto.randomUUID(), name: city, full };
+  });
+}
+
+/* ── Clearbit company search ── */
+interface ClearbitCompany {
+  name: string;
+  domain: string;
+  logo: string;
+}
+
+async function searchClearbitCompanies(query: string): Promise<ClearbitCompany[]> {
+  try {
+    const res = await fetch(
+      `https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(query)}`
+    );
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
 }
 
 /* Shake animation for invalid fields */
@@ -362,6 +453,33 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   // Location detection state
   const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
+  // Location autocomplete
+  const locationAC = useAutocomplete({
+    fetchFn: searchMapboxLocations,
+    toItem: (r) => ({ id: r.id, label: r.full }),
+    debounceMs: 300,
+    minChars: 2,
+  });
+
+  // Company autocomplete
+  const companyAC = useAutocomplete({
+    fetchFn: searchClearbitCompanies,
+    toItem: (c) => ({
+      id: c.domain,
+      label: c.name,
+      sublabel: c.domain,
+      icon: c.logo,
+    }),
+    debounceMs: 300,
+    minChars: 2,
+  });
+
+  // Email hint state
+  const [emailHint, setEmailHint] = useState<string | null>(null);
+
+  // Company domain from Clearbit (for email placeholder enhancement)
+  const [companyDomain, setCompanyDomain] = useState<string | null>(null);
+
   const detectLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       setGeoStatus('error');
@@ -501,10 +619,38 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   }
 
   function handleChange(field: keyof FormData, value: string) {
+    // Phone auto-formatting
+    if (field === 'phone') {
+      value = formatPhoneNumber(value);
+    }
+
     setFormData((prev) => ({ ...prev, [field]: value }));
+
     if (field === 'helpType' && value) {
       trackServiceSelect(value);
     }
+
+    // Trigger location autocomplete
+    if (field === 'location') {
+      locationAC.search(value);
+    }
+
+    // Trigger company autocomplete
+    if (field === 'company') {
+      companyAC.search(value);
+    }
+
+    // Email domain hint
+    if (field === 'email') {
+      const hint = suggestEmailDomain(value);
+      if (hint && hint !== emailHint) {
+        setEmailHint(hint);
+        trackEmailHintShown(hint);
+      } else if (!hint) {
+        setEmailHint(null);
+      }
+    }
+
     if (errors[field as keyof FormErrors]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -724,7 +870,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           </AnimatePresence>
         </motion.div>
 
-        {/* Company */}
+        {/* Company - with Clearbit autocomplete */}
         <motion.div
           key={`company-${shakeKey}`}
           variants={shakeVariants}
@@ -733,19 +879,55 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           <label htmlFor="contact-company" className={labelClass}>
             Company <span className="text-accent-error">*</span>
           </label>
-          <input
-            id="contact-company"
-            type="text"
-            autoComplete="organization"
-            placeholder="Your company"
-            value={formData.company}
-            onChange={(e) => handleChange('company', e.target.value)}
-            onFocus={() => handleFieldFocus('company')}
-            onBlur={() => handleFieldBlur('company', formData.company)}
-            className={`${inputBase} ${errors.company ? inputError : ''}`}
-            aria-invalid={!!errors.company}
-            aria-describedby={errors.company ? 'company-error' : undefined}
-          />
+          <div className="relative">
+            <input
+              id="contact-company"
+              type="text"
+              autoComplete="off"
+              placeholder="Your company"
+              value={formData.company}
+              onChange={(e) => handleChange('company', e.target.value)}
+              onFocus={() => handleFieldFocus('company')}
+              onBlur={() => {
+                handleFieldBlur('company', formData.company);
+                // Delay close so click can register
+                setTimeout(() => companyAC.close(), 150);
+              }}
+              onKeyDown={(e) => {
+                const selected = companyAC.handleKeyDown(e);
+                if (selected) {
+                  handleChange('company', selected.label);
+                  setCompanyDomain(selected.sublabel || null);
+                  companyAC.close();
+                  trackAutocompleteSelect('company', selected.label);
+                }
+                if (e.key === 'Escape') {
+                  trackAutocompleteDismiss('company');
+                }
+              }}
+              className={`${inputBase} ${errors.company ? inputError : ''}`}
+              aria-invalid={!!errors.company}
+              aria-describedby={errors.company ? 'company-error' : undefined}
+              role="combobox"
+              aria-expanded={companyAC.isOpen}
+              aria-controls="company-listbox"
+              aria-activedescendant={companyAC.activeIndex >= 0 ? `company-listbox-option-${companyAC.activeIndex}` : undefined}
+              aria-autocomplete="list"
+            />
+            <AutocompleteDropdown
+              items={companyAC.items}
+              isOpen={companyAC.isOpen}
+              activeIndex={companyAC.activeIndex}
+              loading={companyAC.loading}
+              listboxId="company-listbox"
+              onSelect={(item) => {
+                handleChange('company', item.label);
+                setCompanyDomain(item.sublabel || null);
+                companyAC.close();
+                trackAutocompleteSelect('company', item.label);
+              }}
+            />
+          </div>
           <AnimatePresence>
             {errors.company && (
               <motion.p
@@ -764,7 +946,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           </AnimatePresence>
         </motion.div>
 
-        {/* Email */}
+        {/* Email - with typo hint */}
         <motion.div
           key={`email-${shakeKey}`}
           variants={shakeVariants}
@@ -777,15 +959,42 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             id="contact-email"
             type="email"
             autoComplete="email"
-            placeholder="you@company.com"
+            placeholder={companyDomain ? `you@${companyDomain}` : 'you@company.com'}
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
             onFocus={() => handleFieldFocus('email')}
             onBlur={() => handleFieldBlur('email', formData.email)}
             className={`${inputBase} ${errors.email ? inputError : ''}`}
             aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? 'email-error' : undefined}
+            aria-describedby={errors.email ? 'email-error' : emailHint ? 'email-hint' : undefined}
           />
+          <AnimatePresence>
+            {emailHint && !errors.email && (
+              <motion.button
+                id="email-hint"
+                type="button"
+                className="mt-1.5 text-sm text-accent-primary flex items-center gap-1.5 cursor-pointer hover:text-accent-primary-hover transition-colors"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => {
+                  const atIndex = formData.email.indexOf('@');
+                  if (atIndex >= 0) {
+                    const corrected = formData.email.slice(0, atIndex + 1) + emailHint;
+                    handleChange('email', corrected);
+                    setEmailHint(null);
+                    trackEmailHintAccepted(emailHint);
+                  }
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                </svg>
+                Did you mean @{emailHint}?
+              </motion.button>
+            )}
+          </AnimatePresence>
           <AnimatePresence>
             {errors.email && (
               <motion.p
@@ -846,7 +1055,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             </AnimatePresence>
           </motion.div>
 
-          {/* Location - with geolocation detect button */}
+          {/* Location - with Mapbox autocomplete + geolocation detect */}
           <motion.div
             key={`location-${shakeKey}`}
             variants={shakeVariants}
@@ -859,22 +1068,41 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
               <input
                 id="contact-location"
                 type="text"
-                autoComplete="address-level1"
+                autoComplete="off"
                 placeholder="City, State"
                 value={formData.location}
                 onChange={(e) => handleChange('location', e.target.value)}
                 onFocus={() => handleFieldFocus('location')}
-                onBlur={() => handleFieldBlur('location', formData.location)}
+                onBlur={() => {
+                  handleFieldBlur('location', formData.location);
+                  setTimeout(() => locationAC.close(), 150);
+                }}
+                onKeyDown={(e) => {
+                  const selected = locationAC.handleKeyDown(e);
+                  if (selected) {
+                    handleChange('location', selected.label);
+                    locationAC.close();
+                    trackAutocompleteSelect('location', selected.label);
+                  }
+                  if (e.key === 'Escape') {
+                    trackAutocompleteDismiss('location');
+                  }
+                }}
                 className={`${inputBase} pr-10 ${errors.location ? inputError : ''}`}
                 aria-invalid={!!errors.location}
                 aria-describedby={errors.location ? 'location-error' : undefined}
+                role="combobox"
+                aria-expanded={locationAC.isOpen}
+                aria-controls="location-listbox"
+                aria-activedescendant={locationAC.activeIndex >= 0 ? `location-listbox-option-${locationAC.activeIndex}` : undefined}
+                aria-autocomplete="list"
               />
               {/* Location detect button */}
               <button
                 type="button"
                 onClick={detectLocation}
                 disabled={geoStatus === 'loading'}
-                className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-md text-text-tertiary hover:text-accent-primary hover:bg-accent-primary/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-wait min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded-md text-text-tertiary hover:text-accent-primary hover:bg-accent-primary/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-wait min-w-[44px] min-h-[44px] flex items-center justify-center z-10"
                 title="Detect my location"
                 aria-label="Detect my location"
               >
@@ -895,6 +1123,18 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
                   </svg>
                 )}
               </button>
+              <AutocompleteDropdown
+                items={locationAC.items}
+                isOpen={locationAC.isOpen}
+                activeIndex={locationAC.activeIndex}
+                loading={locationAC.loading}
+                listboxId="location-listbox"
+                onSelect={(item) => {
+                  handleChange('location', item.label);
+                  locationAC.close();
+                  trackAutocompleteSelect('location', item.label);
+                }}
+              />
             </div>
             <AnimatePresence>
               {geoStatus === 'error' && (

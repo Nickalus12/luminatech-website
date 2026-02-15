@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verification Required | Lumina ERP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0A0A0F;
+      color: #E8E8ED;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.5rem;
+    }
+    .container {
+      max-width: 560px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 2rem;
+    }
+    .icon-wrap {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.15); }
+      50% { box-shadow: 0 0 0 12px rgba(245, 158, 11, 0); }
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #E8E8ED;
+    }
+    .description {
+      font-size: 1rem;
+      color: #A0A0B0;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .challenge-box {
+      background: #12121A;
+      border: 1px solid #2A2A36;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #F59E0B, #3B82F6);
+      margin: 0 auto 2rem;
+      border-radius: 2px;
+    }
+    .meta {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      font-size: 0.75rem;
+      color: #6B6B7B;
+    }
+    .meta-item span {
+      color: #A0A0B0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .icon-wrap { animation: none; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#0A0A0F"/>
+      <defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient></defs>
+      <path d="M10 6v18h12" stroke="url(#fg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="10" cy="5" r="2.5" fill="url(#fg)"/>
+    </svg>
+
+    <div class="icon-wrap">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </div>
+
+    <h1>Quick verification needed</h1>
+    <p class="description">We need to verify your connection before granting access. Please complete the challenge below.</p>
+
+    <div class="divider"></div>
+
+    <div class="challenge-box">
+      ::CAPTCHA_BOX::
+    </div>
+
+    <div class="meta">
+      <div class="meta-item">Ray ID: <span>::RAY_ID::</span></div>
+      <div class="meta-item">Region: <span>::GEO::</span></div>
+    </div>
+  </div>
+</body>
+</html>
