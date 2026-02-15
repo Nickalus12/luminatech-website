@@ -18,6 +18,7 @@ interface FormData {
   name: string;
   company: string;
   email: string;
+  linkedin: string;
   phone: string;
   location: string;
   helpType: string;
@@ -144,6 +145,21 @@ function suggestEmailDomain(email: string): string | null {
     }
   }
   return null;
+}
+
+/* ── LinkedIn URL normalization ── */
+function normalizeLinkedInUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  // Extract the path portion (e.g., "in/username" or just "username")
+  const match = trimmed.match(/(?:(?:https?:\/\/)?(?:www\.)?linkedin\.com\/)?(in\/[\w-]+)/i);
+  if (match) return `https://www.linkedin.com/${match[1]}`;
+  return trimmed;
+}
+
+function isValidLinkedInUrl(value: string): boolean {
+  if (!value.trim()) return true; // Optional field, empty is valid
+  return /^https:\/\/www\.linkedin\.com\/in\/[\w-]+\/?$/.test(normalizeLinkedInUrl(value));
 }
 
 /* ── Mapbox location search ── */
@@ -433,6 +449,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
     name: '',
     company: '',
     email: '',
+    linkedin: '',
     phone: '',
     location: '',
     helpType: '',
@@ -714,6 +731,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           name: formData.name,
           company: formData.company,
           email: formData.email,
+          linkedin: formData.linkedin ? normalizeLinkedInUrl(formData.linkedin) : '',
           phone: formData.phone,
           location: formData.location,
           helpType: formData.helpType,
@@ -734,7 +752,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           setSubmittedName(firstName);
           setShowToast(true);
           setStatus('success');
-          setFormData({ name: '', company: '', email: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
+          setFormData({ name: '', company: '', email: '', linkedin: '', phone: '', location: '', helpType: '', message: '', _honeypot: '' });
           setErrors({});
           window.dispatchEvent(new CustomEvent('lumina:form-submitted'));
           setTimeout(() => setShowToast(false), 8000);
@@ -1012,6 +1030,70 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* LinkedIn (optional) */}
+        <div>
+          <label htmlFor="contact-linkedin" className={labelClass}>
+            LinkedIn <span className="text-text-tertiary">(optional)</span>
+          </label>
+          <div className="relative">
+            <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#0A66C2">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </div>
+            <input
+              id="contact-linkedin"
+              type="url"
+              autoComplete="off"
+              placeholder="linkedin.com/in/your-profile"
+              value={formData.linkedin}
+              onChange={(e) => handleChange('linkedin', e.target.value)}
+              onFocus={() => handleFieldFocus('linkedin')}
+              onBlur={() => {
+                handleFieldBlur('linkedin', formData.linkedin);
+                if (formData.linkedin.trim()) {
+                  const normalized = normalizeLinkedInUrl(formData.linkedin);
+                  if (normalized !== formData.linkedin) {
+                    setFormData((prev) => ({ ...prev, linkedin: normalized }));
+                  }
+                }
+              }}
+              className={`${inputBase} pl-10 ${
+                formData.linkedin && isValidLinkedInUrl(formData.linkedin)
+                  ? 'border-[#0A66C2]/30 focus:border-[#0A66C2] focus:ring-[#0A66C2]/40'
+                  : ''
+              }`}
+            />
+            {formData.linkedin && isValidLinkedInUrl(formData.linkedin) && (
+              <motion.div
+                className="absolute right-3.5 top-1/2 -translate-y-1/2"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: 'spring', bounce: 0.5, duration: 0.4 }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </motion.div>
+            )}
+          </div>
+          {formData.linkedin && isValidLinkedInUrl(formData.linkedin) && (
+            <motion.p
+              className="mt-1.5 text-xs text-[#0A66C2]/70 flex items-center gap-1"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              Helps us understand your background
+            </motion.p>
+          )}
+          {formData.linkedin && !isValidLinkedInUrl(formData.linkedin) && (
+            <p className="mt-1.5 text-xs text-text-tertiary">
+              Enter a URL like linkedin.com/in/your-profile
+            </p>
+          )}
+        </div>
 
         {/* Phone & Location -- side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
