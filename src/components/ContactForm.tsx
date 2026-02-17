@@ -60,20 +60,6 @@ const helpOptions = [
   'Something Else',
 ];
 
-const CYCLING_NAMES = [
-  'Sarah Mitchell',
-  'James Chen',
-  'Maria Rodriguez',
-  'David Okafor',
-  'Emma Larsson',
-  'Amir Patel',
-  'Olivia Thompson',
-  'Kenji Nakamura',
-  'Rachel Foster',
-  'Carlos Mendoza',
-  'Priya Sharma',
-  'Lucas Weber',
-];
 
 const inputBase =
   'w-full bg-bg-surface-2 border border-border rounded-lg px-4 py-3 text-text-primary placeholder-text-tertiary text-base transition-all duration-200 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary focus:shadow-glow hover:border-[rgba(59,130,246,0.3)]';
@@ -218,68 +204,6 @@ const shakeVariants = {
   },
 };
 
-/* ── Cycling Name Placeholder Hook ── */
-function useCyclingPlaceholder(names: string[], isFocused: boolean, hasValue: boolean) {
-  const [displayText, setDisplayText] = useState('');
-  const [nameIndex, setNameIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    if (isFocused || hasValue) return;
-
-    const currentName = names[nameIndex];
-
-    if (isPaused) {
-      const pauseTimer = setTimeout(() => {
-        setIsPaused(false);
-        setIsDeleting(true);
-      }, 2000);
-      return () => clearTimeout(pauseTimer);
-    }
-
-    if (!isDeleting) {
-      // Typing forward
-      if (charIndex < currentName.length) {
-        const timer = setTimeout(() => {
-          setDisplayText(currentName.slice(0, charIndex + 1));
-          setCharIndex((c) => c + 1);
-        }, 60 + Math.random() * 40);
-        return () => clearTimeout(timer);
-      } else {
-        // Finished typing - pause before deleting
-        setIsPaused(true);
-      }
-    } else {
-      // Deleting
-      if (charIndex > 0) {
-        const timer = setTimeout(() => {
-          setCharIndex((c) => c - 1);
-          setDisplayText(currentName.slice(0, charIndex - 1));
-        }, 35);
-        return () => clearTimeout(timer);
-      } else {
-        // Finished deleting - move to next name
-        setIsDeleting(false);
-        setNameIndex((i) => (i + 1) % names.length);
-      }
-    }
-  }, [names, nameIndex, charIndex, isDeleting, isPaused, isFocused, hasValue]);
-
-  // Reset when focus is lost and no value
-  useEffect(() => {
-    if (!isFocused && !hasValue) {
-      setCharIndex(0);
-      setDisplayText('');
-      setIsDeleting(false);
-      setIsPaused(false);
-    }
-  }, [isFocused, hasValue]);
-
-  if (isFocused || hasValue) return 'Your name';
-  return displayText || 'Your name';
-}
 
 /** Frosted glass toast notification with enter/exit animation */
 function Toast({ name, onClose }: { name: string; onClose: () => void }) {
@@ -622,9 +546,6 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
   // Track fields recently filled by LinkedIn for highlight animation
   const [linkedInFilledFields, setLinkedInFilledFields] = useState<Set<string>>(new Set());
 
-  // Cycling name placeholder state
-  const [nameFocused, setNameFocused] = useState(false);
-  const cyclingPlaceholder = useCyclingPlaceholder(CYCLING_NAMES, nameFocused, !!formData.name);
 
   // Location detection state
   const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -1141,7 +1062,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           )}
         </AnimatePresence>
 
-        {/* Name - with cycling placeholder */}
+        {/* Name (hidden when LinkedIn connected) */}
+        {!linkedInProfile && (
         <motion.div
           key={`name-${shakeKey}`}
           variants={shakeVariants}
@@ -1149,42 +1071,20 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         >
           <label htmlFor="contact-name" className={labelClass}>
             Name <span className="text-accent-error">*</span>
-            {linkedInProfile && formData.name === linkedInProfile.name && (
-              <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A66C2]">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                via LinkedIn
-              </span>
-            )}
           </label>
-          <div className="relative">
-            <input
-              id="contact-name"
-              type="text"
-              autoComplete="name"
-              placeholder={nameFocused || formData.name ? 'Your name' : ' '}
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              onFocus={() => { setNameFocused(true); handleFieldFocus('name'); }}
-              onBlur={() => { setNameFocused(false); handleFieldBlur('name', formData.name); }}
-              className={`${inputBase} ${errors.name ? inputError : ''} ${linkedInFilledFields.has('name') ? linkedInHighlight : ''}`}
-              aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? 'name-error' : undefined}
-            />
-            {/* Cycling placeholder overlay */}
-            {!nameFocused && !formData.name && (
-              <div
-                className="absolute inset-0 flex items-center px-4 pointer-events-none text-text-tertiary text-base"
-                aria-hidden="true"
-              >
-                <span>{cyclingPlaceholder}</span>
-                <motion.span
-                  className="inline-block w-[2px] h-[1.1em] bg-text-tertiary/50 ml-[1px]"
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
-                />
-              </div>
-            )}
-          </div>
+          <input
+            id="contact-name"
+            type="text"
+            autoComplete="name"
+            placeholder="Full name"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            onFocus={() => handleFieldFocus('name')}
+            onBlur={() => handleFieldBlur('name', formData.name)}
+            className={`${inputBase} ${errors.name ? inputError : ''} ${linkedInFilledFields.has('name') ? linkedInHighlight : ''}`}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? 'name-error' : undefined}
+          />
           <AnimatePresence>
             {errors.name && (
               <motion.p
@@ -1202,6 +1102,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             )}
           </AnimatePresence>
         </motion.div>
+        )}
 
         {/* Company - with Clearbit autocomplete */}
         <motion.div
@@ -1285,7 +1186,8 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
           </AnimatePresence>
         </motion.div>
 
-        {/* Email - with typo hint */}
+        {/* Email - with typo hint (hidden when LinkedIn connected) */}
+        {!linkedInProfile && (
         <motion.div
           key={`email-${shakeKey}`}
           variants={shakeVariants}
@@ -1293,12 +1195,6 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
         >
           <label htmlFor="contact-email" className={labelClass}>
             Email <span className="text-accent-error">*</span>
-            {linkedInProfile && formData.email === linkedInProfile.email && (
-              <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-[#0A66C2]">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                via LinkedIn
-              </span>
-            )}
           </label>
           <input
             id="contact-email"
@@ -1357,8 +1253,10 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             )}
           </AnimatePresence>
         </motion.div>
+        )}
 
-        {/* LinkedIn (optional) */}
+        {/* LinkedIn (optional - hidden when LinkedIn connected) */}
+        {!linkedInProfile && (
         <div>
           <label htmlFor="contact-linkedin" className={labelClass}>
             LinkedIn <span className="text-text-tertiary">(optional)</span>
@@ -1421,6 +1319,7 @@ export default function ContactForm({ onSuccess }: ContactFormProps) {
             </p>
           )}
         </div>
+        )}
 
         {/* Phone & Location -- side by side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

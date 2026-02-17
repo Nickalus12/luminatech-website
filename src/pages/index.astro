@@ -13,6 +13,7 @@ import AnimatedTrustBar from '../components/ui/AnimatedTrustBar';
 import OnboardingFlow from '../components/ui/OnboardingFlow';
 import ChatPrompt from '../components/ui/ChatPrompt';
 import TextReveal from '../components/ui/TextReveal';
+import RotatingWords from '../components/ui/RotatingWords';
 import Spotlight from '../components/ui/Spotlight';
 import { homepage } from '../content/copy';
 ---
@@ -52,8 +53,25 @@ import { homepage } from '../content/copy';
             client:visible
           />
 
-          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed max-w-xl mb-8 animate-slide-up" style="animation-delay: 100ms;">
+          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed max-w-xl mb-4 animate-slide-up" style="animation-delay: 100ms;">
             {homepage.hero.subheadline}
+          </p>
+
+          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed max-w-xl mb-8 animate-slide-up" style="animation-delay: 150ms;">
+            We help distributors with{' '}
+            <RotatingWords
+              words={[
+                'Business Rules',
+                'Cloud Migration',
+                'API Integrations',
+                'Custom Reports',
+                'Warehouse Automation',
+                'Database Optimization',
+              ]}
+              interval={2800}
+              className="font-semibold h-[1.5em]"
+              client:visible
+            />
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4 animate-slide-up" style="animation-delay: 200ms;">
