@@ -85,6 +85,6 @@ ROI in the first 90 days: $85K recovered from dead stock identification alone. T
 
 ## Client Testimonial
 
-> "We tried two other consulting firms before finding Lumina. Nick was the first person who actually understood how we use P21 day-to-day. He didn't just fix the problem -- he showed us three other things we didn't know we were doing wrong. The dead stock report alone paid for the whole project in the first quarter."
+> "We tried two other consulting firms before finding Lumina. Their team was the first group that actually understood how we use P21 day-to-day. They didn't just fix the problem -- they showed us three other things we didn't know we were doing wrong. The dead stock report alone paid for the whole project in the first quarter."
 >
 > -- **IT Director, Multi-Branch Electrical Supply**

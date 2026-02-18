@@ -10,7 +10,7 @@ export const brand = {
   email: "Discovery@Lumina-ERP.com",
   location: "Humble, TX",
   locationFull: "Based in Humble, TX. Serving distributors nationwide.",
-  founder: "Nick Brewer",
+  founder: "Lumina ERP Team",
   copyright: `\u00A9 ${new Date().getFullYear()} Lumina Erp. All rights reserved.`,
   footerDescription:
     "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
@@ -528,9 +528,9 @@ export const about = {
     subheadline: "The practitioner-consultant.",
   },
   intro: {
-    greeting: "Nick Brewer, Founder",
+    greeting: "Our Team",
     paragraphs: [
-      "Lumina Erp was built on a simple idea: ERP consulting should come from people who actually use the system every day. Our founder, Nick Brewer, is an ERP administrator at a wholesale distribution company in Houston -- managing inventory, processing orders, writing business rules, and keeping Prophet 21 running for a real distribution operation.",
+      "Lumina ERP was built on a simple idea: ERP consulting should come from people who actually use the system every day. Our team includes working ERP administrators at wholesale distribution companies -- managing inventory, processing orders, writing business rules, and keeping Prophet 21 running for real distribution operations.",
       "We started this practice because we kept seeing the same pattern: distributors struggling with P21 problems that had already been solved in real distribution environments. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
       "When you work with us, you're getting practitioners who live inside P21. We know the workarounds, the gotchas, and the shortcuts that only come from daily hands-on experience. We don't implement and leave -- we build solutions that actually work in the real world of wholesale distribution.",
       "We're developers, too. C#, SQL, Python -- we write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. And with the mandatory cloud migration deadline approaching, we help distributors plan and execute their transition without disrupting operations.",
@@ -615,7 +615,7 @@ export const about = {
     ],
   },
   personal: {
-    text: "Based in Humble, TX (Houston metro), serving distributors nationwide. Founded by Nick Brewer -- when he's not elbow-deep in P21, he's building electronics projects with his daughters and pushing the boundaries of AI automation.",
+    text: "Based in Humble, TX (Houston metro), serving distributors nationwide. Our team combines deep P21 expertise with a passion for automation and pushing the boundaries of what ERP systems can do.",
   },
   cta: {
     heading: "Let's See If We're a Good Fit",

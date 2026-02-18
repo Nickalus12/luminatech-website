@@ -7,7 +7,7 @@ type Phase = 'form' | 'celebration' | 'map';
 export default function ConsultationExperience() {
   const [phase, setPhase] = useState<Phase>('form');
   const [submittedName, setSubmittedName] = useState('');
-  const [MapComp, setMapComp] = useState<ComponentType | null>(null);
+  const [MapComp, setMapComp] = useState<ComponentType<{ onReset?: () => void }> | null>(null);
   const [showPreparing, setShowPreparing] = useState(false);
 
   // Handle form success: transition to celebration phase and begin loading the map
@@ -227,7 +227,7 @@ export default function ConsultationExperience() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           {MapComp ? (
-            <MapComp />
+            <MapComp onReset={handleBackToForm} />
           ) : (
             /* Loading skeleton while MapSection is still importing */
             <div

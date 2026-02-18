@@ -6,7 +6,7 @@ import Container from '../components/ui/Container.astro';
 
 <BaseLayout
   title="Privacy Policy"
-  description="Privacy policy for Lumina Erp consulting services. Learn how we collect, use, and protect your information."
+  description="Privacy policy for Lumina ERP consulting services. Learn how we collect, use, and protect your information."
 >
 
   <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12">
@@ -14,7 +14,7 @@ import Container from '../components/ui/Container.astro';
       <h1 class="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4">
         Privacy Policy
       </h1>
-      <p class="text-text-tertiary text-sm">Last updated: February 12, 2026</p>
+      <p class="text-text-tertiary text-sm">Last updated: February 16, 2026</p>
     </Container>
   </Section>
 
@@ -25,7 +25,7 @@ import Container from '../components/ui/Container.astro';
         <div>
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Introduction</h2>
           <p>
-            Lumina Erp ("we," "us," or "our") operates the website Lumina-ERP.com. This Privacy Policy describes how we collect, use, and protect your personal information when you visit our website or engage with our Prophet 21 (P21) ERP consulting services for wholesale distributors.
+            Lumina ERP ("we," "us," or "our") operates the website Lumina-ERP.com. This Privacy Policy describes how we collect, use, and protect your personal information when you visit our website or engage with our Prophet 21 (P21) ERP consulting services for wholesale distributors.
           </p>
         </div>
 
@@ -48,15 +48,26 @@ import Container from '../components/ui/Container.astro';
 
           <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Information Collected Automatically</h3>
           <p class="mb-4">
-            When you visit our website, certain information may be collected automatically, including:
+            When you visit our website, certain information is collected automatically through cookies and analytics tools, including:
           </p>
           <ul class="list-disc list-inside space-y-2 ml-4">
-            <li>IP address</li>
+            <li>IP address (anonymized by Google Analytics)</li>
             <li>Browser type and version</li>
-            <li>Pages visited and time spent</li>
-            <li>Referring website</li>
-            <li>Device information</li>
+            <li>Pages visited, time spent, and navigation path</li>
+            <li>Referring website or search terms</li>
+            <li>Device type, screen resolution, and operating system</li>
+            <li>Interactions with site elements (button clicks, form field engagement, scroll depth)</li>
           </ul>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Location Information</h3>
+          <p>
+            Our contact form includes an optional location detection feature. If you click the "Detect Location" button, your browser will ask for permission to share your geographic coordinates. This data is sent to Mapbox's geocoding API to determine your city and state, and is used solely to pre-fill the location field on the form. We do not store raw coordinates.
+          </p>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">LinkedIn Profile Data</h3>
+          <p>
+            Our contact form offers an optional "Pre-fill with LinkedIn" feature. If you choose to use it, you will be redirected to LinkedIn's OAuth authorization page where you grant us temporary read-only access to your public profile. We receive your name, email address, and profile URL, which are used solely to pre-fill the contact form. We do not retain your LinkedIn access token after the form session ends.
+          </p>
         </div>
 
         <div>
@@ -65,38 +76,84 @@ import Container from '../components/ui/Container.astro';
           <ul class="list-disc list-inside space-y-2 ml-4">
             <li>Respond to your inquiries and provide requested consulting services</li>
             <li>Communicate with you about our services</li>
-            <li>Improve our website and user experience</li>
+            <li>Analyze website traffic and user behavior to improve our site layout, content, and functionality</li>
+            <li>Track form engagement and interaction patterns to optimize the user experience</li>
+            <li>Pre-fill contact forms when you opt in to LinkedIn or geolocation features</li>
             <li>Comply with legal obligations</li>
           </ul>
         </div>
 
         <div>
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Third-Party Services</h2>
-          <p class="mb-4">Our website uses the following third-party services:</p>
+          <p class="mb-4">Our website uses the following third-party services, each of which may collect data as described below:</p>
 
-          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Google Analytics & Tag Manager</h3>
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Google Analytics 4 (GA4)</h3>
+          <p class="mb-4">
+            We use Google Analytics 4 (Measurement ID: G-2P1FBWXLFK) for website analytics. GA4 collects data including pages visited, session duration, device information, general geographic location (city/region level derived from IP address), and user interactions with site elements such as button clicks, form engagement, and navigation patterns. GA4 sets the following cookies on your device:
+          </p>
+          <ul class="list-disc list-inside space-y-2 ml-4 mb-4">
+            <li><code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">_ga</code> — Distinguishes unique visitors. Expires after 2 years.</li>
+            <li><code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">_ga_&lt;ID&gt;</code> — Maintains session state. Expires after 2 years.</li>
+          </ul>
           <p>
-            We use Google Analytics 4 and Google Tag Manager for website analytics and performance tracking. These services may collect data including pages visited, session duration, device information, and general location data. You can opt out of Google Analytics tracking by installing the <a href="https://tools.google.com/dlpage/gaoptout" class="text-accent-primary hover:underline" target="_blank" rel="noopener noreferrer">Google Analytics Opt-out Browser Add-on</a>.
+            You can opt out of Google Analytics tracking by installing the <a href="https://tools.google.com/dlpage/gaoptout" class="text-accent-primary hover:underline" target="_blank" rel="noopener noreferrer">Google Analytics Opt-out Browser Add-on</a>.
+          </p>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Google Tag Manager (GTM)</h3>
+          <p>
+            We use Google Tag Manager (Container ID: GTM-TGNXHWTC) to manage analytics and tracking scripts on our website. GTM itself does not collect personal data, but it loads and manages other tags (such as Google Analytics) that do. GTM may set a cookie for its own operational purposes.
           </p>
 
           <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Cloudflare</h3>
+          <p class="mb-4">
+            Our website is hosted on Cloudflare Pages and uses Cloudflare's CDN, DDoS protection, and security services. Cloudflare may set the following cookies:
+          </p>
+          <ul class="list-disc list-inside space-y-2 ml-4">
+            <li><code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">__cf_bm</code> — Bot management cookie. Expires after 30 minutes.</li>
+            <li><code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">cf_clearance</code> — Set after a security challenge is completed. Expires after 30 minutes.</li>
+          </ul>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Mapbox</h3>
           <p>
-            Our website is hosted and served through Cloudflare Pages, which provides CDN, security services including DDoS protection, and basic web analytics. Cloudflare may set cookies for security and performance purposes.
+            Our contact page features an interactive map powered by Mapbox GL JS. When you view the contact page, map tiles and assets are loaded from Mapbox's servers. If you use the location autocomplete or geolocation detection features on the contact form, your search queries or geographic coordinates are sent to Mapbox's geocoding API. Mapbox's use of data is governed by <a href="https://www.mapbox.com/legal/privacy" class="text-accent-primary hover:underline" target="_blank" rel="noopener noreferrer">Mapbox's Privacy Policy</a>.
+          </p>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">LinkedIn</h3>
+          <p>
+            If you choose to use the "Pre-fill with LinkedIn" feature on our contact form, you will be directed to LinkedIn's OAuth authorization flow. We use LinkedIn's OpenID Connect API to request read-only access to your basic profile information (name, email, profile URL). This data is used solely to populate the contact form and is not shared with any other third parties. LinkedIn's use of your data is governed by <a href="https://www.linkedin.com/legal/privacy-policy" class="text-accent-primary hover:underline" target="_blank" rel="noopener noreferrer">LinkedIn's Privacy Policy</a>.
+          </p>
+
+          <h3 class="text-lg font-semibold text-text-primary mt-6 mb-3">Odoo CRM</h3>
+          <p>
+            Contact form submissions are transmitted to our Odoo CRM instance (hosted by Odoo S.A.) via a secure Cloudflare Worker proxy. Submitted data — including your name, email, company, phone number, location, and message — is stored in our CRM for lead management and follow-up purposes.
           </p>
         </div>
 
         <div>
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Cookies</h2>
+          <p class="mb-4">
+            Our website uses cookies for the following purposes:
+          </p>
+          <ul class="list-disc list-inside space-y-2 ml-4 mb-4">
+            <li><strong class="text-text-primary">Essential / Security:</strong> Cloudflare sets cookies (<code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">__cf_bm</code>, <code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">cf_clearance</code>) for bot protection and security challenge completion. These are necessary for the site to function properly.</li>
+            <li><strong class="text-text-primary">Analytics:</strong> Google Analytics sets cookies (<code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">_ga</code>, <code class="text-sm bg-bg-surface-2 px-1.5 py-0.5 rounded">_ga_&lt;ID&gt;</code>) to distinguish visitors and maintain session state. These help us understand how visitors use our site so we can improve it.</li>
+          </ul>
           <p>
-            Our website may use essential cookies required for basic site functionality and security (provided by Cloudflare). We do not use advertising or tracking cookies. Third-party services integrated into our site may set their own cookies as described in their respective privacy policies.
+            We do not use advertising cookies, nor do we sell data collected through cookies to third parties. Most web browsers allow you to control cookies through their settings. Note that disabling cookies may affect site functionality.
           </p>
         </div>
 
         <div>
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Data Retention</h2>
-          <p>
-            Contact form submissions are retained in our Odoo CRM instance for lead management purposes. We retain any personal information you provide via email or other communications for as long as necessary to fulfill the purpose for which it was collected, or as required by law.
+          <p class="mb-4">
+            We retain data for the following periods:
           </p>
+          <ul class="list-disc list-inside space-y-2 ml-4">
+            <li><strong class="text-text-primary">Contact form submissions:</strong> Retained in our Odoo CRM for as long as the business relationship is active, or until you request deletion.</li>
+            <li><strong class="text-text-primary">Analytics data:</strong> Google Analytics retains event data for 14 months by default. Aggregated, non-identifying reports may be retained indefinitely.</li>
+            <li><strong class="text-text-primary">Cookies:</strong> See expiration periods listed in the Cookies section above.</li>
+            <li><strong class="text-text-primary">LinkedIn profile data:</strong> Not retained beyond the form session. We do not store LinkedIn access tokens.</li>
+          </ul>
         </div>
 
         <div>

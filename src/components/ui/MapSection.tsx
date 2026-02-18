@@ -129,7 +129,11 @@ function createPulsingDot(
 /* ═════════════════════════════════════════════
    MAP SECTION COMPONENT
    ═════════════════════════════════════════════ */
-export default function MapSection() {
+interface MapSectionProps {
+  onReset?: () => void;
+}
+
+export default function MapSection({ onReset }: MapSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
@@ -500,73 +504,302 @@ export default function MapSection() {
           });
 
           /* ──────────────────────────────────────
+             ARC TIP (LEADING EDGE) — sources + layers
+             ────────────────────────────────────── */
+          map.addSource('arc-tips', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          });
+
+          map.addLayer({
+            id: 'arc-tip-glow',
+            type: 'circle',
+            source: 'arc-tips',
+            slot: 'top',
+            paint: {
+              'circle-radius': isMobile ? 14 : 20,
+              'circle-color': '#93C5FD',
+              'circle-blur': 1,
+              'circle-opacity': 0.5,
+              'circle-emissive-strength': 1,
+            },
+          });
+
+          map.addLayer({
+            id: 'arc-tip-core',
+            type: 'circle',
+            source: 'arc-tips',
+            slot: 'top',
+            paint: {
+              'circle-radius': isMobile ? 3 : 4,
+              'circle-color': '#ffffff',
+              'circle-blur': 0.2,
+              'circle-opacity': 0.95,
+              'circle-emissive-strength': 1,
+            },
+          });
+
+          /* ──────────────────────────────────────
+             BURST FLASH — source + layer
+             ────────────────────────────────────── */
+          map.addSource('burst-points', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          });
+
+          map.addLayer({
+            id: 'burst-flash',
+            type: 'circle',
+            source: 'burst-points',
+            slot: 'top',
+            paint: {
+              'circle-radius': isMobile ? 35 : 50,
+              'circle-color': '#60A5FA',
+              'circle-blur': 1,
+              'circle-opacity': 0.6,
+              'circle-emissive-strength': 1,
+              'circle-opacity-transition': { duration: 500, delay: 0 },
+              'circle-radius-transition': { duration: 500, delay: 0 },
+            },
+          });
+
+          /* ──────────────────────────────────────
+             PARTICLE DOT — canvas animated image
+             ────────────────────────────────────── */
+          const particleSize = 64;
+          map.addImage(
+            'particle-dot',
+            {
+              width: particleSize,
+              height: particleSize,
+              data: new Uint8Array(particleSize * particleSize * 4),
+              context: null as CanvasRenderingContext2D | null,
+              onAdd() {
+                const canvas = document.createElement('canvas');
+                canvas.width = particleSize;
+                canvas.height = particleSize;
+                this.context = canvas.getContext('2d');
+              },
+              render() {
+                if (!this.context) return false;
+                const ctx = this.context;
+                const cx = particleSize / 2;
+                const t = (performance.now() % 1500) / 1500;
+                ctx.clearRect(0, 0, particleSize, particleSize);
+                const grad = ctx.createRadialGradient(cx, cx, 0, cx, cx, cx);
+                grad.addColorStop(0, `rgba(255, 255, 255, ${0.8 + 0.2 * Math.sin(t * Math.PI * 2)})`);
+                grad.addColorStop(0.15, 'rgba(147, 197, 253, 0.7)');
+                grad.addColorStop(0.4, 'rgba(59, 130, 246, 0.25)');
+                grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                ctx.beginPath();
+                ctx.arc(cx, cx, cx, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                this.data = ctx.getImageData(0, 0, particleSize, particleSize).data;
+                map.triggerRepaint();
+                return true;
+              },
+            },
+            { pixelRatio: 2 },
+          );
+
+          map.addSource('particles', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+          });
+
+          map.addLayer({
+            id: 'particles-layer',
+            type: 'symbol',
+            source: 'particles',
+            slot: 'top',
+            layout: {
+              'icon-image': 'particle-dot',
+              'icon-size': isMobile ? 0.15 : 0.22,
+              'icon-allow-overlap': true,
+              'icon-ignore-placement': true,
+            },
+            paint: {
+              'icon-opacity': 0.85,
+              'icon-emissive-strength': 1,
+            },
+          });
+
+          /* ──────────────────────────────────────
              PROGRESSIVE ARC REVEAL ANIMATION
-             Arcs draw outward from origin, staggered
+             Timestamp-based RAF for smooth, predictable timing
              ────────────────────────────────────── */
           function revealArcs() {
-            const staggerDelay = 150;
-            const drawDuration = 1200;
-            const framesPerArc = 40;
+            const staggerDelay = 120;
+            const drawDuration = 900;
+            const startTime = performance.now();
+            const completedArcs = new Set<number>();
+            let labelsShown = false;
+            let glowsShown = false;
 
-            allArcs.forEach((arc, i) => {
-              const timer = setTimeout(() => {
-                // Show the glow + core layers
-                map.setPaintProperty(`arc-glow-${i}`, 'line-opacity', 0.06);
-                map.setPaintProperty(`arc-core-${i}`, 'line-opacity', 0.75);
+            function animateArcs() {
+              const now = performance.now();
+              const tipFeatures: any[] = [];
 
-                // Progressive coordinate reveal
-                let frame = 0;
-                const interval = drawDuration / framesPerArc;
+              allArcs.forEach((arc, i) => {
+                const arcStart = startTime + i * staggerDelay;
+                const elapsed = now - arcStart;
 
-                function drawFrame() {
-                  frame++;
-                  const progress = Math.min(frame / framesPerArc, 1);
-                  const eased = 1 - Math.pow(1 - progress, 2); // ease-out
-                  const coordCount = Math.max(
-                    2,
-                    Math.round(eased * arc.points.length),
-                  );
-                  const coords = arc.points.slice(0, coordCount);
+                if (elapsed < 0) return; // Not started yet
+                if (completedArcs.has(i)) return; // Already done
 
-                  const source = map.getSource(`arc-${i}`);
-                  if (source) {
-                    source.setData({
-                      type: 'Feature',
-                      properties: { name: arc.city.name },
-                      geometry: { type: 'LineString', coordinates: coords },
-                    });
-                  }
+                const progress = Math.min(elapsed / drawDuration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+                const coordCount = Math.max(2, Math.round(eased * arc.points.length));
+                const coords = arc.points.slice(0, coordCount);
 
-                  if (frame >= framesPerArc) {
-                    setArcsRevealed((prev) => prev + 1);
-                  } else {
-                    const raf = requestAnimationFrame(() => {
-                      const t = setTimeout(drawFrame, interval);
-                      timeoutRefs.current.push(t);
-                    });
-                    animFrameRefs.current.push(raf);
-                  }
+                // Update arc geometry
+                const source = map.getSource(`arc-${i}`) as any;
+                if (source) {
+                  source.setData({
+                    type: 'Feature',
+                    properties: { name: arc.city.name },
+                    geometry: { type: 'LineString', coordinates: coords },
+                  });
                 }
 
-                drawFrame();
-              }, i * staggerDelay);
-              timeoutRefs.current.push(timer);
-            });
+                // Show arc layers on first animation frame
+                if (elapsed < 50) {
+                  map.setPaintProperty(`arc-glow-${i}`, 'line-opacity', 0.08);
+                  map.setPaintProperty(`arc-core-${i}`, 'line-opacity', 0.8);
+                }
 
-            // Fade in destination glows + labels after arcs start
-            const glowTimer = setTimeout(() => {
-              map.setPaintProperty('dest-glow-outer', 'circle-opacity', 0.08);
-              map.setPaintProperty('dest-glow-mid', 'circle-opacity', 0.2);
-              map.setPaintProperty('dest-glow-inner', 'circle-opacity', 0.6);
-              map.setPaintProperty('dest-core', 'circle-opacity', 1);
-            }, 400);
-            timeoutRefs.current.push(glowTimer);
+                // Leading edge tip dot
+                const tipCoord = coords[coords.length - 1];
+                tipFeatures.push({
+                  type: 'Feature' as const,
+                  properties: {},
+                  geometry: { type: 'Point' as const, coordinates: tipCoord },
+                });
 
-            const labelTimer = setTimeout(() => {
-              map.setPaintProperty('city-labels', 'text-opacity', 0.8);
-              map.setPaintProperty('origin-label-text', 'text-opacity', 0.9);
-            }, 1000);
-            timeoutRefs.current.push(labelTimer);
+                // Arc completed
+                if (progress >= 1) {
+                  completedArcs.add(i);
+                  setArcsRevealed((prev) => prev + 1);
+
+                  // Destination burst flash
+                  const burstSource = map.getSource('burst-points') as any;
+                  if (burstSource) {
+                    burstSource.setData({
+                      type: 'FeatureCollection',
+                      features: [{
+                        type: 'Feature',
+                        properties: {},
+                        geometry: { type: 'Point', coordinates: arc.city.coords },
+                      }],
+                    });
+                    // Fade out burst after brief flash
+                    const burstTimer = setTimeout(() => {
+                      map.setPaintProperty('burst-flash', 'circle-opacity', 0);
+                      const clearTimer = setTimeout(() => {
+                        const bs = map.getSource('burst-points') as any;
+                        if (bs) bs.setData({ type: 'FeatureCollection', features: [] });
+                        map.setPaintProperty('burst-flash', 'circle-opacity', 0.6);
+                      }, 600);
+                      timeoutRefs.current.push(clearTimer);
+                    }, 120);
+                    timeoutRefs.current.push(burstTimer);
+                  }
+                }
+              });
+
+              // Update leading edge tips
+              const tipsSource = map.getSource('arc-tips') as any;
+              if (tipsSource) {
+                tipsSource.setData({ type: 'FeatureCollection', features: tipFeatures });
+              }
+
+              // Show destination glows after 300ms
+              if (!glowsShown && now - startTime > 300) {
+                glowsShown = true;
+                map.setPaintProperty('dest-glow-outer', 'circle-opacity', 0.08);
+                map.setPaintProperty('dest-glow-mid', 'circle-opacity', 0.2);
+                map.setPaintProperty('dest-glow-inner', 'circle-opacity', 0.6);
+                map.setPaintProperty('dest-core', 'circle-opacity', 1);
+              }
+
+              // Show labels after 800ms
+              if (!labelsShown && now - startTime > 800) {
+                labelsShown = true;
+                map.setPaintProperty('city-labels', 'text-opacity', 0.8);
+                map.setPaintProperty('origin-label-text', 'text-opacity', 0.9);
+              }
+
+              // Continue or finish
+              if (completedArcs.size < allArcs.length) {
+                const raf = requestAnimationFrame(animateArcs);
+                animFrameRefs.current.push(raf);
+              } else {
+                // All arcs done — clear tips, start particles + pulsing glow
+                if (tipsSource) {
+                  tipsSource.setData({ type: 'FeatureCollection', features: [] });
+                }
+                startParticles(allArcs);
+                startPulsingGlow(allArcs.length);
+              }
+            }
+
+            const raf = requestAnimationFrame(animateArcs);
+            animFrameRefs.current.push(raf);
+          }
+
+          /* ──────────────────────────────────────
+             TRAVELING PARTICLES — continuous flow
+             ────────────────────────────────────── */
+          function startParticles(arcs: typeof allArcs) {
+            // 2 particles per arc, different phase offsets
+            const particleConfigs = arcs.flatMap((arc, i) => [
+              { arcIndex: i, points: arc.points, phase: 0 },
+              { arcIndex: i, points: arc.points, phase: 0.5 },
+            ]);
+
+            function animateParticles() {
+              const now = performance.now();
+              const features = particleConfigs.map((cfg) => {
+                const cycleDuration = 3000 + cfg.arcIndex * 200; // slight variation
+                const t = ((now / cycleDuration + cfg.phase) % 1);
+                const idx = Math.floor(t * (cfg.points.length - 1));
+                const coord = cfg.points[Math.min(idx, cfg.points.length - 1)];
+                return {
+                  type: 'Feature' as const,
+                  properties: {},
+                  geometry: { type: 'Point' as const, coordinates: coord },
+                };
+              });
+
+              const source = map.getSource('particles') as any;
+              if (source) {
+                source.setData({ type: 'FeatureCollection', features });
+              }
+
+              const raf = requestAnimationFrame(animateParticles);
+              animFrameRefs.current.push(raf);
+            }
+
+            const raf = requestAnimationFrame(animateParticles);
+            animFrameRefs.current.push(raf);
+          }
+
+          /* ──────────────────────────────────────
+             PULSING GLOW — oscillate arc glow opacity
+             ────────────────────────────────────── */
+          function startPulsingGlow(arcCount: number) {
+            function pulseGlow() {
+              const t = (performance.now() % 3000) / 3000;
+              const opacity = 0.04 + 0.05 * Math.sin(t * Math.PI * 2);
+              for (let i = 0; i < arcCount; i++) {
+                map.setPaintProperty(`arc-glow-${i}`, 'line-opacity', opacity);
+              }
+              const raf = requestAnimationFrame(pulseGlow);
+              animFrameRefs.current.push(raf);
+            }
+            const raf = requestAnimationFrame(pulseGlow);
+            animFrameRefs.current.push(raf);
           }
 
           /* ──────────────────────────────────────
@@ -636,11 +869,13 @@ export default function MapSection() {
                       timeoutRefs.current.push(arcTimer);
 
                       // Transition to landed (HUD appears)
+                      // Delay long enough for all arcs to draw + counter to count up
+                      // Arc reveal: 120ms stagger * 9 + 900ms draw = ~2000ms, starts at 400ms
                       const landTimer = setTimeout(() => {
                         setPhase('landed');
                         trackMapInteraction('landed');
                         startOrbit();
-                      }, 2200);
+                      }, 3200);
                       timeoutRefs.current.push(landTimer);
                     });
                   }, 800);
@@ -665,6 +900,7 @@ export default function MapSection() {
               map.setPaintProperty(`arc-glow-${i}`, 'line-opacity', 0.06);
               map.setPaintProperty(`arc-core-${i}`, 'line-opacity', 0.75);
             });
+            setArcsRevealed(WAREHOUSE_CITIES.length);
             setPhase('landed');
           }
         });
@@ -758,7 +994,7 @@ export default function MapSection() {
         )}
 
         {/* ═══════════════════════════════════════
-            HUD OVERLAY — Mission Control Panel
+            HUD OVERLAY — Glass Panel
             ═══════════════════════════════════════ */}
         <AnimatePresence>
           {phase === 'landed' && loaded && (
@@ -775,21 +1011,21 @@ export default function MapSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* Corner brackets */}
+                {/* Corner accents */}
                 <div className="hud-corner hud-corner-tl" />
                 <div className="hud-corner hud-corner-tr" />
                 <div className="hud-corner hud-corner-bl" />
                 <div className="hud-corner hud-corner-br" />
 
-                {/* Scan line */}
-                <div className="hud-scanline" />
+                {/* Gradient sweep (replaces scan line) */}
+                <div className="hud-sweep" />
 
                 {/* Top accent gradient */}
                 <div
-                  className="absolute top-0 left-4 right-4 h-[1px]"
+                  className="absolute top-0 left-6 right-6 h-[1px]"
                   style={{
                     background:
-                      'linear-gradient(90deg, transparent, #8B5CF6, #3B82F6, #8B5CF6, transparent)',
+                      'linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.6), rgba(59, 130, 246, 0.6), rgba(139, 92, 246, 0.6), transparent)',
                   }}
                 />
 
@@ -811,7 +1047,8 @@ export default function MapSection() {
 
                 {/* Brand */}
                 <motion.h3
-                  className="text-xl md:text-2xl font-bold text-white tracking-tight text-center"
+                  className="text-xl md:text-2xl font-bold tracking-tight text-center"
+                  style={{ color: '#E8E8ED' }}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7, duration: 0.5 }}
@@ -823,7 +1060,7 @@ export default function MapSection() {
                 <motion.p
                   className="text-center mt-2 hidden sm:block"
                   style={{
-                    color: 'rgba(160, 160, 184, 0.7)',
+                    color: '#6B6B7B',
                     fontSize: '10px',
                     fontFamily: 'var(--font-mono, monospace)',
                     letterSpacing: '0.12em',
@@ -842,7 +1079,7 @@ export default function MapSection() {
                     width: '80%',
                     height: '1px',
                     background:
-                      'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent)',
+                      'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.4), transparent)',
                   }}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -853,9 +1090,9 @@ export default function MapSection() {
                 <motion.p
                   className="text-center mt-2"
                   style={{
-                    color: 'rgba(255, 255, 255, 0.3)',
+                    color: '#A0A0B0',
                     fontSize: '11px',
-                    letterSpacing: '0.2em',
+                    letterSpacing: '0.15em',
                     textTransform: 'uppercase',
                   }}
                   initial={{ opacity: 0 }}
@@ -865,12 +1102,41 @@ export default function MapSection() {
                   Nationwide Distribution Network
                 </motion.p>
 
+                {/* Submit Another Inquiry button */}
+                {onReset && (
+                  <motion.button
+                    onClick={onReset}
+                    className="hud-reset-btn pointer-events-auto mt-4 mx-auto flex items-center gap-2 px-4 py-2 rounded-lg text-sm cursor-pointer"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5, duration: 0.5 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m12 19-7-7 7-7" />
+                      <path d="M19 12H5" />
+                    </svg>
+                    Send Another Message
+                  </motion.button>
+                )}
+
                 {/* Bottom accent */}
                 <div
-                  className="absolute bottom-0 left-4 right-4 h-[1px]"
+                  className="absolute bottom-0 left-6 right-6 h-[1px]"
                   style={{
                     background:
-                      'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent)',
+                      'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.3), transparent)',
                   }}
                 />
               </motion.div>
@@ -960,68 +1226,95 @@ export default function MapSection() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-/* HUD Panel */
+/* HUD Panel — Glass morphism */
 .hud-panel {
-  padding: 20px 28px;
-  background: rgba(3, 3, 10, 0.82);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  border-radius: 8px;
+  padding: 24px 32px;
+  background: rgba(15, 15, 30, 0.75);
+  backdrop-filter: blur(32px) saturate(1.4);
+  -webkit-backdrop-filter: blur(32px) saturate(1.4);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 12px;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.7),
-    0 0 80px rgba(59, 130, 246, 0.06),
-    0 0 120px rgba(139, 92, 246, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(59, 130, 246, 0.08),
+    0 0 80px rgba(139, 92, 246, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
   min-width: 220px;
   overflow: hidden;
 }
 
 @media (min-width: 768px) {
   .hud-panel {
-    padding: 24px 36px;
-    min-width: 260px;
+    padding: 28px 40px;
+    min-width: 280px;
   }
 }
 
-/* Corner brackets */
+/* Corner accents — thin, glowing */
 .hud-corner {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
 }
 .hud-corner-tl {
   top: -1px; left: -1px;
-  border-top: 2px solid rgba(59, 130, 246, 0.5);
-  border-left: 2px solid rgba(59, 130, 246, 0.5);
+  border-top: 1px solid rgba(59, 130, 246, 0.5);
+  border-left: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 2px 0 0 0;
+  box-shadow: -2px -2px 8px rgba(59, 130, 246, 0.15);
 }
 .hud-corner-tr {
   top: -1px; right: -1px;
-  border-top: 2px solid rgba(59, 130, 246, 0.5);
-  border-right: 2px solid rgba(59, 130, 246, 0.5);
+  border-top: 1px solid rgba(59, 130, 246, 0.5);
+  border-right: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 0 2px 0 0;
+  box-shadow: 2px -2px 8px rgba(59, 130, 246, 0.15);
 }
 .hud-corner-bl {
   bottom: -1px; left: -1px;
-  border-bottom: 2px solid rgba(139, 92, 246, 0.5);
-  border-left: 2px solid rgba(139, 92, 246, 0.5);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.5);
+  border-left: 1px solid rgba(139, 92, 246, 0.5);
+  border-radius: 0 0 0 2px;
+  box-shadow: -2px 2px 8px rgba(139, 92, 246, 0.15);
 }
 .hud-corner-br {
   bottom: -1px; right: -1px;
-  border-bottom: 2px solid rgba(139, 92, 246, 0.5);
-  border-right: 2px solid rgba(139, 92, 246, 0.5);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.5);
+  border-right: 1px solid rgba(139, 92, 246, 0.5);
+  border-radius: 0 0 2px 0;
+  box-shadow: 2px 2px 8px rgba(139, 92, 246, 0.15);
 }
 
-/* Scan line */
-.hud-scanline {
+/* Gradient sweep (soft replacement for scan line) */
+.hud-sweep {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.15) 20%, rgba(59, 130, 246, 0.3) 50%, rgba(59, 130, 246, 0.15) 80%, transparent 100%);
-  opacity: 0;
+  bottom: 0;
+  background: linear-gradient(180deg,
+    rgba(59, 130, 246, 0.04) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(139, 92, 246, 0.03) 100%
+  );
   pointer-events: none;
+}
+
+/* Reset button */
+.hud-reset-btn {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #A0A0B0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hud-reset-btn:hover {
+  color: #E8E8ED;
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
 }
 
 /* Status dot — pulsing */
@@ -1048,15 +1341,13 @@ export default function MapSection() {
 .mapboxgl-ctrl-attrib { display: none !important; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hud-scanline {
-    animation: hud-scan 4s ease-in-out infinite;
+  .hud-sweep {
+    animation: hud-sweep-pulse 6s ease-in-out infinite;
   }
 
-  @keyframes hud-scan {
-    0% { top: 0; opacity: 0; }
-    5% { opacity: 0.8; }
-    95% { opacity: 0.8; }
-    100% { top: 100%; opacity: 0; }
+  @keyframes hud-sweep-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
 
   .hud-status-dot {
@@ -1077,17 +1368,17 @@ export default function MapSection() {
   }
 
   .hud-corner {
-    animation: corner-glow 3s ease-in-out infinite alternate;
+    animation: corner-glow 4s ease-in-out infinite alternate;
   }
 
   @keyframes corner-glow {
-    0% { opacity: 0.5; }
+    0% { opacity: 0.6; }
     100% { opacity: 1; }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hud-scanline { display: none; }
+  .hud-sweep { animation: none; }
   .hud-status-dot { animation: none; }
   .hud-spinner { animation: none; }
   .hud-corner { animation: none; }

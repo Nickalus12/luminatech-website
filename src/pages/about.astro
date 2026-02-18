@@ -236,21 +236,15 @@ import { about, brand } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- Person Schema Markup (keep below) -->
+  <!-- Organization Schema Markup -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "ProfilePage",
+    "@type": "AboutPage",
     "mainEntity": {
-      "@type": "Person",
-      "name": "Nick Brewer",
-      "jobTitle": "ERP Administrator & Prophet 21 Consultant",
-      "description": "Founder of Lumina Erp. Working ERP administrator who uses Prophet 21 daily at a wholesale distribution company.",
-      "url": "https://luminatech.xyz/about",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Lumina Erp",
-        "url": "https://luminatech.xyz"
-      },
+      "@type": "Organization",
+      "name": "Lumina ERP",
+      "description": "Practitioner-consultants who use Prophet 21 daily at wholesale distribution companies. ERP administration, custom development, and cloud migration.",
+      "url": "https://lumina-erp.com",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Humble",

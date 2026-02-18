@@ -27,7 +27,7 @@ const blog = defineCollection({
     description: z.string(),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    author: z.string().default('Nick Brewer'),
+    author: z.string().default('Lumina ERP Team'),
     category: z.enum([
       'cloud-migration',
       'technical',

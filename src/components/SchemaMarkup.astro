@@ -19,12 +19,11 @@ const professionalService = {
   '@type': 'ProfessionalService',
   name: 'Lumina Erp',
   url: siteUrl,
-  logo: `${siteUrl}favicon.svg`,
+  logo: `${siteUrl}logo.png`,
   description: 'Expert Prophet 21 (P21) consulting for wholesale distributors. Implementation, business rules, cloud migration, and managed support.',
-  founder: {
-    '@type': 'Person',
-    name: 'Nick Brewer',
-    jobTitle: 'ERP Consultant & Founder',
+  foundingLocation: {
+    '@type': 'Place',
+    address: { '@type': 'PostalAddress', addressLocality: 'Humble', addressRegion: 'TX' },
   },
   areaServed: {
     '@type': 'Country',
@@ -61,9 +60,9 @@ const localBusiness = {
     latitude: 29.9988,
     longitude: -95.2622,
   },
-  founder: {
-    '@type': 'Person',
-    name: 'Nick Brewer',
+  foundingLocation: {
+    '@type': 'Place',
+    address: { '@type': 'PostalAddress', addressLocality: 'Humble', addressRegion: 'TX' },
   },
   areaServed: [
     { '@type': 'Country', name: 'United States' },
@@ -103,8 +102,8 @@ function buildArticleSchema(p: NonNullable<typeof post>) {
     image: p.image ? new URL(p.image, siteUrl).href : undefined,
     url: new URL(p.url, siteUrl).href,
     author: {
-      '@type': 'Person',
-      name: 'Nick Brewer',
+      '@type': 'Organization',
+      name: 'Lumina ERP',
       url: `${siteUrl}about`,
     },
     publisher: {
