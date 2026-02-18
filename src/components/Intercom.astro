@@ -1,32 +1,117 @@
 ---
 // Intercom Messenger Widget
 // App ID: o6impn8n
-// Only active on /services page — hidden everywhere else
+// Custom launcher with Lumina logo + glassmorphism — only visible on /services
 // FIN AI handles conversations, qualifies leads, and pushes to Odoo via webhook
 ---
 
-<!-- Intercom Messenger -->
+<!-- Intercom Messenger (hidden launcher — we use a custom one) -->
 <script is:inline>
-window.intercomSettings = {
-  api_base: "https://api-iam.intercom.io",
-  app_id: "o6impn8n",
-  hide_default_launcher: true
-};
+(function() {
+  var isServices = window.location.pathname === '/services' || window.location.pathname === '/services/';
+  window.intercomSettings = {
+    api_base: "https://api-iam.intercom.io",
+    app_id: "o6impn8n",
+    hide_default_launcher: true
+  };
+})();
 </script>
 <script is:inline>
 (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/o6impn8n';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
 </script>
 
-<!-- Show launcher only on /services, hide everywhere else -->
-<script is:inline>
-document.addEventListener('astro:page-load', function() {
-  if (window.Intercom) {
-    var isServices = window.location.pathname === '/services' || window.location.pathname === '/services/';
-    window.Intercom('update', {
-      api_base: "https://api-iam.intercom.io",
-      app_id: "o6impn8n",
-      hide_default_launcher: !isServices
-    });
+<!-- Custom Lumina chat launcher — glassmorphism style, /services only -->
+<button
+  id="lumina-chat-launcher"
+  aria-label="Chat with us"
+  style="display:none"
+>
+  <img src="/logo-64.png" alt="" width="32" height="32" />
+</button>
+
+<style>
+  #lumina-chat-launcher {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(10, 10, 15, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.15),
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    padding: 0;
+    outline: none;
   }
-});
+  #lumina-chat-launcher:hover {
+    transform: scale(1.08);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow:
+      0 0 28px rgba(59, 130, 246, 0.25),
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  #lumina-chat-launcher:active {
+    transform: scale(0.95);
+  }
+  #lumina-chat-launcher.visible {
+    display: flex;
+  }
+  #lumina-chat-launcher img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  function initIntercomLauncher() {
+    var btn = document.getElementById('lumina-chat-launcher');
+    if (!btn) return;
+
+    var isServices = window.location.pathname === '/services' || window.location.pathname === '/services/';
+
+    if (isServices) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+
+    // Wire click to open Intercom
+    btn.onclick = function() {
+      if (window.Intercom) {
+        window.Intercom('show');
+      } else {
+        window.location.href = '/contact';
+      }
+    };
+
+    // Update Intercom settings
+    if (window.Intercom) {
+      window.Intercom('update', window.intercomSettings);
+    }
+  }
+
+  // Astro view transitions + initial load
+  document.addEventListener('astro:page-load', initIntercomLauncher);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initIntercomLauncher);
+  } else {
+    initIntercomLauncher();
+  }
+})();
 </script>

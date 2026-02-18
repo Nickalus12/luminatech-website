@@ -37,7 +37,7 @@
   <text x="80" y="448" font-family="Inter, system-ui, sans-serif" font-size="26" fill="#A0A0B0">Wholesale Distributors</text>
 
   <!-- Domain -->
-  <text x="80" y="560" font-family="monospace" font-size="20" fill="#7A7A8A">luminatech.xyz</text>
+  <text x="80" y="560" font-family="monospace" font-size="20" fill="#7A7A8A">lumina-erp.com</text>
 
   <!-- Bottom border accent -->
   <rect x="0" y="626" width="1200" height="4" fill="#3B82F6"/>
