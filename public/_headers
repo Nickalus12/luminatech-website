@@ -21,6 +21,12 @@
 /favicon.ico
   Cache-Control: public, max-age=86400
 
+/logo*.png
+  Cache-Control: public, max-age=86400
+
+/favicon-32.png
+  Cache-Control: public, max-age=86400
+
 /hero-visual.svg
   Cache-Control: public, max-age=2592000, immutable
 
