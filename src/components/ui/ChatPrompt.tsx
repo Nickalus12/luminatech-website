@@ -6,9 +6,8 @@ export default function ChatPrompt() {
   const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   const handleClick = useCallback(() => {
-    // Try Tawk.to first, fallback to /contact
-    if (typeof window !== 'undefined' && (window as any).Tawk_API?.toggle) {
-      (window as any).Tawk_API.toggle();
+    if (typeof window !== 'undefined' && (window as any).Intercom) {
+      (window as any).Intercom('showNewMessage', 'I have a P21 question: ');
     } else {
       window.location.href = '/contact';
     }

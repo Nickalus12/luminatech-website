@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
 import SchemaMarkup from '../components/SchemaMarkup.astro';
 import Analytics from '../components/Analytics.astro';
+import Intercom from '../components/Intercom.astro';
 import StickyCTA from '../components/ui/StickyCTA';
 import ExitIntent from '../components/ui/ExitIntent';
 
@@ -46,10 +47,13 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0A0A0F" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/logo-64.png" sizes="64x64" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/logo.png" />
     <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://widget.intercom.io" crossorigin />
+    <link rel="dns-prefetch" href="https://api-iam.intercom.io" />
 
     <SEO
       title={title}
@@ -84,6 +88,7 @@ const {
     <StickyCTA client:idle />
     <ExitIntent client:idle />
     <Analytics />
+    <Intercom />
 
     <script is:inline>
       (function() {
