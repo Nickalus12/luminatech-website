@@ -78,7 +78,7 @@ export const homepage = {
           { label: "API Calls", value: "140x less", detail: "optimized batch processing" },
           { label: "Time Saved", value: "95%", detail: "from manual process" },
         ],
-        tech: ["N8N", "REST API", "PostgreSQL", "Rate Limiting"],
+        tech: ["n8n", "REST API", "PostgreSQL", "Rate Limiting"],
       },
       {
         title: "Production Business Rules",
@@ -183,7 +183,7 @@ export const homepage = {
         solution:
           "We built an automated workflow with intelligent batching, rate limiting, and error handling -- syncing 280K+ products without intervention.",
         result: "95% reduction in manual effort with 140x fewer API calls.",
-        tech: ["N8N", "REST API", "PostgreSQL"],
+        tech: ["n8n", "REST API", "PostgreSQL"],
         accent: "success" as const,
       },
     ],
@@ -238,10 +238,10 @@ export const services = {
       icon: "development",
       title: "P21 Extensions & DynaChange Development",
       description:
-        "Custom P21 business rules that automate workflows, enforce validation, and integrate with external systems -- without modifying core P21 code. Built against P21 Extensions SDK with production-tested patterns.",
+        "Custom P21 business rules that automate workflows, enforce validation, and integrate with external systems -- without modifying core P21 code. Built against the DynaChange Extensibility Suite with production-tested patterns.",
       includes: [
         "C# .NET business rules (Validators, Converters, On Event, On Demand)",
-        "P21 Transaction API v2 integration for quote/order automation",
+        "P21 Transaction API integration for quote/order automation",
         "Custom database tables for configuration and audit trails",
         "Field auto-population and data transformation logic",
         "Fail-safe patterns preventing legitimate operations from blocking",
@@ -270,18 +270,18 @@ export const services = {
     {
       id: "integrations",
       icon: "integration",
-      title: "API Integration Services",
+      title: "API & ERP Integration Services",
       description:
-        "Connect P21 to SellerCloud, Rithum, e-commerce platforms, and custom APIs using N8N automation workflows. Proven patterns delivering 150x performance improvements and 140x API call reductions.",
+        "Connect your ERP to e-commerce platforms, marketplaces, CRMs, and third-party systems. We integrate with SellerCloud, Rithum, Shopify, and custom APIs using n8n automation workflows -- with proven patterns delivering 150x performance improvements.",
       includes: [
-        "N8N workflow development with visual automation editor",
+        "n8n workflow development with visual automation editor",
         "Bi-directional data sync (orders, tracking, pricing, inventory)",
+        "ERP-to-marketplace connectors (Amazon, Wayfair, Shopify, SellerCloud)",
         "Batch API processing (25-50 items per request for optimal performance)",
         "OAuth2 token management and refresh automation",
         "Retry logic with exponential backoff (up to 10 attempts)",
         "Error handling workflows with database logging",
-        "Email alerts and monitoring dashboards",
-        "N8N workflow JSON export and documentation",
+        "n8n workflow JSON export and documentation",
         "30-day post-deployment support",
       ],
       timeline: "1-3 weeks per integration",
@@ -291,13 +291,13 @@ export const services = {
         {
           name: "Address Matching Dashboard Optimization",
           problem: "1,500+ API calls taking 5 hours with constant timeouts",
-          solution: "Replaced 1,000 P21 API calls with single SQL query, batched external API calls (50 orders/request)",
+          solution: "Replaced 1,000 ERP API calls with single SQL query, batched external API calls (50 orders/request)",
           result: "150x faster (5 hours → <2 minutes), 140x fewer API calls (1,500+ → 11)",
         },
         {
           name: "SellerCloud Tracking Sync",
           problem: "Manual tracking number updates for Wayfair/Amazon orders via SellerCloud",
-          solution: "N8N workflow running every 30 minutes with verification loops and retry logic",
+          solution: "n8n workflow running every 30 minutes with verification loops and retry logic",
           result: "Automated bi-directional tracking sync with 100% accuracy verification",
         },
       ],
@@ -307,7 +307,7 @@ export const services = {
       icon: "reporting",
       title: "Database Optimization & Performance",
       description:
-        "Make P21 reports load 10x faster without upgrading hardware. Expert SQL query optimization, indexing strategies, and database performance tuning for Crystal Reports, SSRS, and custom queries.",
+        "Make your ERP reports load 10x faster without upgrading hardware. Expert SQL query optimization, indexing strategies, and database performance tuning for Crystal Reports, SSRS, Power BI, and custom queries across any SQL Server-backed ERP.",
       includes: [
         "Free performance audit (1-hour database review, top 10 slow queries)",
         "SQL query optimization with before/after benchmarks",
@@ -342,15 +342,15 @@ export const services = {
       icon: "advisory",
       title: "Warehouse Automation Solutions",
       description:
-        "Automate pick ticket routing, bin allocation, and shipping workflows without expensive WMS platforms. Quantity-based logic, carrier validation, and RF scanner integration built on P21.",
+        "Automate pick ticket routing, bin allocation, and shipping workflows without expensive WMS platforms. Quantity-based logic, carrier validation, and RF scanner integration built on your existing ERP.",
       includes: [
         "Quantity-based bin routing (eaches vs. pallet bin logic)",
         "Carrier auto-assignment and validation rules",
         "Pick ticket validation before printing/processing",
-        "Shipping label integration (ShipLink, UPS WorldShip)",
+        "Shipping label integration (ShipLink, UPS WorldShip, FedEx Ship Manager)",
         "Dynamic bin allocation based on configurable thresholds",
         "Configuration portal for warehouse managers",
-        "SQL triggers or N8N automation (client choice)",
+        "SQL triggers or n8n automation (client choice)",
         "Custom audit tables and reporting",
         "Pilot deployment with success metrics",
         "60-day warranty on automation logic",
@@ -378,13 +378,13 @@ export const services = {
       icon: "cloud",
       title: "Custom Portal Development",
       description:
-        "Customer-facing portals that pull live pricing, availability, and order history from P21 without exposing your ERP. Modern web interfaces with mobile-optimized responsive design.",
+        "Customer-facing portals that pull live pricing, availability, and order history from your ERP without exposing the backend. Modern web interfaces with mobile-optimized responsive design.",
       includes: [
         "Responsive web portal (HTML/CSS/JavaScript)",
-        "Customer-specific contract pricing via P21 GetItemPrice API",
+        "Customer-specific contract pricing via ERP APIs",
         "Real-time inventory availability lookups",
         "Order history and tracking information",
-        "Quote request forms creating P21 quotes via Transaction API",
+        "Quote request forms integrated with your ERP",
         "User authentication (Customer ID + token or SSO)",
         "Batch API optimization (25-50 items per request)",
         "Progress tracking for bulk export jobs",
