@@ -16,7 +16,31 @@
 })();
 </script>
 <script is:inline>
-(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/o6impn8n';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}w.Intercom('boot',w.intercomSettings);})();
+(function(){
+  var w=window;var ic=w.Intercom;
+  if(typeof ic==="function"){
+    ic('reattach_activator');
+    ic('update',w.intercomSettings);
+  } else {
+    var d=document;
+    var i=function(){i.c(arguments);};
+    i.q=[];
+    i.c=function(args){i.q.push(args);};
+    w.Intercom=i;
+    var l=function(){
+      var s=d.createElement('script');
+      s.type='text/javascript';s.async=true;
+      s.src='https://widget.intercom.io/widget/o6impn8n';
+      s.onload=function(){ w.__intercomSDKLoaded=true; };
+      var x=d.getElementsByTagName('script')[0];
+      x.parentNode.insertBefore(s,x);
+    };
+    if(document.readyState==='complete'){l();}
+    else if(w.attachEvent){w.attachEvent('onload',l);}
+    else{w.addEventListener('load',l,false);}
+  }
+  w.Intercom('boot',w.intercomSettings);
+})();
 </script>
 
 <!-- Custom Lumina chat launcher — glassmorphism style, /services only -->
@@ -25,6 +49,7 @@
   aria-label="Chat with us"
 >
   <img src="/logo-64.png" alt="" width="32" height="32" />
+  <span id="lumina-chat-loader" aria-hidden="true"></span>
 </button>
 
 <style>
@@ -32,7 +57,7 @@
     position: fixed;
     bottom: 24px;
     right: 24px;
-    z-index: 1000;
+    z-index: 2147483000;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -73,10 +98,33 @@
     object-fit: contain;
     pointer-events: none;
   }
+
+  /* Loading spinner shown while waiting for Intercom */
+  #lumina-chat-loader {
+    display: none;
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: rgba(59, 130, 246, 0.8);
+    animation: lumina-spin 0.6s linear infinite;
+    pointer-events: none;
+  }
+  #lumina-chat-launcher.loading #lumina-chat-loader {
+    display: block;
+  }
+  @keyframes lumina-spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
 
 <script is:inline>
 (function() {
+  // Check if the real Intercom SDK is loaded (not just the stub)
+  function isIntercomReady() {
+    return window.Intercom && (window.__intercomSDKLoaded || !window.Intercom.q);
+  }
+
   function initIntercomLauncher() {
     var btn = document.getElementById('lumina-chat-launcher');
     if (!btn) return;
@@ -91,17 +139,40 @@
 
     // Wire click to open Intercom
     btn.onclick = function() {
-      if (window.Intercom) {
-        // Ensure booted, then show
-        window.Intercom('boot', window.intercomSettings);
+      if (isIntercomReady()) {
+        // Real SDK loaded — just show the messenger
         window.Intercom('show');
+      } else if (window.Intercom && window.Intercom.q) {
+        // Stub exists but SDK still loading — show spinner, queue show, and set a fallback
+        btn.classList.add('loading');
+        window.Intercom('show');
+
+        // Wait up to 4 seconds for SDK to load and process the queue
+        var checks = 0;
+        var poll = setInterval(function() {
+          checks++;
+          if (isIntercomReady()) {
+            clearInterval(poll);
+            btn.classList.remove('loading');
+            // SDK loaded — re-fire show in case the queued one didn't work
+            window.Intercom('show');
+          } else if (checks >= 8) {
+            // 4 seconds elapsed, SDK never loaded — fall back to contact
+            clearInterval(poll);
+            btn.classList.remove('loading');
+            window.location.href = '/contact';
+          }
+        }, 500);
       } else {
+        // No Intercom at all — go to contact page
         window.location.href = '/contact';
       }
     };
 
-    // Boot Intercom on page navigation (Astro view transitions)
-    if (window.Intercom) {
+    // Ensure Intercom is booted on page navigation (Astro view transitions)
+    if (isIntercomReady()) {
+      window.Intercom('update', window.intercomSettings);
+    } else if (window.Intercom) {
       window.Intercom('boot', window.intercomSettings);
     }
   }
