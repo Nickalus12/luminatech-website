@@ -1,0 +1,402 @@
+---
+import ServiceDetailLayout from '@layouts/ServiceDetailLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import GlowText from '@components/ui/GlowText.astro';
+import Button from '@components/ui/Button.astro';
+
+const heroMetrics = [
+  { value: '50+', label: 'Items per Batch' },
+  { value: '<2.5s', label: 'Response Time (25 items)' },
+  { value: 'OAuth2', label: 'Enterprise Security' },
+  { value: '60-Day', label: 'Warranty Included' },
+];
+---
+
+<ServiceDetailLayout
+  title="API Development & Integration"
+  description="Build secure REST APIs on top of Prophet 21 for portals, mobile apps, and partner integrations. OAuth2 authentication, rate limiting, and OpenAPI documentation included."
+  badge="API Development"
+  headline="Build Secure APIs on Top of P21 for Portals, Mobile Apps, and Partners"
+  subheadline="Expose P21 data via REST APIs without compromising security. OAuth2 authentication, rate limiting, and documentation included."
+  heroMetrics={heroMetrics}
+  ctaLabel="Request API Development Quote"
+  ctaHref="/contact"
+  secondaryCtaLabel="Explore API Examples"
+  secondaryCtaHref="/contact"
+>
+
+  <!-- API DEVELOPMENT SERVICES -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-5">API Services</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          API Development Services
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          We build production-grade APIs that sit between your applications and P21, handling authentication, rate limiting, and data transformation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            icon: 'api',
+            title: 'RESTful API Design',
+            description: 'Clean JSON endpoints for P21 data following REST conventions. Versioned URLs, proper HTTP status codes, consistent schemas.',
+          },
+          {
+            icon: 'lock',
+            title: 'Authentication & Security',
+            description: 'OAuth2 with refresh tokens, API key management, JWT validation. Every request authenticated and authorized.',
+          },
+          {
+            icon: 'shield',
+            title: 'Rate Limiting',
+            description: 'Protect P21 from abuse with configurable rate limits. Redis-backed counters ensure fair usage across all API consumers.',
+          },
+          {
+            icon: 'webhook',
+            title: 'Webhook Notifications',
+            description: 'Event-driven integrations that push data when things change. Order status updates, inventory alerts, shipping notifications.',
+          },
+          {
+            icon: 'docs',
+            title: 'OpenAPI Documentation',
+            description: 'Auto-generated Swagger UI with interactive testing. Developer documentation and authentication guide included.',
+          },
+          {
+            icon: 'batch',
+            title: 'Batch Processing',
+            description: 'Handle high-volume requests efficiently. Process 25-50 items per API call with optimized P21 backend queries.',
+          },
+        ].map((service, i) => (
+          <Card class="scroll-reveal" style={`animation-delay: ${i * 80}ms;`}>
+            <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+              {service.icon === 'api' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9" /><path d="M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1" /></svg>
+              )}
+              {service.icon === 'lock' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              )}
+              {service.icon === 'shield' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              )}
+              {service.icon === 'webhook' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+              )}
+              {service.icon === 'docs' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+              )}
+              {service.icon === 'batch' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+              )}
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary mb-2">{service.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">{service.description}</p>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- COMMON API USE CASES TABLE -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">Use Cases</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Common API Use Cases
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          These are the most frequently requested P21 API endpoints we build for distributors.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 100ms;">
+        <div class="overflow-x-auto rounded-xl border border-border">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-bg-surface-2">
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Use Case</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Method</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Example Endpoint</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { useCase: 'Customer pricing lookup', method: 'GET', endpoint: '/api/pricing?customer={id}&items={skus}', methodColor: 'accent-success' },
+                { useCase: 'Create quote', method: 'POST', endpoint: '/api/quotes', methodColor: 'accent-primary' },
+                { useCase: 'Order status', method: 'GET', endpoint: '/api/orders/{order_no}/status', methodColor: 'accent-success' },
+                { useCase: 'Inventory availability', method: 'GET', endpoint: '/api/inventory?item={id}&location={loc}', methodColor: 'accent-success' },
+                { useCase: 'Update tracking', method: 'PUT', endpoint: '/api/orders/{order_no}/tracking', methodColor: 'accent-warning' },
+              ].map((row, i) => (
+                <tr class:list={["border-t border-border/50", i % 2 === 0 ? "bg-bg-surface-1/50" : "bg-bg-base"]}>
+                  <td class="px-6 py-4 text-sm text-text-primary">{row.useCase}</td>
+                  <td class="px-6 py-4">
+                    <span class={`text-xs font-mono font-bold px-2 py-1 rounded bg-${row.methodColor}/10 text-${row.methodColor}`}>
+                      {row.method}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-mono text-text-secondary">{row.endpoint}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- TECHNICAL ARCHITECTURE -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <!-- Left: Architecture Diagram -->
+        <div class="scroll-reveal">
+          <Badge variant="primary" class="mb-5">Architecture</Badge>
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-6">
+            Technical Architecture
+          </h2>
+          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed mb-8">
+            Our API layer sits between your applications and P21, handling authentication, rate limiting, and routing requests to the appropriate backend.
+          </p>
+
+          <div class="rounded-xl bg-[#0d0d14] border border-border p-6">
+            <h4 class="text-sm font-semibold text-text-tertiary uppercase tracking-wider mb-4">API Layer Pattern</h4>
+            <pre class="text-sm font-mono text-text-secondary leading-relaxed overflow-x-auto"><code><span class="text-accent-primary">External Client</span> (Portal, Mobile App)
+        |
+        v
+<span class="text-accent-warning">OAuth2 Authentication</span> (JWT token)
+        |
+        v
+<span class="text-accent-primary">API Gateway</span> (Node.js/Express or N8N)
+        |
+        v
+<span class="text-accent-violet">Rate Limiting</span> (Redis-based)
+        |
+        v
++---------------+----------------+
+|               |                |
+v               v                v
+<span class="text-accent-success">P21 API</span>      <span class="text-accent-primary">Direct SQL</span>    <span class="text-accent-violet">Business Logic</span>
+(Write)      (Read-Only)    (Custom Rules)</code></pre>
+          </div>
+        </div>
+
+        <!-- Right: Security Layers -->
+        <div class="scroll-reveal" style="animation-delay: 150ms;">
+          <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-6">Security Layers</h3>
+          <div class="space-y-4">
+            {[
+              {
+                num: '1',
+                title: 'Authentication',
+                detail: 'OAuth2 with refresh tokens. Every API consumer gets unique credentials with automatic token rotation.',
+                color: 'accent-primary',
+              },
+              {
+                num: '2',
+                title: 'Authorization',
+                detail: 'Role-based access control (RBAC). Customers only see their own data. Partners get scoped access.',
+                color: 'accent-violet',
+              },
+              {
+                num: '3',
+                title: 'Rate Limiting',
+                detail: '100 requests/min per API key. Configurable per consumer. Prevents P21 overload.',
+                color: 'accent-warning',
+              },
+              {
+                num: '4',
+                title: 'Input Validation',
+                detail: 'Parameterized queries prevent SQL injection. Schema validation rejects malformed payloads.',
+                color: 'accent-success',
+              },
+              {
+                num: '5',
+                title: 'Audit Logging',
+                detail: 'Every request logged to database with timestamp, consumer ID, endpoint, and response status.',
+                color: 'accent-error',
+              },
+            ].map((layer) => (
+              <div class="flex items-start gap-4 p-4 rounded-lg bg-bg-surface-2/50 border border-border/50">
+                <div class={`w-8 h-8 flex items-center justify-center rounded-lg bg-${layer.color}/10 shrink-0`}>
+                  <span class={`text-sm font-mono font-bold text-${layer.color}`}>{layer.num}</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-text-primary text-sm">{layer.title}</h4>
+                  <p class="text-sm text-text-secondary mt-1 leading-relaxed">{layer.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-6 p-4 rounded-lg bg-bg-surface-1 border border-border/50">
+            <h4 class="text-sm font-semibold text-text-primary mb-2">Technology Stack</h4>
+            <div class="flex flex-wrap gap-2">
+              {['Node.js + Express', 'N8N Webhooks', 'SQL Server', 'P21 Transaction API', 'P21 eCommerce API', 'Redis', 'JWT'].map((tech) => (
+                <span class="text-xs px-2.5 py-1 rounded-full bg-bg-surface-2 text-text-secondary border border-border/50">{tech}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- API DOCUMENTATION & DEVELOPER EXPERIENCE -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-5">Developer Experience</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          API Documentation & Developer Experience
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          Every API we build ships with comprehensive documentation, interactive testing, and client libraries.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        {[
+          {
+            icon: 'swagger',
+            title: 'OpenAPI Specification',
+            items: ['Auto-generated Swagger UI', 'Interactive API testing', 'Developer documentation', 'Authentication guide'],
+          },
+          {
+            icon: 'portal',
+            title: 'Developer Portal',
+            items: ['API key management', 'Usage analytics dashboard', 'Rate limit visibility', 'Webhook configuration'],
+          },
+          {
+            icon: 'sdk',
+            title: 'SDKs & Libraries',
+            items: ['JavaScript/TypeScript client', 'Python client (optional)', 'Postman collection', 'Example integrations'],
+          },
+        ].map((section, i) => (
+          <Card class="scroll-reveal" style={`animation-delay: ${i * 80}ms;`}>
+            <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+              {section.icon === 'swagger' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+              )}
+              {section.icon === 'portal' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
+              )}
+              {section.icon === 'sdk' && (
+                <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>
+              )}
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary mb-3">{section.title}</h3>
+            <ul class="space-y-2">
+              {section.items.map((item) => (
+                <li class="flex items-center gap-2 text-sm text-text-secondary">
+                  <svg class="w-4 h-4 text-accent-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- PRICING & DELIVERABLES -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">Transparent Pricing</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Pricing & Deliverables
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          API projects scale with complexity. Every engagement includes security, documentation, and warranty.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
+        {[
+          { title: 'Simple API', range: '$3,000 - $6,000', endpoints: '1-3 endpoints', detail: 'Pricing lookup, inventory check' },
+          { title: 'Standard API', range: '$8,000 - $15,000', endpoints: '5-10 endpoints', detail: 'Full CRUD with auth', highlight: true },
+          { title: 'Complex API', range: '$15,000 - $30,000', endpoints: '15+ endpoints', detail: 'OAuth2, webhooks, portal' },
+        ].map((tier, i) => (
+          <div class:list={[
+            "scroll-reveal p-6 rounded-xl border transition-colors duration-300",
+            tier.highlight ? "bg-bg-surface-1 border-accent-primary shadow-glow" : "bg-bg-surface-1/50 border-border/50 hover:border-accent-primary/30",
+          ]} style={`animation-delay: ${i * 80}ms;`}>
+            {tier.highlight && (
+              <div class="mb-3">
+                <Badge variant="primary">Most Common</Badge>
+              </div>
+            )}
+            <h3 class="text-base font-semibold text-text-primary mb-2">{tier.title}</h3>
+            <div class="text-2xl font-mono font-bold text-accent-primary mb-1">{tier.range}</div>
+            <p class="text-sm text-text-secondary mb-1">{tier.endpoints}</p>
+            <p class="text-xs text-text-tertiary">{tier.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="max-w-lg mx-auto text-center mb-12 scroll-reveal" style="animation-delay: 100ms;">
+        <div class="p-4 rounded-lg bg-bg-surface-1 border border-border/50">
+          <p class="text-sm text-text-secondary">
+            Monthly hosting & maintenance: <span class="font-mono font-bold text-accent-primary">$300 - $800/mo</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="max-w-3xl mx-auto scroll-reveal" style="animation-delay: 150ms;">
+        <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-6 text-center">Project Timeline</h3>
+        <div class="space-y-4">
+          {[
+            { phase: 'Discovery', duration: '2-3 days', detail: 'API requirements, endpoint design, authentication strategy' },
+            { phase: 'Development', duration: '2-4 weeks', detail: 'Endpoint implementation, security, error handling' },
+            { phase: 'Documentation', duration: '3-5 days', detail: 'OpenAPI spec, developer guide, authentication docs' },
+            { phase: 'Deployment', duration: '2 days', detail: 'Production hosting, SSL, monitoring setup' },
+          ].map((step, i) => (
+            <div class="flex items-start gap-4 p-4 rounded-lg bg-bg-surface-1 border border-border/50">
+              <div class="shrink-0 w-20 text-right">
+                <span class="text-sm font-mono font-bold text-accent-primary">{step.duration}</span>
+              </div>
+              <div class="grow border-l-2 border-accent-primary/30 pl-4">
+                <h4 class="font-semibold text-text-primary text-sm">{step.phase}</h4>
+                <p class="text-sm text-text-secondary">{step.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- What You Get -->
+      <div class="max-w-3xl mx-auto mt-10 scroll-reveal" style="animation-delay: 200ms;">
+        <Card hover={false} padding="lg">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">What You Get</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              'RESTful API endpoints (Node.js or N8N)',
+              'OAuth2 authentication system',
+              'Rate limiting and security',
+              'OpenAPI documentation (Swagger)',
+              'Developer portal (optional)',
+              'SSL certificate and hosting',
+              'Monitoring and alerting',
+              '60-day warranty on API functionality',
+            ].map((item) => (
+              <div class="flex items-center gap-2 text-sm text-text-secondary">
+                <svg class="w-4 h-4 text-accent-success shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                {item}
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+</ServiceDetailLayout>

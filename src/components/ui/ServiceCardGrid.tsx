@@ -90,6 +90,14 @@ const iconPaths: Record<string, string> = {
   managed: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z',
 };
 
+const detailPageUrls: Record<string, string> = {
+  extensions: '/services/p21-extensions-dynachange',
+  integrations: '/services/n8n-integrations-p21',
+  database: '/services/erp-database-optimization-p21',
+  warehouse: '/services/warehouse-automation-p21',
+  portals: '/services/custom-portals-p21',
+};
+
 const tabDefs = [
   { id: 'overview', label: 'Overview' },
   { id: 'roi', label: 'ROI & Pricing' },
@@ -157,6 +165,18 @@ function ServiceCardCompact({
             <span className="text-xs text-[#6B6B7B]">|</span>
             <span className="text-xs text-[#3B82F6] font-mono font-semibold">{service.pricing}</span>
           </div>
+          {detailPageUrls[service.id] && (
+            <a
+              href={detailPageUrls[service.id]}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-[#3B82F6] hover:text-[#60A5FA] transition-colors"
+            >
+              View Full Details
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+              </svg>
+            </a>
+          )}
         </div>
         <div className="shrink-0 mt-1">
           <svg
@@ -514,6 +534,17 @@ function ServiceCardExpanded({ service }: { service: EnrichedService }) {
             <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
           </svg>
         </a>
+        {detailPageUrls[service.id] && (
+          <a
+            href={detailPageUrls[service.id]}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[#3B82F6] text-sm font-semibold rounded-md border border-[#3B82F6] hover:bg-[#3B82F6]/10 transition-colors duration-150"
+          >
+            View Full Details
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+        )}
       </div>
     </div>
   );

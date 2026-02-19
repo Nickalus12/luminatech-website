@@ -1,0 +1,448 @@
+---
+import ServiceDetailLayout from '@layouts/ServiceDetailLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import GlowText from '@components/ui/GlowText.astro';
+---
+
+<ServiceDetailLayout
+  title="Custom Portal Development"
+  description="Customer-facing web portals with live P21 pricing, availability, and order history. Modern interfaces that integrate seamlessly with Prophet 21 ERP."
+  badge="Portal Development"
+  headline="Customer-Facing Portals That Pull Live Pricing from P21"
+  subheadline="Give your customers real-time pricing, availability, and order history without exposing P21. Modern web interfaces that integrate seamlessly with your ERP."
+  heroMetrics={[
+    { value: '6.4x', label: 'Faster batch pricing' },
+    { value: '25K+', label: 'Items per export' },
+    { value: '<2s', label: 'Avg response time' },
+    { value: '60-day', label: 'Defect warranty' },
+  ]}
+  ctaLabel="Request Portal Development Quote"
+  ctaHref="/contact"
+  secondaryCtaLabel="See Our Work"
+  secondaryCtaHref="/contact"
+>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Portal Capabilities                                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Capabilities</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Everything Your Customers Need — <GlowText as="span" gradient>Powered by P21</GlowText>
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          We build portals that pull live data from Prophet 21 so your customers get accurate, real-time information every time they log in.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card class="scroll-reveal" style="animation-delay: 0ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Pricing Lookup</h3>
+          <p class="text-text-secondary">Customer-specific contract pricing via the P21 GetItemPrice API. Supports individual and bulk SKU queries with real-time results.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-success/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Availability Check</h3>
+          <p class="text-text-secondary">Real-time inventory from the <code class="text-accent-primary bg-bg-surface-2 px-1.5 py-0.5 rounded text-sm">inv_loc</code> table. Show on-hand, allocated, and available quantities by warehouse.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-violet/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Order History</h3>
+          <p class="text-text-secondary">Read-only access to past orders, invoices, and shipment tracking. Customers can search, filter, and export without calling your team.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 300ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-warning/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15a2.25 2.25 0 0 1 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Quote Requests</h3>
+          <p class="text-text-secondary">Form submissions create P21 quotes via the Transaction API. Customers submit requests that flow directly into your ERP workflow.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 400ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Account Management</h3>
+          <p class="text-text-secondary">Ship-to addresses, PO numbers, and job names. Customers manage their own account details, reducing your support burden.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 500ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-success/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Mobile-Optimized</h3>
+          <p class="text-text-secondary">Responsive designs built for warehouse and field use. Your team and customers get full functionality on any device.</p>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Integration Methods                                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="max-w-3xl mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-4">Integration Methods</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Multiple Ways to Connect to P21
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          We choose the right integration pattern for each portal feature — balancing speed, reliability, and data freshness.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto scroll-reveal" style="animation-delay: 100ms;">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Method</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Use Case</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Advantages</th>
+            </tr>
+          </thead>
+          <tbody class="text-text-secondary">
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4">
+                <span class="text-accent-primary font-medium">P21 eCommerce API</span>
+              </td>
+              <td class="py-4 px-4">Pricing, availability</td>
+              <td class="py-4 px-4">Native P21 support, XML-based, respects business logic</td>
+            </tr>
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4">
+                <span class="text-accent-primary font-medium">Transaction API v2</span>
+              </td>
+              <td class="py-4 px-4">Order creation, quotes</td>
+              <td class="py-4 px-4">Full business logic, JSON payloads, write operations</td>
+            </tr>
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4">
+                <span class="text-accent-primary font-medium">Direct SQL (Read-Only)</span>
+              </td>
+              <td class="py-4 px-4">Reporting, history</td>
+              <td class="py-4 px-4">Fast, flexible queries, no API overhead</td>
+            </tr>
+            <tr class="hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4">
+                <span class="text-accent-primary font-medium">N8N Webhooks</span>
+              </td>
+              <td class="py-4 px-4">Form submissions, async jobs</td>
+              <td class="py-4 px-4">Visual workflow editor, easy to modify</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Performance Metrics                                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="max-w-3xl mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-4">Performance</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Optimized for Speed at Scale
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          We benchmark every portal build to ensure sub-3-second response times, even when querying thousands of items from P21.
+        </p>
+      </div>
+
+      <!-- Performance table -->
+      <div class="overflow-x-auto scroll-reveal" style="animation-delay: 100ms;">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Batch Size</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Response Time</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Throughput</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Recommendation</th>
+            </tr>
+          </thead>
+          <tbody class="text-text-secondary">
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4 font-mono text-text-primary">25 items</td>
+              <td class="py-4 px-4 font-mono">1,750ms</td>
+              <td class="py-4 px-4 font-mono">14.29 items/sec</td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center gap-1.5 text-accent-success font-medium text-sm">
+                  <span class="w-2 h-2 rounded-full bg-accent-success"></span>
+                  Optimal
+                </span>
+              </td>
+            </tr>
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4 font-mono text-text-primary">50 items</td>
+              <td class="py-4 px-4 font-mono">2,800ms</td>
+              <td class="py-4 px-4 font-mono">17.86 items/sec</td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center gap-1.5 text-accent-success font-medium text-sm">
+                  <span class="w-2 h-2 rounded-full bg-accent-success"></span>
+                  Good
+                </span>
+              </td>
+            </tr>
+            <tr class="hover:bg-bg-surface-1/50 transition-colors">
+              <td class="py-4 px-4 font-mono text-text-primary">100 items</td>
+              <td class="py-4 px-4 font-mono">5,800ms</td>
+              <td class="py-4 px-4 font-mono">17.24 items/sec</td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center gap-1.5 text-accent-warning font-medium text-sm">
+                  <span class="w-2 h-2 rounded-full bg-accent-warning"></span>
+                  Timeout risk
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Optimization callout -->
+      <div class="mt-8 p-6 rounded-lg bg-accent-primary/5 border border-accent-primary/20 scroll-reveal" style="animation-delay: 200ms;">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3.75 13.5 14.25 2.25l-3.75 7.5h9.75L9.75 21l3.75-7.5H3.75Z"/></svg>
+          </div>
+          <div>
+            <h4 class="text-text-primary font-semibold mb-1">Batch Processing Makes the Difference</h4>
+            <p class="text-text-secondary text-sm">By batching 25-50 items per API call instead of individual requests, we achieved a <strong class="text-accent-primary">6.44x speed improvement</strong>. For bulk exports, keyset pagination ensures consistent results across 15,000+ items without offset drift.</p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Design & UX Showcase                               -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Design Philosophy</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Modern UX, Built for Real Users
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Our portals feel like modern SaaS products — not clunky ERP screens. Dark theme, glassmorphism, smooth animations, and responsive layouts come standard.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <Card hover={false} class="scroll-reveal" style="animation-delay: 0ms;">
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-4">Visual Design</h3>
+          <ul class="space-y-3 text-text-secondary">
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-primary mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Dark Theme</strong> — Modern gradient backgrounds with depth layers</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-violet mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Glassmorphism</strong> — Backdrop blur effects for visual hierarchy</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-primary mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Smooth Transitions</strong> — 200-300ms animations for polish</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-violet mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Consistent Palette</strong> — Professional blue accent with status colors</span>
+            </li>
+          </ul>
+        </Card>
+
+        <Card hover={false} class="scroll-reveal" style="animation-delay: 100ms;">
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-4">Interactive Elements</h3>
+          <ul class="space-y-3 text-text-secondary">
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-success mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Tag Input System</strong> — Gmail-style tags for entering SKU lists</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-success mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Progress Animations</strong> — Shimmer loading bars for bulk operations</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-success mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Success States</strong> — Bounce animations on task completion</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-1.5 h-1.5 rounded-full bg-accent-success mt-2 shrink-0"></span>
+              <span><strong class="text-text-primary">Responsive Grid</strong> — Adapts seamlessly from desktop to mobile</span>
+            </li>
+          </ul>
+        </Card>
+
+        <Card hover={false} class="md:col-span-2 scroll-reveal" style="animation-delay: 200ms;">
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-4">Accessibility Standards</h3>
+          <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="flex items-center gap-3">
+              <span class="text-accent-success">&#10003;</span>
+              <span class="text-text-secondary text-sm">Semantic HTML structure</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-accent-success">&#10003;</span>
+              <span class="text-text-secondary text-sm">Label associations</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-accent-success">&#10003;</span>
+              <span class="text-text-secondary text-sm">Keyboard navigation</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-accent-success">&#10003;</span>
+              <span class="text-text-secondary text-sm">ARIA screen reader support</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Pricing & Deliverables                             -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Investment</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Transparent Pricing
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Every portal engagement follows a clear process from discovery to deployment, with a fixed scope and warranty.
+        </p>
+      </div>
+
+      <!-- Pricing tiers -->
+      <div class="grid md:grid-cols-3 gap-6 mb-12">
+        <Card class="scroll-reveal" style="animation-delay: 0ms;">
+          <div class="mb-4">
+            <h3 class="text-text-primary font-semibold mb-1">Simple Pricing Portal</h3>
+            <p class="text-sm text-text-tertiary">Pricing lookup + availability</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$5,000 <span class="text-lg text-text-tertiary font-normal">-</span> $8,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Customer pricing lookup</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Inventory availability</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Responsive design</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Mobile-optimized</li>
+          </ul>
+        </Card>
+
+        <Card glow class="relative scroll-reveal" style="animation-delay: 100ms;">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge variant="primary">Most Popular</Badge>
+          </div>
+          <div class="mb-4 pt-2">
+            <h3 class="text-text-primary font-semibold mb-1">Full-Featured Portal</h3>
+            <p class="text-sm text-text-tertiary">Auth, history, quotes, account mgmt</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$12,000 <span class="text-lg text-text-tertiary font-normal">-</span> $20,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Everything in Simple</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> User authentication</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Order history + tracking</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Quote request forms</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Account management</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Admin config interface</li>
+          </ul>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="mb-4">
+            <h3 class="text-text-primary font-semibold mb-1">Configuration Portal</h3>
+            <p class="text-sm text-text-tertiary">Internal tools + workflow config</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$8,000 <span class="text-lg text-text-tertiary font-normal">-</span> $15,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Custom config interface</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Database-driven settings</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Audit trail</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Role-based access</li>
+          </ul>
+        </Card>
+      </div>
+
+      <!-- What you get -->
+      <div class="scroll-reveal" style="animation-delay: 300ms;">
+        <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-6">What Every Portal Includes</h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            'Responsive web portal (HTML/CSS/JS)',
+            'Backend API integration',
+            'User authentication system',
+            'Admin configuration interface',
+            'Mobile-optimized design',
+            'SSL certificate and hosting setup',
+            'Training documentation',
+            '60-day warranty on defects',
+          ].map((item) => (
+            <div class="flex items-start gap-2 p-3 rounded-lg bg-bg-base border border-border/50">
+              <span class="text-accent-success mt-0.5 shrink-0">&#10003;</span>
+              <span class="text-text-secondary text-sm">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Optional add-on -->
+      <div class="mt-8 p-4 rounded-lg bg-bg-base border border-border/50 text-center scroll-reveal" style="animation-delay: 400ms;">
+        <p class="text-text-secondary text-sm">
+          <strong class="text-text-primary">Monthly Hosting & Maintenance:</strong> $200 - $500/mo — includes uptime monitoring, security patches, and minor feature updates.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 8: Timeline                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="max-w-3xl mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-4">Process</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          From Discovery to Launch
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-5 gap-4">
+        {[
+          { step: '01', title: 'Discovery', duration: '3-5 days', desc: 'Requirements gathering, mockup review, P21 environment assessment' },
+          { step: '02', title: 'Design', duration: '1 week', desc: 'UI/UX design, branding integration, interactive prototypes' },
+          { step: '03', title: 'Development', duration: '2-4 weeks', desc: 'Frontend build + backend P21 API integration' },
+          { step: '04', title: 'Testing', duration: '1 week', desc: 'UAT with real customer data in PLAY environment' },
+          { step: '05', title: 'Deployment', duration: '2 days', desc: 'Production hosting, SSL setup, go-live' },
+        ].map((phase, i) => (
+          <div class="relative p-5 rounded-lg bg-bg-surface-1 border border-border/50 scroll-reveal" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="text-accent-primary font-mono text-sm mb-2">{phase.step}</div>
+            <h4 class="text-text-primary font-semibold mb-1">{phase.title}</h4>
+            <p class="text-accent-primary text-xs font-medium mb-2">{phase.duration}</p>
+            <p class="text-text-tertiary text-sm">{phase.desc}</p>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+</ServiceDetailLayout>

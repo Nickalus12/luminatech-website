@@ -1,0 +1,610 @@
+---
+import ServiceDetailLayout from '@layouts/ServiceDetailLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import GlowText from '@components/ui/GlowText.astro';
+import Button from '@components/ui/Button.astro';
+---
+
+<ServiceDetailLayout
+  title="N8N Integration Services"
+  description="Connect Prophet 21 to SellerCloud, Rithum, and any API with visual workflow automation. No expensive middleware platforms. No vendor lock-in."
+  badge="Integration Services"
+  headline="Connect P21 to SellerCloud, Rithum, and Any API Without Custom Code"
+  subheadline="Visual workflow automation that syncs orders, tracking numbers, and pricing in real-time. No expensive middleware platforms. No vendor lock-in."
+  heroMetrics={[
+    { value: "150x", label: "Faster Processing" },
+    { value: "140x", label: "Fewer API Calls" },
+    { value: "11", label: "Calls vs. 1,500+" },
+    { value: "$0", label: "Per-Connector Fees" },
+  ]}
+  ctaLabel="Schedule Integration Discovery Call"
+  ctaHref="/contact"
+  secondaryCtaLabel="See Live Integration Examples"
+  secondaryCtaHref="#proven-integrations"
+>
+
+  <!-- PROVEN INTEGRATIONS -->
+  <Section id="proven-integrations" background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">In Production Now</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Proven Integrations Running in <GlowText as="span">Production</GlowText>
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          These workflows process real orders, sync real tracking numbers, and handle real revenue every day.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[
+          {
+            title: "SellerCloud Tracking Sync",
+            desc: "Bi-directional tracking updates every 30 minutes with retry logic and verification loops. Supports Wayfair and Amazon order fulfillment.",
+            badge: "Bi-Directional",
+            badgeVariant: "primary" as const,
+            icon: "refresh",
+          },
+          {
+            title: "Rithum/ChannelAdvisor Order Sync",
+            desc: "Amazon marketplace order ingestion with field mapping, error handling, and automatic P21 order creation via Transaction API.",
+            badge: "Inbound",
+            badgeVariant: "success" as const,
+            icon: "download",
+          },
+          {
+            title: "Address Matching Dashboard",
+            desc: "Detects P21 address truncation (25 char limit) vs. source platforms. Color-coded dashboard with real-time audit results.",
+            badge: "Audit",
+            badgeVariant: "warning" as const,
+            icon: "search",
+          },
+          {
+            title: "TDP Pricing Portal",
+            desc: "Customer pricing lookup processing 25-50 item batches via P21 GetItemPrice API. Supports quick search and bulk catalog export.",
+            badge: "Customer-Facing",
+            badgeVariant: "primary" as const,
+            icon: "dollar",
+          },
+          {
+            title: "Automation Studio Sync",
+            desc: "Event-driven P21 workflows that trigger on document actions — pick ticket creation, order completion, inventory changes.",
+            badge: "Event-Driven",
+            badgeVariant: "success" as const,
+            icon: "zap",
+          },
+        ].map((item, i) => (
+          <Card class="scroll-reveal" style={`animation-delay: ${i * 80}ms;`}>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 shrink-0 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+                {item.icon === "refresh" && <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" /></svg>}
+                {item.icon === "download" && <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>}
+                {item.icon === "search" && <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>}
+                {item.icon === "dollar" && <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>}
+                {item.icon === "zap" && <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>}
+              </div>
+              <div>
+                <h3 class="text-base font-semibold text-text-primary mb-2">{item.title}</h3>
+                <p class="text-sm text-text-secondary leading-relaxed mb-3">{item.desc}</p>
+                <Badge variant={item.badgeVariant}>{item.badge}</Badge>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- PLATFORM CAPABILITIES -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Why N8N Over Enterprise Middleware
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Open-source, self-hosted, and zero per-connector licensing fees. Your data stays on your infrastructure.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { title: "Open Source", desc: "No per-connector licensing fees. One-time development cost, then it runs on your infrastructure forever.", icon: "unlock" },
+          { title: "Visual Editor", desc: "Workflows are diagrams, not code. Your team can see exactly how data flows between systems at a glance.", icon: "eye" },
+          { title: "Self-Hosted", desc: "Your data never leaves your infrastructure. Full control over security, updates, and backup schedules.", icon: "server" },
+          { title: "100+ Built-in Nodes", desc: "HTTP, SQL, Email, Webhooks, and more — out of the box. Custom nodes for P21-specific operations.", icon: "grid" },
+        ].map((item, i) => (
+          <div class="text-center p-6 rounded-xl bg-bg-surface-1 border border-border/50 scroll-reveal" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="w-12 h-12 mx-auto mb-4 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+              {item.icon === "unlock" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>}
+              {item.icon === "eye" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>}
+              {item.icon === "server" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6.01" y2="6" /><line x1="6" y1="18" x2="6.01" y2="18" /></svg>}
+              {item.icon === "grid" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>}
+            </div>
+            <h3 class="text-base font-semibold text-text-primary mb-2">{item.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Cost Comparison -->
+      <div class="max-w-3xl mx-auto mt-12 scroll-reveal" style="animation-delay: 400ms;">
+        <div class="overflow-x-auto rounded-xl border border-border">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-bg-surface-2">
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Platform</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Monthly Cost</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Lock-In</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+              <tr class="bg-bg-surface-1">
+                <td class="px-6 py-3 text-sm text-text-tertiary">Zapier Enterprise</td>
+                <td class="px-6 py-3 text-sm text-accent-error font-mono">$1,200-$3,000/mo</td>
+                <td class="px-6 py-3 text-sm text-text-tertiary">Vendor-locked</td>
+              </tr>
+              <tr class="bg-bg-surface-1">
+                <td class="px-6 py-3 text-sm text-text-tertiary">Workato</td>
+                <td class="px-6 py-3 text-sm text-accent-error font-mono">$2,000-$5,000/mo</td>
+                <td class="px-6 py-3 text-sm text-text-tertiary">Vendor-locked</td>
+              </tr>
+              <tr class="bg-bg-surface-1">
+                <td class="px-6 py-3 text-sm text-text-tertiary">MuleSoft</td>
+                <td class="px-6 py-3 text-sm text-accent-error font-mono">$3,000-$10,000/mo</td>
+                <td class="px-6 py-3 text-sm text-text-tertiary">Vendor-locked</td>
+              </tr>
+              <tr class="bg-accent-success/5">
+                <td class="px-6 py-3 text-sm font-semibold text-text-primary">N8N (Self-Hosted)</td>
+                <td class="px-6 py-3 text-sm text-accent-success font-mono font-bold">$0/mo</td>
+                <td class="px-6 py-3 text-sm text-accent-success font-medium">Open source</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- PERFORMANCE BREAKTHROUGH -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10 scroll-reveal">
+          <Badge variant="warning" class="mb-5">Performance Breakthrough</Badge>
+          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+            We Made Address Audits <GlowText as="span">150x Faster</GlowText>
+          </h2>
+        </div>
+
+        <!-- Before/After -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          <div class="scroll-reveal">
+            <div class="p-6 rounded-xl bg-accent-error/5 border border-accent-error/20">
+              <h3 class="text-base font-semibold text-accent-error mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                Before Optimization
+              </h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Total API Calls</span>
+                  <span class="text-sm font-mono font-bold text-accent-error">1,500+</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Runtime</span>
+                  <span class="text-sm font-mono font-bold text-accent-error">5 hours</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Timeout Errors</span>
+                  <span class="text-sm font-mono font-bold text-accent-error">Constant</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Usability</span>
+                  <span class="text-sm font-mono font-bold text-accent-error">Unusable</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scroll-reveal" style="animation-delay: 100ms;">
+            <div class="p-6 rounded-xl bg-accent-success/5 border border-accent-success/20">
+              <h3 class="text-base font-semibold text-accent-success mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                After Optimization
+              </h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Total API Calls</span>
+                  <span class="text-sm font-mono font-bold text-accent-success">11</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Runtime</span>
+                  <span class="text-sm font-mono font-bold text-accent-success">&lt;2 minutes</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Timeout Errors</span>
+                  <span class="text-sm font-mono font-bold text-accent-success">Eliminated</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">Dashboard</span>
+                  <span class="text-sm font-mono font-bold text-accent-success">Real-time</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How We Did It -->
+        <div class="scroll-reveal" style="animation-delay: 200ms;">
+          <Card hover={false} padding="lg">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">How We Did It</h3>
+            <div class="space-y-4 mb-6">
+              {[
+                { step: "1", title: "Replaced 1,000 P21 API calls with 1 SQL query", desc: "Added a JOIN on the address table to pull full ship-to addresses in a single query." },
+                { step: "2", title: "Batched SellerCloud calls (50 orders per request)", desc: "Reduced 250 individual calls down to 5 batched requests with proper pagination." },
+                { step: "3", title: "Batched Rithum calls (50 orders per request)", desc: "Same batch strategy for ChannelAdvisor, reducing 250 calls to 5." },
+              ].map((item) => (
+                <div class="flex items-start gap-4">
+                  <div class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg bg-accent-primary/10">
+                    <span class="text-sm font-mono font-bold text-accent-primary">{item.step}</span>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-text-primary text-sm">{item.title}</h4>
+                    <p class="text-sm text-text-secondary mt-1">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <!-- SQL Example -->
+            <div class="rounded-lg bg-bg-base border border-border/50 p-4 overflow-x-auto">
+              <p class="text-xs text-text-tertiary mb-2 font-mono">-- Single SQL query replaces 1,000 API calls</p>
+              <pre class="text-xs font-mono text-text-secondary"><code><span class="text-accent-primary">SELECT</span>
+    oh.order_no,
+    oh.ship2_add1,              <span class="text-text-tertiary">-- May be truncated (25 char limit)</span>
+    addr.phys_address1,         <span class="text-text-tertiary">-- Full address from address table</span>
+    <span class="text-accent-warning">LEN</span>(oh.ship2_add1) <span class="text-accent-primary">as</span> addr1_length
+<span class="text-accent-primary">FROM</span> oe_hdr oh
+<span class="text-accent-primary">LEFT JOIN</span> address addr <span class="text-accent-primary">ON</span> oh.address_id = addr.id
+<span class="text-accent-primary">WHERE</span> <span class="text-accent-warning">LEN</span>(oh.ship2_add1) = <span class="text-accent-success">25</span>  <span class="text-text-tertiary">-- Potential truncation</span></code></pre>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- INTEGRATION ARCHITECTURE -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-5">Architecture</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Integration Architecture
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          N8N sits at the center, orchestrating data flow between P21 and all external platforms.
+        </p>
+      </div>
+
+      <!-- Architecture Diagram -->
+      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 100ms;">
+        <div class="rounded-xl bg-bg-surface-1 border border-border p-6 md:p-10 overflow-x-auto">
+          <pre class="text-xs sm:text-sm font-mono text-text-secondary leading-relaxed text-center"><code><span class="text-text-tertiary">┌─────────────────────────────────────────────────────┐</span>
+<span class="text-text-tertiary">│</span>               <span class="text-accent-primary font-bold">P21 ERP Database</span>                      <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">│</span>           <span class="text-text-tertiary">(SQL Server Production)</span>                   <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">└───────────┬─────────────────────────┬───────────────┘</span>
+            <span class="text-text-tertiary">│</span>                         <span class="text-text-tertiary">│</span>
+            <span class="text-text-tertiary">▼</span>                         <span class="text-text-tertiary">▼</span>
+<span class="text-text-tertiary">┌─────────────────────┐   ┌─────────────────────────┐</span>
+<span class="text-text-tertiary">│</span>  <span class="text-accent-success">P21 eCommerce API</span>  <span class="text-text-tertiary">│   │</span>  <span class="text-accent-success">P21 Security Token</span>    <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">│</span>  <span class="text-text-tertiary">(GetItemPrice)</span>     <span class="text-text-tertiary">│   │</span>  <span class="text-text-tertiary">(OAuth2 Auth)</span>          <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">└─────────────────────┘   └─────────────────────────┘</span>
+            <span class="text-text-tertiary">│</span>                         <span class="text-text-tertiary">│</span>
+            <span class="text-text-tertiary">└──────────┬──────────────┘</span>
+                       <span class="text-text-tertiary">│</span>
+                       <span class="text-text-tertiary">▼</span>
+            <span class="text-text-tertiary">┌──────────────────────┐</span>
+            <span class="text-text-tertiary">│</span>    <span class="text-accent-violet font-bold">N8N Workflows</span>     <span class="text-text-tertiary">│</span>
+            <span class="text-text-tertiary">│</span>  <span class="text-text-tertiary">(Automation Hub)</span>    <span class="text-text-tertiary">│</span>
+            <span class="text-text-tertiary">└──────┬──────┬────────┘</span>
+                   <span class="text-text-tertiary">│</span>      <span class="text-text-tertiary">│</span>
+        <span class="text-text-tertiary">┌──────────┘      └──────────┐</span>
+        <span class="text-text-tertiary">│</span>                            <span class="text-text-tertiary">│</span>
+        <span class="text-text-tertiary">▼</span>                            <span class="text-text-tertiary">▼</span>
+<span class="text-text-tertiary">┌─────────────────┐      ┌─────────────────────┐</span>
+<span class="text-text-tertiary">│</span>  <span class="text-accent-warning">SellerCloud</span>    <span class="text-text-tertiary">│      │</span>  <span class="text-accent-warning">Rithum/Channel</span>     <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">│</span>   <span class="text-text-tertiary">REST API</span>      <span class="text-text-tertiary">│      │</span>   <span class="text-text-tertiary">Advisor API</span>       <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">│</span> <span class="text-text-tertiary">(Wayfair/Amazon)</span><span class="text-text-tertiary">│      │</span>  <span class="text-text-tertiary">(Amazon Seller)</span>    <span class="text-text-tertiary">│</span>
+<span class="text-text-tertiary">└─────────────────┘      └─────────────────────┘</span></code></pre>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- INTEGRATION PATTERNS TABLE -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Integration Patterns
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          We match the right pattern to your use case, optimizing for performance, cost, and reliability.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 100ms;">
+        <div class="overflow-x-auto rounded-xl border border-border">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-bg-surface-2">
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Pattern</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Use Case</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary whitespace-nowrap">Typical Cost</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">Scheduled Polling</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Sync tracking every 30 min, periodic data reconciliation</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">$2,000 - $4,000</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">Webhook-Triggered</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Real-time order ingestion, instant event processing</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">$3,000 - $6,000</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">Hybrid API + SQL</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Complex data orchestration, multi-system coordination</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">$5,000 - $10,000</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">CSV Processing</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Bulk product updates, catalog imports, data migrations</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">$2,500 - $5,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- TECHNICAL CAPABILITIES -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-5">Under the Hood</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Technical Capabilities
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Enterprise-grade reliability patterns built into every workflow.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <!-- Token Management -->
+        <Card padding="lg" class="scroll-reveal">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary">Token Management</h3>
+          </div>
+          <ul class="space-y-2">
+            {[
+              "Centralized token retrieval workflow (reusable across projects)",
+              "Environment-based configuration (PLAY vs. Production)",
+              "Automatic token refresh before expiry",
+            ].map((item) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <!-- Error Handling -->
+        <Card padding="lg" class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-accent-error/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary">Error Handling</h3>
+          </div>
+          <ul class="space-y-2">
+            {[
+              "continueErrorOutput on all HTTP nodes (never crash the workflow)",
+              "Exponential backoff retry logic (max 10 attempts)",
+              "Dedicated error workflows with database logging",
+              "Email alerts on failures (SendGrid integration)",
+            ].map((item) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <!-- Data Transformation -->
+        <Card padding="lg" class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-accent-violet/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h12m0 0-4-4m4 4-4 4M16 17H4m0 0 4-4m-4 4 4 4"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary">Data Transformation</h3>
+          </div>
+          <ul class="space-y-2">
+            {[
+              "XML to JSON conversion (P21 eCommerce API)",
+              "Field mapping (Rithum to P21 schema)",
+              "CSV processing with shadow product filtering",
+              "Base64 encoding for file uploads",
+            ].map((item) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <!-- Monitoring & Reporting -->
+        <Card padding="lg" class="scroll-reveal" style="animation-delay: 300ms;">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-accent-success/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-text-primary">Monitoring & Reporting</h3>
+          </div>
+          <ul class="space-y-2">
+            {[
+              "HTML dashboards with color-coded status badges",
+              "Progress tracking for bulk operations",
+              "Verification loops with retry logic",
+              "Summary emails with success/failure counts",
+            ].map((item) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- PRICING & DELIVERABLES -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">Transparent Pricing</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Pricing & Deliverables
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          One-time development cost. No ongoing platform fees. Your workflows, your infrastructure.
+        </p>
+      </div>
+
+      <!-- Pricing Tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+        <Card padding="lg" class="scroll-reveal text-center">
+          <h3 class="text-base font-semibold text-text-primary mb-2">Simple Integration</h3>
+          <p class="text-xs text-text-tertiary mb-4">1-Way Sync</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">$2,000</span>
+            <span class="text-text-tertiary">-</span>
+            <span class="text-3xl font-mono font-bold text-accent-primary">$4,000</span>
+          </div>
+          <p class="text-sm text-text-secondary">Scheduled polling, single-direction data sync, basic error handling.</p>
+        </Card>
+
+        <Card padding="lg" glow class="scroll-reveal text-center" style="animation-delay: 100ms;">
+          <Badge variant="primary" class="mb-3">Most Common</Badge>
+          <h3 class="text-base font-semibold text-text-primary mb-2">Bi-Directional Sync</h3>
+          <p class="text-xs text-text-tertiary mb-4">Verification Loops</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">$4,000</span>
+            <span class="text-text-tertiary">-</span>
+            <span class="text-3xl font-mono font-bold text-accent-primary">$7,000</span>
+          </div>
+          <p class="text-sm text-text-secondary">Two-way sync with verification, retry logic, audit trails, and dashboards.</p>
+        </Card>
+
+        <Card padding="lg" class="scroll-reveal text-center" style="animation-delay: 200ms;">
+          <h3 class="text-base font-semibold text-text-primary mb-2">Complex Multi-System</h3>
+          <p class="text-xs text-text-tertiary mb-4">3+ APIs</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">$8,000</span>
+            <span class="text-text-tertiary">-</span>
+            <span class="text-3xl font-mono font-bold text-accent-primary">$15,000</span>
+          </div>
+          <p class="text-sm text-text-secondary">Multi-system orchestration, complex data mapping, custom dashboards.</p>
+        </Card>
+      </div>
+
+      <!-- Monthly Retainer -->
+      <div class="max-w-md mx-auto mb-12 scroll-reveal" style="animation-delay: 250ms;">
+        <div class="text-center p-6 rounded-xl bg-bg-surface-1 border border-border/50">
+          <h3 class="text-base font-semibold text-text-primary mb-2">Monthly Management Retainer</h3>
+          <div class="flex items-baseline justify-center gap-1 mb-2">
+            <span class="text-2xl font-mono font-bold text-accent-primary">$500 - $1,500</span>
+            <span class="text-text-tertiary">/mo</span>
+          </div>
+          <p class="text-sm text-text-secondary">Ongoing workflow management, monitoring, and changes.</p>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="max-w-3xl mx-auto scroll-reveal" style="animation-delay: 300ms;">
+        <h3 class="text-lg font-semibold text-text-primary mb-6 text-center">Typical Integration Timeline</h3>
+        <div class="space-y-4">
+          {[
+            { phase: "Discovery", duration: "2-3 days", desc: "API documentation review, authentication setup, architecture design" },
+            { phase: "Development", duration: "1-3 weeks", desc: "Workflow building, error handling, testing with real data" },
+            { phase: "Deployment", duration: "1 day", desc: "Production deployment, monitoring setup, go-live validation" },
+            { phase: "Training", duration: "2 hours", desc: "Workflow editing basics for your team, troubleshooting guide" },
+          ].map((step) => (
+            <div class="flex items-start gap-4">
+              <div class="shrink-0 w-24 text-right">
+                <span class="text-sm font-mono font-bold text-accent-primary">{step.duration}</span>
+              </div>
+              <div class="grow border-l-2 border-accent-primary/30 pl-4 pb-2">
+                <h4 class="font-semibold text-text-primary text-sm">{step.phase}</h4>
+                <p class="text-sm text-text-secondary mt-1">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- What You Get -->
+      <div class="max-w-3xl mx-auto mt-12 scroll-reveal" style="animation-delay: 400ms;">
+        <Card hover={false} padding="lg">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">What You Get</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              "N8N workflow JSON export (yours to keep)",
+              "API credentials setup guide",
+              "Documentation with workflow diagrams",
+              "Test data and validation queries",
+              "Error handling and retry logic built-in",
+              "30-day post-deployment support",
+            ].map((item) => (
+              <div class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center mt-12 scroll-reveal" style="animation-delay: 500ms;">
+        <Button href="/contact" variant="primary" size="lg" arrow glow>
+          Schedule Integration Discovery Call
+        </Button>
+      </div>
+    </Container>
+  </Section>
+
+</ServiceDetailLayout>

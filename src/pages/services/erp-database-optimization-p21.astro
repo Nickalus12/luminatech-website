@@ -1,0 +1,401 @@
+---
+import ServiceDetailLayout from '@layouts/ServiceDetailLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import GlowText from '@components/ui/GlowText.astro';
+---
+
+<ServiceDetailLayout
+  title="ERP Database Optimization"
+  description="Make P21 reports load 10x faster without upgrading hardware. SQL Server query tuning, index strategy, and database optimization for Prophet 21."
+  badge="Database Performance"
+  headline="Make P21 Reports Load 10x Faster Without Upgrading Hardware"
+  subheadline="Slow dashboards and timeouts aren't normal. We optimize SQL Server queries, indexes, and database design to unlock P21's full performance."
+  heroMetrics={[
+    { value: '150x', label: 'Faster runtime' },
+    { value: '140x', label: 'Fewer API calls' },
+    { value: 'Free', label: 'Performance audit' },
+    { value: '90-day', label: 'Performance warranty' },
+  ]}
+  ctaLabel="Schedule Free Performance Audit"
+  ctaHref="/contact"
+>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Common P21 Performance Issues                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="max-w-3xl mb-12 scroll-reveal">
+        <Badge variant="error" class="mb-4">Sound Familiar?</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Common P21 Performance Issues — <GlowText as="span">And How We Fix Them</GlowText>
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Most P21 performance problems stem from a handful of root causes. We have proven fixes for all of them.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto scroll-reveal" style="animation-delay: 100ms;">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Symptom</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Root Cause</th>
+              <th class="py-4 px-4 text-text-primary font-semibold text-sm">Our Fix</th>
+            </tr>
+          </thead>
+          <tbody class="text-text-secondary">
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/80 transition-colors">
+              <td class="py-4 px-4">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-accent-error shrink-0"></span>
+                  Dashboard timeout (30+ sec)
+                </span>
+              </td>
+              <td class="py-4 px-4">Missing indexes on filter columns</td>
+              <td class="py-4 px-4"><span class="text-accent-success font-medium">Add covering indexes</span></td>
+            </tr>
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/80 transition-colors">
+              <td class="py-4 px-4">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-accent-error shrink-0"></span>
+                  Crystal Report fails
+                </span>
+              </td>
+              <td class="py-4 px-4">Offset pagination at 10,000+ rows</td>
+              <td class="py-4 px-4"><span class="text-accent-success font-medium">Keyset pagination pattern</span></td>
+            </tr>
+            <tr class="border-b border-border/50 hover:bg-bg-surface-1/80 transition-colors">
+              <td class="py-4 px-4">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-accent-warning shrink-0"></span>
+                  Slow order entry
+                </span>
+              </td>
+              <td class="py-4 px-4">Excessive triggers firing</td>
+              <td class="py-4 px-4"><span class="text-accent-success font-medium">Optimize trigger logic, batch updates</span></td>
+            </tr>
+            <tr class="hover:bg-bg-surface-1/80 transition-colors">
+              <td class="py-4 px-4">
+                <span class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-accent-warning shrink-0"></span>
+                  Import failures
+                </span>
+              </td>
+              <td class="py-4 px-4">Transaction log full</td>
+              <td class="py-4 px-4"><span class="text-accent-success font-medium">Batch processing, checkpoint tuning</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Services Overview                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Services</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Database Optimization Services
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          We target the queries and structures that matter most, delivering measurable performance gains with before-and-after benchmarks.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card class="scroll-reveal" style="animation-delay: 0ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3.75 13.5 14.25 2.25l-3.75 7.5h9.75L9.75 21l3.75-7.5H3.75Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Query Performance Tuning</h3>
+          <p class="text-text-secondary">Rewrite slow Crystal Reports queries, eliminate table scans, and optimize execution plans for sub-second response times.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-success/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Index Strategy</h3>
+          <p class="text-text-secondary">Add targeted covering indexes without over-indexing. We analyze your actual query patterns to create indexes that matter.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-violet/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Keyset Pagination</h3>
+          <p class="text-text-secondary">Replace offset-based pagination with keyset patterns for consistent, fast results even on tables with millions of rows.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 300ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-warning/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">View Optimization</h3>
+          <p class="text-text-secondary">Simplify complex views, add indexed views where appropriate, and materialize frequently-accessed data for faster dashboards.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 400ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Batch Processing</h3>
+          <p class="text-text-secondary">Reduce transaction log growth with proper batch sizing, checkpoint tuning, and import optimization strategies.</p>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 500ms;">
+          <div class="w-12 h-12 rounded-lg bg-accent-success/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"/><path d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"/></svg>
+          </div>
+          <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-2">Monitoring & Maintenance</h3>
+          <p class="text-text-secondary">Ongoing index fragmentation monitoring, blocking/deadlock detection, and proactive performance recommendations.</p>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Technical Approach                                 -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="max-w-3xl mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Our Approach</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Performance Audit Process
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Every optimization starts with data. We capture, analyze, and benchmark before writing a single line of SQL.
+        </p>
+      </div>
+
+      <!-- Audit steps -->
+      <div class="grid md:grid-cols-5 gap-4 mb-16">
+        {[
+          { step: '01', title: 'Capture', desc: 'Slow query logs via SQL Profiler or Extended Events' },
+          { step: '02', title: 'Analyze', desc: 'Execution plans for table scans and bottlenecks' },
+          { step: '03', title: 'Review', desc: 'Index statistics, fragmentation, and missing indexes (DMVs)' },
+          { step: '04', title: 'Benchmark', desc: 'Record current performance baselines' },
+          { step: '05', title: 'Optimize', desc: 'Apply targeted fixes, re-benchmark, and validate' },
+        ].map((phase, i) => (
+          <div class="p-5 rounded-lg bg-bg-base border border-border/50 scroll-reveal" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="text-accent-primary font-mono text-sm mb-2">{phase.step}</div>
+            <h4 class="text-text-primary font-semibold mb-1">{phase.title}</h4>
+            <p class="text-text-tertiary text-sm">{phase.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Optimization patterns with code -->
+      <div class="max-w-3xl mb-8 scroll-reveal">
+        <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-2">
+          Optimization Patterns We Apply
+        </h3>
+        <p class="text-text-secondary">
+          These are the patterns we use most often when tuning P21 SQL Server databases. Real code from production engagements.
+        </p>
+      </div>
+
+      <!-- Pattern A: Keyset Pagination -->
+      <div class="mb-8 scroll-reveal" style="animation-delay: 100ms;">
+        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary text-sm font-mono">A</span>
+          Keyset Pagination (vs. Offset-Based)
+        </h4>
+        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
+            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
+            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
+          </div>
+          <div class="p-5 overflow-x-auto">
+            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- SLOW: Offset-based pagination</span>
+<span class="text-accent-primary">SELECT</span> * <span class="text-accent-primary">FROM</span> inv_mast
+<span class="text-accent-primary">ORDER BY</span> item_id
+<span class="text-accent-primary">OFFSET</span> 10000 <span class="text-accent-primary">ROWS FETCH NEXT</span> 100 <span class="text-accent-primary">ROWS ONLY</span>;
+
+<span class="text-text-tertiary">-- FAST: Keyset pagination</span>
+<span class="text-accent-primary">DECLARE</span> <span class="text-accent-violet">@last_item_id</span> <span class="text-accent-violet">VARCHAR</span>(40) = <span class="text-accent-success">'ITEM-10000'</span>;
+
+<span class="text-accent-primary">SELECT TOP</span> 100 * <span class="text-accent-primary">FROM</span> inv_mast
+<span class="text-accent-primary">WHERE</span> item_id > <span class="text-accent-violet">@last_item_id</span>
+<span class="text-accent-primary">ORDER BY</span> item_id;</code></pre>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-text-tertiary">
+          Offset pagination gets slower as you go deeper into the result set. Keyset pagination maintains consistent performance regardless of position by using the last known value as a cursor.
+        </p>
+      </div>
+
+      <!-- Pattern B: Covering Indexes -->
+      <div class="mb-8 scroll-reveal" style="animation-delay: 200ms;">
+        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-accent-success/10 flex items-center justify-center text-accent-success text-sm font-mono">B</span>
+          Covering Indexes
+        </h4>
+        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
+            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
+            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
+          </div>
+          <div class="p-5 overflow-x-auto">
+            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- Report filters on date_created and customer_id</span>
+<span class="text-text-tertiary">-- Add covering index with INCLUDE clause</span>
+
+<span class="text-accent-primary">CREATE INDEX</span> IX_oe_hdr_customer_date
+<span class="text-accent-primary">ON</span> oe_hdr (customer_id, date_created)
+<span class="text-accent-primary">INCLUDE</span> (order_no, po_no, total_dollars);</code></pre>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-text-tertiary">
+          A covering index includes all columns the query needs, eliminating key lookups back to the clustered index. This turns expensive table scans into fast index seeks.
+        </p>
+      </div>
+
+      <!-- Pattern C: NOLOCK -->
+      <div class="scroll-reveal" style="animation-delay: 300ms;">
+        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-accent-violet/10 flex items-center justify-center text-accent-violet text-sm font-mono">C</span>
+          Read-Only Queries with NOLOCK
+        </h4>
+        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
+          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
+            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
+            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
+            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
+          </div>
+          <div class="p-5 overflow-x-auto">
+            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- Dashboard and reporting queries</span>
+<span class="text-text-tertiary">-- NOLOCK avoids blocking on high-traffic tables</span>
+
+<span class="text-accent-primary">SELECT</span> * <span class="text-accent-primary">FROM</span> oe_hdr <span class="text-accent-primary">WITH</span> (<span class="text-accent-warning">NOLOCK</span>)
+<span class="text-accent-primary">WHERE</span> customer_id = <span class="text-accent-violet">@customer_id</span>;</code></pre>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-text-tertiary">
+          For dashboards and reporting queries where 100% transactional accuracy is not required, NOLOCK eliminates blocking waits caused by concurrent write operations on the same tables.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SECTION 4: Pricing & Deliverables                             -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <Section background="surface-1" padding="lg">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-16 scroll-reveal">
+        <Badge variant="primary" class="mb-4">Investment</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Transparent Pricing — <GlowText as="span">Free Audit Included</GlowText>
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          Start with a free performance audit. We identify the top 10 slow queries and give you quick-win recommendations before any commitment.
+        </p>
+      </div>
+
+      <!-- Free audit callout -->
+      <div class="mb-10 p-8 rounded-lg bg-accent-primary/5 border border-accent-primary/30 text-center scroll-reveal">
+        <div class="w-16 h-16 rounded-full bg-accent-primary/10 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>
+        </div>
+        <h3 class="text-[length:var(--font-size-h3)] font-bold text-text-primary mb-2">Free Performance Audit</h3>
+        <p class="text-text-secondary max-w-lg mx-auto mb-2">1-hour database review. Top 10 slow queries identified. Quick-win recommendations. Estimated optimization ROI.</p>
+        <p class="text-accent-primary text-sm font-medium">No commitment required — we show you the problems before you pay for fixes.</p>
+      </div>
+
+      <!-- Pricing tiers -->
+      <div class="grid md:grid-cols-3 gap-6 mb-12">
+        <Card class="scroll-reveal" style="animation-delay: 0ms;">
+          <div class="mb-4">
+            <h3 class="text-text-primary font-semibold mb-1">Basic Package</h3>
+            <p class="text-sm text-text-tertiary">5 queries optimized</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$2,500 <span class="text-lg text-text-tertiary font-normal">-</span> $4,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> 5 queries rewritten</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Before/after benchmarks</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Index recommendations</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> 90-day warranty</li>
+          </ul>
+        </Card>
+
+        <Card glow class="relative scroll-reveal" style="animation-delay: 100ms;">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge variant="primary">Recommended</Badge>
+          </div>
+          <div class="mb-4 pt-2">
+            <h3 class="text-text-primary font-semibold mb-1">Standard Package</h3>
+            <p class="text-sm text-text-tertiary">10 queries + index strategy</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$5,000 <span class="text-lg text-text-tertiary font-normal">-</span> $8,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> 10 queries rewritten</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Full index strategy</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Execution plan analysis</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Best practices documentation</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> 90-day warranty</li>
+          </ul>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="mb-4">
+            <h3 class="text-text-primary font-semibold mb-1">Comprehensive</h3>
+            <p class="text-sm text-text-tertiary">Full database review</p>
+          </div>
+          <div class="text-3xl font-bold text-accent-primary mb-1">$10,000 <span class="text-lg text-text-tertiary font-normal">-</span> $15,000</div>
+          <p class="text-xs text-text-tertiary mb-5">Fixed project price</p>
+          <ul class="space-y-2 text-sm text-text-secondary">
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> All queries reviewed</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Complete index overhaul</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> View optimization</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Transaction log tuning</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> Monitoring setup</li>
+            <li class="flex items-start gap-2"><span class="text-accent-success">&#10003;</span> 90-day warranty</li>
+          </ul>
+        </Card>
+      </div>
+
+      <!-- What you get -->
+      <div class="scroll-reveal" style="animation-delay: 300ms;">
+        <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-6">What Every Engagement Includes</h3>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            'Optimized SQL queries (before/after benchmarks)',
+            'Index creation scripts',
+            'Execution plan analysis reports',
+            'Best practices documentation',
+            'Performance baseline vs. post-optimization metrics',
+            '90-day performance warranty',
+          ].map((item) => (
+            <div class="flex items-start gap-2 p-3 rounded-lg bg-bg-base border border-border/50">
+              <span class="text-accent-success mt-0.5 shrink-0">&#10003;</span>
+              <span class="text-text-secondary text-sm">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Monthly retainer -->
+      <div class="mt-8 p-4 rounded-lg bg-bg-base border border-border/50 text-center scroll-reveal" style="animation-delay: 400ms;">
+        <p class="text-text-secondary text-sm">
+          <strong class="text-text-primary">Monthly Retainer (Proactive Monitoring):</strong> $1,000 - $2,000/mo — includes ongoing index maintenance, blocking detection, and proactive optimization recommendations.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+</ServiceDetailLayout>

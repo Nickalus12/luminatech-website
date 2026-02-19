@@ -1,0 +1,386 @@
+---
+import ServiceDetailLayout from '@layouts/ServiceDetailLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import GlowText from '@components/ui/GlowText.astro';
+import Button from '@components/ui/Button.astro';
+---
+
+<ServiceDetailLayout
+  title="P21 Extensions & DynaChange"
+  description="Custom P21 business rules and DynaChange extensions that automate workflows, enforce validation, and integrate with external systems — without modifying core P21 code."
+  badge="DynaChange Development"
+  headline="Custom P21 Business Rules That Actually Work in Production"
+  subheadline="Turn P21 limitations into competitive advantages. We build DynaChange business rules that automate workflows, enforce validation, and integrate with external systems — without modifying core P21 code."
+  heroMetrics={[
+    { value: "4+", label: "Production Extensions" },
+    { value: "C#", label: ".NET Framework" },
+    { value: "0", label: "Core Code Changes" },
+    { value: "30-Day", label: "Warranty Included" },
+  ]}
+  ctaLabel="Request Extension Development Quote"
+  ctaHref="/contact"
+  secondaryCtaLabel="See Our Production Extensions"
+  secondaryCtaHref="#extensions-list"
+>
+
+  <!-- REAL EXTENSIONS IN PRODUCTION -->
+  <Section id="extensions-list" background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">Production-Proven</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Real Extensions Running in <GlowText as="span">Production</GlowText>
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Every extension we build is battle-tested in live P21 environments processing real orders, real inventory, and real revenue.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card class="scroll-reveal">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accent-error/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-text-primary mb-2">PreventEmptyCarrierPickTickets</h3>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                Blocks pick ticket creation when no carrier is assigned — preventing ShipLink integration failures before they happen. User sees a clear error message with instructions to assign a carrier.
+              </p>
+              <Badge variant="error" class="mt-3">Validator</Badge>
+            </div>
+          </div>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h12m0 0-4-4m4 4-4 4M16 17H4m0 0 4-4m-4 4 4 4"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-text-primary mb-2">Quote Duplication with Auto-Repricing</h3>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                One-click quote duplication via P21 Transaction API v2. Intentionally omits unit_price to trigger automatic contract pricing recalculation for current customer terms.
+              </p>
+              <Badge variant="primary" class="mt-3">On Demand</Badge>
+            </div>
+          </div>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accent-success/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-text-primary mb-2">Dynamic Bin Routing</h3>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                Quantity-based warehouse allocation that routes small orders to eaches bins and large orders to pallet bins — reducing picker travel time and improving fulfillment speed.
+              </p>
+              <Badge variant="success" class="mt-3">On Event</Badge>
+            </div>
+          </div>
+        </Card>
+
+        <Card class="scroll-reveal" style="animation-delay: 300ms;">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 shrink-0 rounded-lg bg-accent-violet/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3m0 12v3M4.22 4.22l2.12 2.12m11.32 11.32 2.12 2.12M3 12h3m12 0h3M4.22 19.78l2.12-2.12M18.36 5.64l2.12-2.12"/></svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-text-primary mb-2">UDF Auto-Population</h3>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                Eliminates manual data entry by automatically populating user-defined fields with field converters. Transforms and validates data on save without user intervention.
+              </p>
+              <Badge variant="default" class="mt-3">Converter</Badge>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- DEVELOPMENT APPROACH -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Our Development Approach
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Built on proven patterns refined across multiple P21 environments, with safety and reliability as the foundation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { icon: "code", title: "C# .NET Framework", desc: "Built against the P21 Extensions SDK (v4.6.1/4.8) using Visual Studio for full IntelliSense support and debugging." },
+          { icon: "shield", title: "Fail-Safe Patterns", desc: "Rules never block legitimate operations due to errors. Try-catch wrappers ensure business continuity even if a rule encounters unexpected data." },
+          { icon: "database", title: "Database Integration", desc: "Custom tables for configuration and audit trails. Business users can adjust rule parameters without recompilation." },
+          { icon: "layers", title: "Multi-Version Support", desc: "Desktop and Web UI compatibility from day one. Field alias fallback patterns handle P21 version differences gracefully." },
+        ].map((item, i) => (
+          <div class="text-center p-6 rounded-xl bg-bg-surface-1 border border-border/50 scroll-reveal" style={`animation-delay: ${i * 100}ms;`}>
+            <div class="w-12 h-12 mx-auto mb-4 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+              {item.icon === "code" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>}
+              {item.icon === "shield" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>}
+              {item.icon === "database" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg>}
+              {item.icon === "layers" && <svg class="w-6 h-6 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>}
+            </div>
+            <h3 class="text-base font-semibold text-text-primary mb-2">{item.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- RULE TYPES TABLE -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Types of Rules We Build
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          From simple field converters to complex multi-step workflows, we cover the full DynaChange rule spectrum.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 100ms;">
+        <div class="overflow-x-auto rounded-xl border border-border">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-bg-surface-2">
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Rule Type</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Use Cases</th>
+                <th class="px-6 py-4 text-sm font-semibold text-text-primary whitespace-nowrap">Typical Timeline</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">Validators</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Block invalid saves, enforce business constraints, prevent bad data entry</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">1-2 weeks</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">Converters</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Auto-populate fields, transform data on save, enforce formatting rules</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">1 week</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">On Event</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Intercept document actions, trigger workflows, automate multi-step processes</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">2-3 weeks</td>
+              </tr>
+              <tr class="bg-bg-surface-1 hover:bg-bg-surface-2/50 transition-colors">
+                <td class="px-6 py-4">
+                  <span class="font-semibold text-text-primary">On Demand</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-text-secondary">Button-triggered business processes, one-click operations from any P21 screen</td>
+                <td class="px-6 py-4 text-sm text-accent-primary font-mono whitespace-nowrap">3-4 weeks</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- TECHNICAL DIFFERENTIATORS -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="primary" class="mb-5">Technical Depth</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Why Our Extensions Stand Out
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Architecture patterns refined through production deployments, not just theory.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Hybrid API + SQL -->
+        <Card padding="lg" class="scroll-reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h12m0 0-4-4m4 4-4 4M16 17H4m0 0 4-4m-4 4 4 4"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-3">Hybrid API + SQL Approach</h3>
+          <p class="text-sm text-text-secondary leading-relaxed mb-4">
+            Primary path uses the Transaction API to leverage full P21 business logic. SQL fallback provides reliability when the API is unavailable — no rule failures during maintenance windows.
+          </p>
+          <div class="rounded-lg bg-bg-base border border-border/50 p-4 overflow-x-auto">
+            <pre class="text-xs font-mono text-text-secondary"><code><span class="text-text-tertiary">// Quote repricing trick:</span>
+<span class="text-text-tertiary">// Omit unit_price in API payload</span>
+<span class="text-text-tertiary">// P21 auto-calculates from contracts</span>
+payload.Remove(<span class="text-accent-success">"unit_price"</span>);
+<span class="text-text-tertiary">// Result: current contract pricing</span></code></pre>
+          </div>
+        </Card>
+
+        <!-- Configuration-Driven Logic -->
+        <Card padding="lg" class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="w-10 h-10 rounded-lg bg-accent-success/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-accent-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-3">Configuration-Driven Logic</h3>
+          <p class="text-sm text-text-secondary leading-relaxed mb-4">
+            Custom config tables let business users adjust thresholds, routing rules, and behavior — without recompiling the DLL. Change a value in the database, and the rule adapts immediately.
+          </p>
+          <div class="rounded-lg bg-bg-base border border-border/50 p-4 overflow-x-auto">
+            <pre class="text-xs font-mono text-text-secondary"><code><span class="text-accent-primary">SELECT</span> config_value
+<span class="text-accent-primary">FROM</span> tdp_config <span class="text-accent-primary">WITH</span> (<span class="text-accent-warning">NOLOCK</span>)
+<span class="text-accent-primary">WHERE</span> config_key = <span class="text-accent-success">'qty_threshold'</span>
+  <span class="text-accent-primary">AND</span> active_flag = <span class="text-accent-success">'Y'</span></code></pre>
+          </div>
+        </Card>
+
+        <!-- Comprehensive Audit Trails -->
+        <Card padding="lg" class="scroll-reveal" style="animation-delay: 200ms;">
+          <div class="w-10 h-10 rounded-lg bg-accent-violet/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-accent-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-3">Comprehensive Audit Trails</h3>
+          <p class="text-sm text-text-secondary leading-relaxed mb-4">
+            Every automated action is logged to dedicated audit tables. Full visibility into what changed, when, and why — essential for compliance and troubleshooting.
+          </p>
+          <div class="rounded-lg bg-bg-base border border-border/50 p-4 overflow-x-auto">
+            <pre class="text-xs font-mono text-text-secondary"><code><span class="text-accent-primary">INSERT INTO</span> tdp_audit_log
+  (action, order_no, user_id,
+   old_value, new_value, timestamp)
+<span class="text-accent-primary">VALUES</span>
+  (<span class="text-accent-success">'QUOTE_DUP'</span>, @orderNo, @user,
+   @oldQuote, @newQuote, GETDATE())</code></pre>
+          </div>
+        </Card>
+      </div>
+
+      <!-- Code Quality Callouts -->
+      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 scroll-reveal" style="animation-delay: 300ms;">
+        {[
+          "Field alias fallback pattern for version compatibility",
+          "WITH (NOLOCK) on all read queries for performance",
+          "User-friendly error messages (no technical jargon)",
+          "Logging API integration for remote diagnostics",
+        ].map((item) => (
+          <div class="flex items-start gap-3 p-4 rounded-lg bg-bg-surface-1/50 border border-border/50">
+            <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+            <span class="text-sm text-text-secondary">{item}</span>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </Section>
+
+  <!-- PRICING & DELIVERABLES -->
+  <Section background="base" padding="lg">
+    <Container>
+      <div class="text-center mb-12 scroll-reveal">
+        <Badge variant="success" class="mb-5">Transparent Pricing</Badge>
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
+          Pricing & Deliverables
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
+          Fixed pricing based on scope. No hourly surprises, no ambiguous deliverables.
+        </p>
+      </div>
+
+      <!-- Pricing Tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+        <Card padding="lg" class="scroll-reveal text-center">
+          <h3 class="text-base font-semibold text-text-primary mb-2">Simple Rule</h3>
+          <p class="text-xs text-text-tertiary mb-4">Converter / Validator</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">$1,500</span>
+            <span class="text-text-tertiary">-</span>
+            <span class="text-3xl font-mono font-bold text-accent-primary">$3,000</span>
+          </div>
+          <p class="text-sm text-text-secondary">Field validation, auto-population, data transformation rules with straightforward logic.</p>
+        </Card>
+
+        <Card padding="lg" glow class="scroll-reveal text-center" style="animation-delay: 100ms;">
+          <Badge variant="primary" class="mb-3">Most Common</Badge>
+          <h3 class="text-base font-semibold text-text-primary mb-2">Complex Rule</h3>
+          <p class="text-xs text-text-tertiary mb-4">On Event / API Integration</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">$4,000</span>
+            <span class="text-text-tertiary">-</span>
+            <span class="text-3xl font-mono font-bold text-accent-primary">$8,000</span>
+          </div>
+          <p class="text-sm text-text-secondary">Document interception, Transaction API integration, multi-step workflows with error handling.</p>
+        </Card>
+
+        <Card padding="lg" class="scroll-reveal text-center" style="animation-delay: 200ms;">
+          <h3 class="text-base font-semibold text-text-primary mb-2">Multi-Rule Project</h3>
+          <p class="text-xs text-text-tertiary mb-4">Custom Scope</p>
+          <div class="flex items-baseline justify-center gap-1 mb-4">
+            <span class="text-3xl font-mono font-bold text-accent-primary">Custom</span>
+          </div>
+          <p class="text-sm text-text-secondary">Multiple interconnected rules, full workflow automation suites. Quote based on discovery.</p>
+        </Card>
+      </div>
+
+      <!-- Timeline -->
+      <div class="max-w-3xl mx-auto scroll-reveal" style="animation-delay: 300ms;">
+        <h3 class="text-lg font-semibold text-text-primary mb-6 text-center">Typical Engagement Timeline</h3>
+        <div class="space-y-4">
+          {[
+            { phase: "Discovery", duration: "1-2 days", desc: "Requirements gathering, P21 environment review, technical spec" },
+            { phase: "Development", duration: "1-4 weeks", desc: "Rule coding, PLAY environment testing, validation" },
+            { phase: "Deployment", duration: "1 day", desc: "Production deployment, user training, go-live support" },
+            { phase: "Warranty", duration: "30 days", desc: "Post-deployment support, bug fixes, minor adjustments" },
+          ].map((step, i) => (
+            <div class="flex items-start gap-4">
+              <div class="shrink-0 w-24 text-right">
+                <span class="text-sm font-mono font-bold text-accent-primary">{step.duration}</span>
+              </div>
+              <div class="grow border-l-2 border-accent-primary/30 pl-4 pb-2">
+                <h4 class="font-semibold text-text-primary text-sm">{step.phase}</h4>
+                <p class="text-sm text-text-secondary mt-1">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- What You Get -->
+      <div class="max-w-3xl mx-auto mt-12 scroll-reveal" style="animation-delay: 400ms;">
+        <Card hover={false} padding="lg">
+          <h3 class="text-lg font-semibold text-text-primary mb-4">What You Get</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              "Compiled .DLL file ready for deployment",
+              "Installation documentation",
+              "P21 configuration guide (Field Selector setup)",
+              "Source code (C# .csproj)",
+              "SQL scripts for custom tables/stored procedures",
+              "30-day warranty on defects",
+            ].map((item) => (
+              <div class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-accent-success shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                <span class="text-sm text-text-secondary">{item}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <!-- CTA -->
+      <div class="text-center mt-12 scroll-reveal" style="animation-delay: 500ms;">
+        <Button href="/contact" variant="primary" size="lg" arrow glow>
+          Request Extension Development Quote
+        </Button>
+      </div>
+    </Container>
+  </Section>
+
+</ServiceDetailLayout>

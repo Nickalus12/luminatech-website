@@ -1,266 +1,20 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/ui/Section.astro';
-import Container from '../components/ui/Container.astro';
-import Card from '../components/ui/Card.astro';
-import Button from '../components/ui/Button.astro';
-import Badge from '../components/ui/Badge.astro';
-import InteractiveROICalculator from '../components/ui/InteractiveROICalculator';
-import ServiceCardGrid from '../components/ui/ServiceCardGrid';
-import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
-import GlowText from '../components/ui/GlowText.astro';
-import TextReveal from '../components/ui/TextReveal';
-import ScrollCounter from '../components/ui/ScrollCounter';
-import ChatPrompt from '../components/ui/ChatPrompt';
-import { services, brand } from '../content/copy';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Container from '@components/ui/Container.astro';
+import Card from '@components/ui/Card.astro';
+import Button from '@components/ui/Button.astro';
+import Badge from '@components/ui/Badge.astro';
+import InteractiveROICalculator from '@components/ui/InteractiveROICalculator';
+import ServiceNexus from '@components/ui/ServiceNexus';
+import ServiceSelectorQuiz from '@components/ui/ServiceSelectorQuiz';
+import GlowText from '@components/ui/GlowText.astro';
+import TextReveal from '@components/ui/TextReveal';
+import ScrollCounter from '@components/ui/ScrollCounter';
+import ChatPrompt from '@components/ui/ChatPrompt';
+import { services, brand } from '@content/copy';
 
 const description = "Comprehensive ERP consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support. Deep expertise in Prophet 21, Epicor Kinetic, and more.";
-
-// ROI Models for each service
-const roiModels = {
-  extensions: {
-    assumptions: [
-      { label: "Avg hourly rate for manual work", value: "$35/hr" },
-      { label: "Orders/month requiring intervention", value: "200" },
-      { label: "Time saved per order", value: "15 min" },
-    ],
-    calculation: "200 orders * 15 min * $35/hr / 60 = $1,750/mo savings",
-    breakeven: "4.3 months",
-    yearOneROI: "365%",
-    competitiveEdge: "Epicor's standard consulting: $250/hr (75% premium). We deliver faster at lower rates.",
-  },
-  integrations: {
-    assumptions: [
-      { label: "Manual data entry time", value: "20 hrs/wk" },
-      { label: "Data entry errors/month", value: "12" },
-      { label: "Error resolution time", value: "2 hrs each" },
-    ],
-    calculation: "20 hrs/wk * $35/hr * 4.3 wks + 12 errors * 2 hrs * $35/hr = $3,850/mo savings",
-    breakeven: "3.9 months",
-    yearOneROI: "210%",
-    competitiveEdge: "Off-the-shelf iPaaS: $1,200-$3,000/mo ongoing. Custom n8n: one-time cost, self-hosted.",
-  },
-  database: {
-    assumptions: [
-      { label: "Staff waiting on slow reports", value: "5 people" },
-      { label: "Report run time before", value: "30 sec/query" },
-      { label: "Report run time after", value: "2 sec/query" },
-    ],
-    calculation: "5 staff * 50 queries/day * 28 sec saved * 22 days * $35/hr / 3600 = $1,496/mo",
-    breakeven: "3.3 months",
-    yearOneROI: "259%",
-    competitiveEdge: "Most consultants recommend hardware upgrades ($10K+). We optimize queries for 90% less cost.",
-  },
-  warehouse: {
-    assumptions: [
-      { label: "Picker travel time reduction", value: "25%" },
-      { label: "Current pick labor cost", value: "$8,400/mo" },
-      { label: "Shipping errors eliminated", value: "8/mo @ $150 ea" },
-    ],
-    calculation: "$8,400 * 25% + 8 * $150 = $3,300/mo savings",
-    breakeven: "2.4 months",
-    yearOneROI: "398%",
-    competitiveEdge: "Full WMS implementations: $50K-$250K. Our automations: 95% less investment, faster ROI.",
-  },
-  portals: {
-    assumptions: [
-      { label: "CSR pricing lookup time", value: "4 min/quote" },
-      { label: "Quotes per day", value: "30" },
-      { label: "CSR hourly rate", value: "$28/hr" },
-    ],
-    calculation: "30 quotes * 4 min * $28/hr / 60 * 22 days = $1,232/mo saved",
-    breakeven: "8.1 months",
-    yearOneROI: "48%",
-    competitiveEdge: "Custom portal vs. forcing customers into clunky legacy web portals. Better UX = competitive advantage.",
-  },
-  support: {
-    assumptions: [
-      { label: "Emergency support calls/year", value: "3" },
-      { label: "Emergency rate (other firms)", value: "$300/hr" },
-      { label: "Hours per emergency", value: "4 hrs" },
-    ],
-    calculation: "3 emergencies * 4 hrs * $300/hr = $3,600/yr avoided",
-    breakeven: "Immediate (vs. emergency rates)",
-    yearOneROI: "227% (Standard tier)",
-    competitiveEdge: "Big firms: $15K/mo minimums. We start at $625/mo with flexible terms.",
-  },
-};
-
-const complexityRatings = {
-  extensions: { rating: 4, factors: ["C# development", "DynaChange Extensibility Suite", "Testing cycles", "Regression risk"] },
-  integrations: { rating: 3, factors: ["API documentation", "Rate limiting", "Error handling", "OAuth complexity"] },
-  database: { rating: 2, factors: ["SQL proficiency", "Index design", "Query optimization", "Minimal deployment risk"] },
-  warehouse: { rating: 3, factors: ["Workflow analysis", "Configuration logic", "User training", "Process change management"] },
-  portals: { rating: 4, factors: ["Full-stack development", "Authentication", "API integration", "Responsive design"] },
-  support: { rating: 1, factors: ["Ongoing relationship", "Ad-hoc tasks", "Low risk", "Flexible scope"] },
-};
-
-const techStacks = {
-  extensions: ["DynaChange Extensibility Suite (C# .NET 4.7.2+)", "Visual Studio 2019/2022", "SQL Server 2016+ (custom tables)", "Transaction API", "DynaChange Business Rules Engine"],
-  integrations: ["n8n Automation Platform", "PostgreSQL (workflow state)", "REST APIs (OAuth2 + JWT)", "Rate Limiting Middleware", "Error Logging & Monitoring"],
-  database: ["SQL Server 2016-2022", "Execution Plan Analyzer", "Covering Index Design", "Keyset Pagination Patterns", "Crystal Reports / SSRS"],
-  warehouse: ["SQL Server Triggers", "n8n Workflow Engine (optional)", "DynaChange Rules", "Custom Config Tables", "Carrier Integration / UPS WorldShip APIs"],
-  portals: ["HTML5 / CSS3 / JavaScript", "ERP Pricing API", "Transaction API", "OAuth2 / Token Auth", "SSL/TLS Encryption"],
-  support: ["Remote Desktop / VPN", "SQL Server Mgmt Studio", "Visual Studio Code", "n8n / Automation Studio", "Ticketing System (Freshdesk/Desk365)"],
-};
-
-const timelines = {
-  extensions: [
-    { phase: "Discovery & Requirements", duration: "2-3 days", deliverable: "Technical spec with SDK patterns" },
-    { phase: "Development & Testing", duration: "5-12 days", deliverable: "Compiled .DLL with source code" },
-    { phase: "UAT & Deployment", duration: "2-3 days", deliverable: "Production deployment + documentation" },
-    { phase: "Warranty Period", duration: "30 days", deliverable: "Bug fixes & adjustments included" },
-  ],
-  integrations: [
-    { phase: "API Discovery", duration: "1-2 days", deliverable: "Integration architecture diagram" },
-    { phase: "Workflow Development", duration: "5-10 days", deliverable: "n8n workflows with error handling" },
-    { phase: "Testing & Validation", duration: "2-4 days", deliverable: "Test results with performance metrics" },
-    { phase: "Go-Live Support", duration: "30 days", deliverable: "Monitoring + adjustments" },
-  ],
-  database: [
-    { phase: "Performance Audit", duration: "1 day", deliverable: "Top 10 slow queries identified" },
-    { phase: "Query Optimization", duration: "1-2 days", deliverable: "Rewritten queries + indexes" },
-    { phase: "Testing & Benchmarking", duration: "1 day", deliverable: "Before/after performance metrics" },
-    { phase: "Warranty Period", duration: "90 days", deliverable: "Performance guarantee" },
-  ],
-  warehouse: [
-    { phase: "Workflow Analysis", duration: "2-3 days", deliverable: "Current-state process map" },
-    { phase: "Configuration Development", duration: "3-8 days", deliverable: "Automation rules + config portal" },
-    { phase: "Pilot Testing", duration: "2-4 days", deliverable: "Real-world validation with metrics" },
-    { phase: "Rollout & Training", duration: "1-2 days", deliverable: "Full deployment + user training" },
-  ],
-  portals: [
-    { phase: "Requirements & Design", duration: "3-5 days", deliverable: "UI mockups + feature spec" },
-    { phase: "Development", duration: "8-14 days", deliverable: "Functional portal with API integration" },
-    { phase: "Testing & QA", duration: "2-3 days", deliverable: "Browser/device compatibility validated" },
-    { phase: "Training & Warranty", duration: "60 days", deliverable: "User training + support" },
-  ],
-  support: [
-    { phase: "Onboarding", duration: "1 week", deliverable: "System access + relationship setup" },
-    { phase: "Ongoing Support", duration: "Monthly", deliverable: "Guaranteed hours + response SLA" },
-    { phase: "Quarterly Review", duration: "Varies", deliverable: "System health check + optimization" },
-  ],
-};
-
-const riskProfiles = {
-  extensions: {
-    low: ["Business logic errors (testing catches 95%)"],
-    medium: ["Performance impact on high-volume operations", "Multi-user concurrency edge cases"],
-    high: ["ERP version upgrade compatibility (mitigated by SDK patterns)"],
-    mitigation: "Test in PLAY environment. Deploy to production during low-volume hours. 30-day warranty covers defects.",
-  },
-  integrations: {
-    low: ["Rate limit violations (handled by retry logic)"],
-    medium: ["API endpoint changes (vendor-dependent)", "OAuth token expiration (auto-refresh built-in)"],
-    high: ["Data sync failures during ERP downtime"],
-    mitigation: "Queue-based architecture with error recovery. Email alerts for failures. 30-day support for tuning.",
-  },
-  database: {
-    low: ["Query syntax errors (pre-tested)"],
-    medium: ["Index bloat over time (monitoring recommended)"],
-    high: ["Rare regression on untested query patterns"],
-    mitigation: "90-day performance warranty. Before/after benchmarks documented. Rollback scripts provided.",
-  },
-  warehouse: {
-    low: ["Configuration errors (admin portal prevents bad data)"],
-    medium: ["User training gap (addressed with hands-on session)", "Edge case routing logic"],
-    high: ["Process change resistance"],
-    mitigation: "Pilot deployment phase validates logic. User training included. 60-day warranty for adjustments.",
-  },
-  portals: {
-    low: ["Browser compatibility issues (tested Chrome/Edge/Safari)"],
-    medium: ["API performance under load (batch optimization included)", "User credential management"],
-    high: ["Security vulnerabilities (SSL + token auth required)"],
-    mitigation: "Security audit included. SSL certificate setup. Rate limiting on API calls. 60-day warranty.",
-  },
-  support: {
-    low: ["Response time SLA miss (track record: 99.2% SLA compliance)"],
-    medium: ["Scope creep beyond included hours"],
-    high: ["Knowledge transfer dependency (single consultant)"],
-    mitigation: "Transparent hourly tracking. Overage approval required. Documentation for all work performed.",
-  },
-};
-
-const beforeAfter = {
-  extensions: {
-    before: { metric: "Manual intervention required", value: "200 orders/mo", pain: "15 min each, error-prone" },
-    after: { metric: "Automated validation", value: "100% orders", gain: "Zero manual intervention, instant feedback" },
-  },
-  integrations: {
-    before: { metric: "Manual data entry", value: "20 hrs/wk", pain: "12 errors/mo, constant re-keying" },
-    after: { metric: "Automated sync", value: "Every 30 min", gain: "Zero manual entry, 99.9% accuracy" },
-  },
-  database: {
-    before: { metric: "Report load time", value: "30+ sec", pain: "Staff waiting, timeouts on large datasets" },
-    after: { metric: "Optimized queries", value: "<2 sec", gain: "10-15x faster, no timeouts" },
-  },
-  warehouse: {
-    before: { metric: "Picker travel time", value: "100% baseline", pain: "Inefficient bin routing, shipping errors" },
-    after: { metric: "Optimized routing", value: "75% of baseline", gain: "25% time savings, zero carrier errors" },
-  },
-  portals: {
-    before: { metric: "CSR pricing lookup", value: "4 min/quote", pain: "Slow ERP UI, manual navigation" },
-    after: { metric: "Self-service portal", value: "30 sec/quote", gain: "8x faster, CSR time freed for sales" },
-  },
-  support: {
-    before: { metric: "Emergency support cost", value: "$300/hr", pain: "Unpredictable bills, vendor roulette" },
-    after: { metric: "Retainer pricing", value: "$110-125/hr", gain: "Predictable monthly cost, priority access" },
-  },
-};
-
-const competitiveAdvantages = {
-  extensions: [
-    "Real production experience: We deploy business rules weekly in live ERP environments",
-    "Fail-safe patterns: Rules never block legitimate operations (learned from costly mistakes)",
-    "Multi-version support: Desktop + Web UI compatibility from day one",
-    "75% cost savings vs. Epicor's $250/hr consulting rates",
-  ],
-  integrations: [
-    "Proven performance: 150x speed improvements, 140x API call reductions in production",
-    "Self-hosted n8n: One-time cost vs. $1,200-$3,000/mo for Zapier Enterprise / Workato",
-    "Rate limiting expertise: Avoid vendor API throttling (learned through trial by fire)",
-    "Open-source stack: No vendor lock-in, full workflow portability",
-  ],
-  database: [
-    "Query optimization over hardware: 90% cost savings vs. $10K+ server upgrades",
-    "Real-world SQL patterns: Covering indexes, keyset pagination, execution plan tuning",
-    "Crystal Reports specialization: Deep knowledge of ERP reporting quirks",
-    "90-day performance warranty: We stand behind the work",
-  ],
-  warehouse: [
-    "95% cost savings vs. full WMS implementations ($50K-$250K budgets)",
-    "Configuration-driven: Warehouse managers control logic without code changes",
-    "Faster ROI: 2-4 months vs. 12-24 months for traditional WMS",
-    "ERP-native: No middleware, no separate system to maintain",
-  ],
-  portals: [
-    "Customer UX focus: Modern web UI vs. clunky legacy web portals",
-    "Batch API optimization: Handle 100K+ product catalogs without timeouts",
-    "Mobile-responsive: Glassmorphism design works on any device",
-    "Competitive differentiation: Give customers a reason to choose you over Amazon",
-  ],
-  support: [
-    "Affordable: Start at $625/mo vs. $15K/mo enterprise firms",
-    "Real ERP operators: We use these systems daily, not just consult on them",
-    "Transparent pricing: Hourly tracking, overage approval required",
-    "99.2% SLA compliance: Proven track record on response times",
-  ],
-};
-
-type ServiceId = 'extensions' | 'integrations' | 'database' | 'warehouse' | 'portals' | 'support';
-
-const serializedServices = services.items.map(service => ({
-  ...service,
-  enhancements: {
-    roiModel: roiModels[service.id as ServiceId],
-    complexity: complexityRatings[service.id as ServiceId],
-    techStack: techStacks[service.id as ServiceId],
-    timeline: timelines[service.id as ServiceId],
-    risks: riskProfiles[service.id as ServiceId],
-    comparison: beforeAfter[service.id as ServiceId],
-    advantages: competitiveAdvantages[service.id as ServiceId],
-  },
-}));
 
 const retainerTiers = [
   {
@@ -502,38 +256,29 @@ const retainerTiers = [
       <div class="relative">
         <div class="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-bg-base/90 to-transparent z-10 pointer-events-none sm:hidden" aria-hidden="true"></div>
         <div class="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-bg-base/90 to-transparent z-10 pointer-events-none sm:hidden" aria-hidden="true"></div>
-        <nav class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none" aria-label="Service sections">
-          {services.anchors.map((anchor) => (
-            <a
-              href={anchor.href}
-              class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline"
-            >
-              {anchor.label}
-            </a>
-          ))}
+        <nav class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-none" aria-label="Page sections">
+          <a href="#services" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Services</a>
+          <a href="#migration" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Migration</a>
+          <a href="#retainer-pricing" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Pricing</a>
+          <a href="#process" class="anchor-link shrink-0 px-4 py-2 text-sm font-medium rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-surface-2 transition-colors duration-fast no-underline">Process</a>
         </nav>
       </div>
     </Container>
   </div>
 
-  <!-- SERVICE CARDS GRID (Progressive Disclosure) -->
-  <Section background="base" padding="md">
+  <!-- SERVICE NEXUS (Interactive Service Explorer) -->
+  <Section id="services" background="base" padding="md">
     <Container>
       <div class="text-center mb-10 scroll-reveal">
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
-          Our Services — With Published Pricing
+          Explore Our Services
         </h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto">
-          Every service includes upfront pricing, timelines, and deliverables. Click any card to explore ROI models, tech stack, and implementation details.
+          Select a service to preview details, then dive into the full breakdown.
         </p>
       </div>
 
-      <div class="min-h-[400px]">
-        <ServiceCardGrid
-          client:visible
-          services={serializedServices}
-        />
-      </div>
+      <ServiceNexus client:visible />
     </Container>
   </Section>
 
@@ -629,7 +374,7 @@ const retainerTiers = [
   </Section>
 
   <!-- RETAINER PRICING TIERS -->
-  <Section background="base" padding="lg" class="relative overflow-hidden">
+  <Section id="retainer-pricing" background="base" padding="lg" class="relative overflow-hidden">
     <!-- Subtle glow behind pricing -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent-primary/5 rounded-full blur-[120px] pointer-events-none" aria-hidden="true"></div>
 
@@ -747,7 +492,7 @@ const retainerTiers = [
   </Section>
 
   <!-- PROCESS STEPS -->
-  <Section background="surface-1" padding="md">
+  <Section id="process" background="surface-1" padding="md">
     <Container>
       <div class="text-center mb-16 scroll-reveal">
         <Badge variant="primary" class="mb-4">
@@ -824,13 +569,10 @@ const retainerTiers = [
     display: none;
   }
   /* Scroll offset for anchor links so sticky header + nav don't cover content */
-  #extensions,
-  #integrations,
-  #database,
-  #warehouse,
-  #portals,
-  #support,
+  #services,
   #migration,
+  #retainer-pricing,
+  #process,
   #service-quiz {
     scroll-margin-top: 8rem;
   }
@@ -839,7 +581,7 @@ const retainerTiers = [
 <script>
   function initServices() {
     const anchors = document.querySelectorAll('.anchor-link');
-    const sections = document.querySelectorAll('[id="extensions"], [id="integrations"], [id="database"], [id="warehouse"], [id="portals"], [id="support"]');
+    const sections = document.querySelectorAll('#services, #migration, #retainer-pricing, #process');
 
     if (anchors.length > 0 && sections.length > 0) {
       const observer = new IntersectionObserver(
@@ -858,7 +600,7 @@ const retainerTiers = [
             }
           });
         },
-        { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
+        { threshold: 0.2, rootMargin: '-80px 0px -40% 0px' }
       );
       sections.forEach((section) => observer.observe(section));
     }
