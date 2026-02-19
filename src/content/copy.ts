@@ -23,7 +23,7 @@ export const nav = {
     { label: "Services", href: "/services" },
     { label: "Case Studies", href: "/case-studies" },
     { label: "About", href: "/about" },
-    { label: "Blog", href: "/blog" },
+    { label: "Roadmap", href: "/roadmap" },
   ],
   cta: { label: "Free Consultation", href: "/contact" },
 } as const;
@@ -211,10 +211,10 @@ export const services = {
       "In an industry where every consultant hides behind \"Contact Us for Pricing,\" we put our rates right here on this page. Your budget shouldn't be a guessing game.",
     comparisonHeadline: "See the Difference",
     comparisonItems: [
-      { them: "\"Contact us for a custom quote\"", us: "$1,500 - $8,000 per business rule" },
-      { them: "\"Pricing varies by engagement\"", us: "$2,000 - $15,000 per integration" },
-      { them: "\"Let's schedule a call to discuss\"", us: "$625 - $3,600/mo support plans" },
-      { them: "\"Depends on complexity\"", us: "$2,500 - $15,000 database optimization" },
+      { them: "\"Contact us for a custom quote\"", us: "Published rates. Fixed quotes before work begins." },
+      { them: "\"Pricing varies by engagement\"", us: "Transparent project pricing upfront." },
+      { them: "\"Let's schedule a call to discuss\"", us: "Flexible plans from 5 to 40 hrs/mo." },
+      { them: "\"Depends on complexity\"", us: "Scope-based fixed quotes. No surprises." },
     ],
     trustSignals: [
       { icon: "lock", label: "No Hidden Fees", detail: "The price we quote is the price you pay" },
@@ -252,20 +252,6 @@ export const services = {
       timeline: "1-4 weeks per rule",
       pricing: "$1,500 - $8,000 per rule",
       cta: { label: "Request Development Quote", href: "/contact" },
-      examples: [
-        {
-          name: "PreventEmptyCarrierPickTickets",
-          problem: "Pick tickets printed without carriers break shipping label integration",
-          solution: "On Event rule intercepts pick ticket creation, validates carrier_id, blocks if NULL",
-          result: "Zero carrier-related shipping failures since deployment",
-        },
-        {
-          name: "Quote Duplication with Auto-Repricing",
-          problem: "Sales team manually re-entering quotes with outdated pricing (30+ min per quote)",
-          solution: "Transaction API integration omits unit_price to trigger P21's contract pricing engine",
-          result: "Quote duplication reduced from 30 minutes to 30 seconds",
-        },
-      ],
     },
     {
       id: "integrations",
@@ -287,20 +273,6 @@ export const services = {
       timeline: "1-3 weeks per integration",
       pricing: "$2,000 - $15,000 per integration",
       cta: { label: "Schedule Integration Discovery", href: "/contact" },
-      examples: [
-        {
-          name: "Address Matching Dashboard Optimization",
-          problem: "High-volume API calls taking hours with constant timeouts",
-          solution: "Replaced hundreds of ERP API calls with single SQL query, batched external API calls (50 orders/request)",
-          result: "150x faster processing, 140x fewer API calls through intelligent batching",
-        },
-        {
-          name: "Marketplace Order Tracking Sync",
-          problem: "Manual tracking updates for multi-channel orders causing delays and customer complaints",
-          solution: "n8n workflow running on schedule with verification loops and retry logic",
-          result: "Zero missed updates, fully automated bi-directional tracking sync",
-        },
-      ],
     },
     {
       id: "database",
@@ -322,20 +294,6 @@ export const services = {
       timeline: "3-5 days per optimization package",
       pricing: "$2,500 - $15,000 based on scope",
       cta: { label: "Get Free Performance Audit", href: "/contact" },
-      examples: [
-        {
-          name: "Keyset Pagination Pattern",
-          problem: "Crystal Report fails at 10,000+ rows with OFFSET pagination",
-          solution: "Replaced OFFSET/FETCH with keyset pagination using indexed primary key",
-          result: "Consistent performance regardless of row position, eliminated timeouts",
-        },
-        {
-          name: "Covering Index Strategy",
-          problem: "Dashboard queries scanning entire order header table (30+ sec load times)",
-          solution: "Created covering indexes on filter columns with INCLUDE for display columns",
-          result: "Query time reduced from 30+ seconds to <2 seconds",
-        },
-      ],
     },
     {
       id: "warehouse",
@@ -358,20 +316,6 @@ export const services = {
       timeline: "1-3 weeks per automation",
       pricing: "$2,000 - $8,000 per automation",
       cta: { label: "Request Warehouse Consultation", href: "/contact" },
-      examples: [
-        {
-          name: "Dynamic Bin Quantity Routing",
-          problem: "Small high-volume e-commerce orders (1-2 units) allocated to bulk pallet bins, excessive picker travel",
-          solution: "Configuration-driven routing: qty < threshold → EACHES bin, qty >= threshold → PALLET bin",
-          result: "Improved pick efficiency, reduced warehouse travel time",
-        },
-        {
-          name: "Carrier Validation Rule",
-          problem: "Pick tickets printed without carrier cause shipping integration failures",
-          solution: "DynaChange On Event rule blocks pick ticket creation if carrier_id is NULL, shows user-friendly error",
-          result: "Zero invalid pick tickets, eliminated shipping integration failures",
-        },
-      ],
     },
     {
       id: "portals",
@@ -396,20 +340,6 @@ export const services = {
       timeline: "2-4 weeks for full-featured portal",
       pricing: "$5,000 - $20,000 based on features",
       cta: { label: "Request Portal Development Quote", href: "/contact" },
-      examples: [
-        {
-          name: "B2B Pricing Portal",
-          problem: "Customer service reps need fast pricing lookups for large catalogs with customer-specific contract pricing",
-          solution: "Dual-mode portal (Quick: 1-25 SKUs instant, Bulk: 15K+ items async job) with batch API calls",
-          result: "6.44x faster via batch processing, handles 100K+ product catalogs",
-        },
-        {
-          name: "Configuration Portal for Bin Routing",
-          problem: "Warehouse managers need to configure quantity thresholds without code changes",
-          solution: "Web portal updating SQL config tables (item, threshold, eaches bin, pallet bin)",
-          result: "Non-technical users configure routing logic, full audit trail",
-        },
-      ],
     },
     {
       id: "support",
@@ -785,7 +715,7 @@ export const footer = {
     {
       heading: "Resources",
       links: [
-        { label: "Blog", href: "/blog" },
+        { label: "Roadmap", href: "/roadmap" },
         { label: "Case Studies", href: "/case-studies" },
       ],
     },

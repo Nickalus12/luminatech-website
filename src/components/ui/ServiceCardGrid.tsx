@@ -9,13 +9,6 @@ interface ServiceTier {
   price: string;
 }
 
-interface ServiceExample {
-  name: string;
-  problem: string;
-  solution: string;
-  result: string;
-}
-
 interface ServiceItem {
   id: string;
   icon: string;
@@ -26,7 +19,6 @@ interface ServiceItem {
   pricing: string;
   cta: { label: string; href: string };
   tiers?: ServiceTier[];
-  examples?: ServiceExample[];
 }
 
 interface ROIModel {
@@ -103,7 +95,6 @@ const tabDefs = [
   { id: 'roi', label: 'ROI & Pricing' },
   { id: 'tech', label: 'Tech Stack' },
   { id: 'timeline', label: 'Timeline' },
-  { id: 'examples', label: 'Examples' },
 ] as const;
 
 type TabId = (typeof tabDefs)[number]['id'];
@@ -427,42 +418,7 @@ function TimelineTab({ service }: { service: EnrichedService }) {
   );
 }
 
-function ExamplesTab({ service }: { service: EnrichedService }) {
-  if (!service.examples || service.examples.length === 0) {
-    return (
-      <p className="text-sm text-[#6B6B7B] text-center py-8">
-        Contact us for detailed case studies related to this service.
-      </p>
-    );
-  }
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {service.examples.map((example, i) => (
-        <div key={i} className="bg-[#1A1A24] rounded-lg p-5">
-          <h4 className="font-semibold text-[#E8E8ED] mb-3 text-sm">{example.name}</h4>
-          <div className="space-y-3">
-            <div>
-              <p className="text-xs text-[#6B6B7B] uppercase tracking-wider font-medium mb-1">Challenge</p>
-              <p className="text-xs text-[#A0A0B0] leading-relaxed">{example.problem}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#6B6B7B] uppercase tracking-wider font-medium mb-1">Solution</p>
-              <p className="text-xs text-[#A0A0B0] leading-relaxed">{example.solution}</p>
-            </div>
-            <div className="pt-3 border-t border-[#2A2A36]">
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#10B981] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-xs font-medium text-[#10B981]">{example.result}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+// Examples tab removed — service examples no longer included in data
 
 // ── Expanded card with tabs ──────────────────────────────────
 
@@ -543,7 +499,6 @@ function ServiceCardExpanded({ service }: { service: EnrichedService }) {
             {activeTab === 'roi' && <ROITab service={service} />}
             {activeTab === 'tech' && <TechStackTab service={service} />}
             {activeTab === 'timeline' && <TimelineTab service={service} />}
-            {activeTab === 'examples' && <ExamplesTab service={service} />}
           </motion.div>
         </AnimatePresence>
       </div>

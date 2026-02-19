@@ -15,6 +15,8 @@ import ChatPrompt from '../components/ui/ChatPrompt';
 import TextReveal from '../components/ui/TextReveal';
 import RotatingWords from '../components/ui/RotatingWords';
 import Spotlight from '../components/ui/Spotlight';
+import TechGrid from '../components/ui/TechGrid';
+import ProjectShowcase from '../components/ui/ProjectShowcase';
 import { homepage } from '../content/copy';
 ---
 
@@ -105,79 +107,22 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       TRUST BADGES — Technologies We Work With
-       Pure CSS, grayscale → color on hover
+       TECH GRID — Interactive Technologies We Work With
+       Filterable grid with animated logos, hover effects, and external links
   ═══════════════════════════════════════════════════════════════════════════ -->
-  <div class="border-y border-border/30 py-6 md:py-8 bg-bg-base">
+  <Section background="base" padding="md">
     <Container>
-      <p class="text-center text-xs uppercase tracking-[0.2em] font-medium text-text-tertiary mb-5">
-        Technologies We Work With
-      </p>
-      <div class="relative">
-      <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-bg-base to-transparent z-10 pointer-events-none md:hidden" aria-hidden="true"></div>
-      <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-base to-transparent z-10 pointer-events-none md:hidden" aria-hidden="true"></div>
-      <div class="trust-badges-row flex items-center justify-center gap-6 md:gap-10 overflow-x-auto scrollbar-none px-2">
-        <!-- Prophet 21 Expert -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="Prophet 21 Expert">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.15)] flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
-            </svg>
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">Prophet 21</span>
-        </div>
-
-        <!-- SQL Server -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="SQL Server">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(139,92,246,0.08)] border border-[rgba(139,92,246,0.15)] flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/>
-            </svg>
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">SQL Server</span>
-        </div>
-
-        <!-- C# .NET -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="C# .NET">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(16,185,129,0.08)] border border-[rgba(16,185,129,0.15)] flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-            </svg>
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">C# .NET</span>
-        </div>
-
-        <!-- Azure -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="Microsoft Azure">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(6,182,212,0.08)] border border-[rgba(6,182,212,0.15)] flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-            </svg>
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">Azure</span>
-        </div>
-
-        <!-- n8n Automation -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="n8n Automation">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(234,75,113,0.08)] border border-[rgba(234,75,113,0.15)] flex items-center justify-center">
-            <img src="/partners/n8n-pink-white.svg" alt="n8n" width="28" height="8" class="h-2.5 w-auto opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" />
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">n8n</span>
-        </div>
-
-        <!-- Cloudflare -->
-        <div class="trust-badge shrink-0 flex items-center gap-2.5 group" title="Cloudflare">
-          <div class="w-9 h-9 rounded-lg bg-[rgba(251,146,60,0.08)] border border-[rgba(251,146,60,0.15)] flex items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>
-            </svg>
-          </div>
-          <span class="text-sm font-medium text-text-tertiary group-hover:text-text-primary transition-colors whitespace-nowrap">Cloudflare</span>
-        </div>
+      <div class="max-w-3xl mx-auto text-center mb-8 scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+          Technologies We Work With
+        </h2>
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
+          From ERP platforms to modern dev tools — we bring the full stack to every engagement.
+        </p>
       </div>
-      </div>
+      <TechGrid client:visible />
     </Container>
-  </div>
+  </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        MIGRATION URGENCY BANNER
@@ -500,65 +445,20 @@ import { homepage } from '../content/copy';
   </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       FEATURED PROJECTS SECTION
-       Real P21 achievements with before/after metrics
+       FEATURED PROJECTS — Interactive Metrics Showcase
+       Visual-first project cards with animated count-up metrics
   ═══════════════════════════════════════════════════════════════════════════ -->
   <Section background="surface-1" padding="md">
     <Container>
       <div class="max-w-3xl mx-auto text-center mb-12 md:mb-16 scroll-reveal">
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
-          {homepage.featuredProjects.heading}
+          Proven Results
         </h2>
         <p class="text-[length:var(--font-size-body-lg)] text-text-secondary">
-          {homepage.featuredProjects.subheading}
+          Real-world optimizations delivering measurable performance gains.
         </p>
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {homepage.featuredProjects.projects.map((project, i) => (
-          <Card hover padding="lg" class="scroll-reveal flex flex-col" style={`animation-delay: ${i * 150}ms;`}>
-            <div class="mb-4">
-              <h3 class="text-[length:var(--font-size-h4)] font-semibold text-text-primary mb-3">{project.title}</h3>
-              <div class="space-y-3 mb-4">
-                <div>
-                  <p class="text-accent-error text-xs font-semibold uppercase tracking-wider mb-1">Challenge</p>
-                  <p class="text-text-secondary text-sm leading-relaxed">{project.challenge}</p>
-                </div>
-                <div>
-                  <p class="text-accent-success text-xs font-semibold uppercase tracking-wider mb-1">Solution</p>
-                  <p class="text-text-secondary text-sm leading-relaxed">{project.solution}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-auto">
-              <div class="bg-bg-surface-2 rounded-lg p-4 mb-4">
-                <p class="text-accent-primary text-xs font-semibold uppercase tracking-wider mb-3">Results</p>
-                <div class="space-y-2">
-                  {project.results.map((result) => (
-                    <div class="flex items-baseline justify-between gap-2">
-                      <span class="text-text-tertiary text-xs">{result.label}</span>
-                      <div class="flex-1 border-b border-border/30 border-dotted mb-1"></div>
-                      <div class="text-right">
-                        <span class="text-text-primary font-mono text-sm font-semibold">{result.value}</span>
-                        <span class="text-text-tertiary text-xs ml-1">{result.detail}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div class="flex flex-wrap gap-2">
-                {project.tech.map((tech) => (
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-accent-primary/10 text-accent-primary text-xs font-medium">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+      <ProjectShowcase client:visible />
     </Container>
   </Section>
 
@@ -662,26 +562,6 @@ import { homepage } from '../content/copy';
     transform: translateY(-2px);
   }
 
-  /* ── Trust badges ── */
-  .trust-badge {
-    filter: grayscale(1);
-    opacity: 0.6;
-    transition: filter 0.3s ease, opacity 0.3s ease;
-  }
-
-  .trust-badge:hover {
-    filter: grayscale(0);
-    opacity: 1;
-  }
-
-  .trust-badges-row {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .trust-badges-row::-webkit-scrollbar {
-    display: none;
-  }
 
   /* ── Reduced motion ── */
   @media (prefers-reduced-motion: reduce) {
