@@ -19,7 +19,7 @@ const steps: Step[] = [
     ),
     title: 'Discovery Call',
     description:
-      'A free 30-minute video call to understand your P21 setup, pain points, and goals. We ask the right questions so you get honest, actionable feedback -- not a sales pitch.',
+      'A free 30-minute video call to understand your ERP setup, pain points, and goals. We ask the right questions so you get honest, actionable feedback -- not a sales pitch.',
     accent: '#3B82F6',
   },
   {

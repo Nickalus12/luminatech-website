@@ -158,7 +158,7 @@ export default function ExitIntent() {
                 </div>
                 <div className="min-w-0 pr-6">
                   <p className="text-sm font-semibold text-white leading-snug">
-                    Before you go — got a quick P21 question?
+                    Before you go — got a quick ERP question?
                   </p>
                 </div>
               </div>

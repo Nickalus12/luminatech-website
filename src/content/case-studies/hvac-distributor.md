@@ -63,6 +63,6 @@ Estimated annual ROI: $180K+ in recovered revenue from pricing accuracy alone, p
 
 ## Client Testimonial
 
-> "The Lumina team understood our P21 setup from day one. No ramp-up time, no hand-holding -- just results. The pricing validation rule alone paid for the entire engagement in the first month. I wish we'd found them before spending $35K on that other firm's report."
+> "The Lumina team understood our ERP setup from day one. No ramp-up time, no hand-holding -- just results. The pricing validation rule alone paid for the entire engagement in the first month. I wish we'd found them before spending $35K on that other firm's report."
 >
 > -- **Operations Manager, Regional HVAC Distributor**

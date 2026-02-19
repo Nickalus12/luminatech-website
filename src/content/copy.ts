@@ -41,7 +41,7 @@ export const homepage = {
   trustBar: {
     metrics: [
       { value: "150x", label: "Performance Improvement" },
-      { value: "280K", label: "Product Operations" },
+      { value: "100K+", label: "Product Operations" },
       { value: "140x", label: "API Call Reduction" },
     ],
   },
@@ -49,7 +49,7 @@ export const homepage = {
     heading: "Proven Results from Real ERP Projects",
     items: [
       { value: 150, suffix: "x", label: "Performance Improvement" },
-      { value: 280, suffix: "K", label: "Bulk Product Operations" },
+      { value: 100, suffix: "K+", label: "Large-Scale Product Operations" },
       { value: 140, suffix: "x", label: "API Call Reduction" },
       { value: 5, suffix: "+", label: "Production Business Rules" },
     ],
@@ -59,24 +59,24 @@ export const homepage = {
     subheading: "Real-world optimizations delivering measurable performance gains and operational efficiency.",
     projects: [
       {
-        title: "Address Truncation Fix",
-        challenge: "SellerCloud integration failing with 1,200+ orders due to 30-character address limit",
-        solution: "Compiled C# business rule with intelligent truncation preserving critical address data",
+        title: "E-Commerce Order Integration",
+        challenge: "Marketplace order sync failing with high-volume batches due to API rate limits and data validation gaps",
+        solution: "Custom middleware with intelligent batching, retry logic, and field validation",
         results: [
-          { label: "Performance", value: "150x faster", detail: "vs SQL trigger approach" },
-          { label: "Orders", value: "1,200+", detail: "processed successfully" },
-          { label: "Impact", value: "Zero", detail: "address data loss" },
+          { label: "Performance", value: "150x faster", detail: "vs previous approach" },
+          { label: "Orders", value: "2,000+", detail: "processed per batch" },
+          { label: "Accuracy", value: "99.8%", detail: "success rate" },
         ],
-        tech: ["C# .NET", "DynaChange", "SellerCloud API"],
+        tech: ["C# .NET", "DynaChange", "Marketplace APIs (Amazon, Shopify, etc.)"],
       },
       {
-        title: "SellerCloud Bulk Operations",
-        challenge: "Manual product sync and pricing updates taking hours across 280K+ SKUs",
-        solution: "n8n workflow automating bulk operations with rate limiting and error handling",
+        title: "Bulk Catalog Sync",
+        challenge: "Manual product updates taking hours across large multi-channel catalogs",
+        solution: "Automated workflow with batch processing, rate limiting, and error recovery",
         results: [
-          { label: "Products", value: "280K+", detail: "synchronized automatically" },
+          { label: "Products", value: "100K+", detail: "synced automatically" },
           { label: "API Calls", value: "140x less", detail: "optimized batch processing" },
-          { label: "Time Saved", value: "95%", detail: "from manual process" },
+          { label: "Time Saved", value: "85%", detail: "reduction in manual effort" },
         ],
         tech: ["n8n", "REST API", "PostgreSQL", "Rate Limiting"],
       },
@@ -135,7 +135,7 @@ export const homepage = {
     before: { label: "Before", value: "45 min", detail: "per order" },
     after: { label: "After", value: "18 min", detail: "per order" },
     quote:
-      "The Lumina team understood our P21 setup from day one. No ramp-up time, no hand-holding -- just results.",
+      "The Lumina team understood our ERP setup from day one. No ramp-up time, no hand-holding -- just results.",
     attribution: "Operations Manager, Regional HVAC Distributor",
     link: {
       label: "Read Full Case Study",
@@ -154,13 +154,13 @@ export const homepage = {
     stories: [
       {
         metric: { value: 150, suffix: "x", label: "Performance Improvement" },
-        title: "Address Truncation Fix",
+        title: "E-Commerce Order Integration",
         problem:
-          "SellerCloud integration failing with 1,200+ orders due to 30-character address limits.",
+          "Marketplace order sync failing with high-volume batches due to API rate limits and data validation gaps.",
         solution:
-          "We built a compiled C# business rule with intelligent truncation -- preserving critical address data while eliminating integration failures.",
-        result: "150x faster than the SQL trigger approach, with zero data loss across 1,200+ orders.",
-        tech: ["C# .NET", "DynaChange", "SellerCloud API"],
+          "We built custom middleware with intelligent batching, retry logic, and field validation -- eliminating integration failures and data loss.",
+        result: "150x faster than the previous approach, with 99.8% success rate across 2,000+ orders per batch.",
+        tech: ["C# .NET", "DynaChange", "Marketplace APIs (Amazon, Shopify, etc.)"],
         accent: "primary" as const,
       },
       {
@@ -176,13 +176,13 @@ export const homepage = {
         accent: "violet" as const,
       },
       {
-        metric: { value: 95, suffix: "%", label: "Time Saved" },
-        title: "Bulk Product Sync Automation",
+        metric: { value: 85, suffix: "%", label: "Time Saved" },
+        title: "Bulk Catalog Sync Automation",
         problem:
-          "Manual product sync and pricing updates taking hours across 280K+ SKUs.",
+          "Manual product updates taking hours across large multi-channel catalogs.",
         solution:
-          "We built an automated workflow with intelligent batching, rate limiting, and error handling -- syncing 280K+ products without intervention.",
-        result: "95% reduction in manual effort with 140x fewer API calls.",
+          "We built an automated workflow with intelligent batching, rate limiting, and error recovery -- syncing 100K+ products without intervention.",
+        result: "85% reduction in manual effort with 140x fewer API calls.",
         tech: ["n8n", "REST API", "PostgreSQL"],
         accent: "success" as const,
       },
@@ -255,7 +255,7 @@ export const services = {
       examples: [
         {
           name: "PreventEmptyCarrierPickTickets",
-          problem: "Pick tickets printed without carriers break ShipLink integration",
+          problem: "Pick tickets printed without carriers break shipping label integration",
           solution: "On Event rule intercepts pick ticket creation, validates carrier_id, blocks if NULL",
           result: "Zero carrier-related shipping failures since deployment",
         },
@@ -272,11 +272,11 @@ export const services = {
       icon: "integration",
       title: "API & ERP Integration Services",
       description:
-        "Connect your ERP to e-commerce platforms, marketplaces, CRMs, and third-party systems. We integrate with SellerCloud, Rithum, Shopify, and custom APIs using n8n automation workflows -- with proven patterns delivering 150x performance improvements.",
+        "Connect your ERP to e-commerce platforms, marketplaces, CRMs, and third-party systems. We build custom API integrations and n8n automation workflows with proven patterns delivering significant performance improvements.",
       includes: [
         "n8n workflow development with visual automation editor",
         "Bi-directional data sync (orders, tracking, pricing, inventory)",
-        "ERP-to-marketplace connectors (Amazon, Wayfair, Shopify, SellerCloud)",
+        "ERP-to-marketplace connectors (Amazon, Wayfair, Shopify, and more)",
         "Batch API processing (25-50 items per request for optimal performance)",
         "OAuth2 token management and refresh automation",
         "Retry logic with exponential backoff (up to 10 attempts)",
@@ -290,15 +290,15 @@ export const services = {
       examples: [
         {
           name: "Address Matching Dashboard Optimization",
-          problem: "1,500+ API calls taking 5 hours with constant timeouts",
-          solution: "Replaced 1,000 ERP API calls with single SQL query, batched external API calls (50 orders/request)",
-          result: "150x faster (5 hours → <2 minutes), 140x fewer API calls (1,500+ → 11)",
+          problem: "High-volume API calls taking hours with constant timeouts",
+          solution: "Replaced hundreds of ERP API calls with single SQL query, batched external API calls (50 orders/request)",
+          result: "150x faster processing, 140x fewer API calls through intelligent batching",
         },
         {
-          name: "SellerCloud Tracking Sync",
-          problem: "Manual tracking number updates for Wayfair/Amazon orders via SellerCloud",
-          solution: "n8n workflow running every 30 minutes with verification loops and retry logic",
-          result: "Automated bi-directional tracking sync with 100% accuracy verification",
+          name: "Marketplace Order Tracking Sync",
+          problem: "Manual tracking updates for multi-channel orders causing delays and customer complaints",
+          solution: "n8n workflow running on schedule with verification loops and retry logic",
+          result: "Zero missed updates, fully automated bi-directional tracking sync",
         },
       ],
     },
@@ -331,7 +331,7 @@ export const services = {
         },
         {
           name: "Covering Index Strategy",
-          problem: "Dashboard queries scanning entire oe_hdr table (30+ sec load times)",
+          problem: "Dashboard queries scanning entire order header table (30+ sec load times)",
           solution: "Created covering indexes on filter columns with INCLUDE for display columns",
           result: "Query time reduced from 30+ seconds to <2 seconds",
         },
@@ -347,7 +347,7 @@ export const services = {
         "Quantity-based bin routing (eaches vs. pallet bin logic)",
         "Carrier auto-assignment and validation rules",
         "Pick ticket validation before printing/processing",
-        "Shipping label integration (ShipLink, UPS WorldShip, FedEx Ship Manager)",
+        "Shipping label integration (UPS WorldShip, FedEx Ship Manager, and more)",
         "Dynamic bin allocation based on configurable thresholds",
         "Configuration portal for warehouse managers",
         "SQL triggers or n8n automation (client choice)",
@@ -361,15 +361,15 @@ export const services = {
       examples: [
         {
           name: "Dynamic Bin Quantity Routing",
-          problem: "Small Costco.com orders (1-2 units) allocated to bulk pallet bins, excessive picker travel",
+          problem: "Small high-volume e-commerce orders (1-2 units) allocated to bulk pallet bins, excessive picker travel",
           solution: "Configuration-driven routing: qty < threshold → EACHES bin, qty >= threshold → PALLET bin",
           result: "Improved pick efficiency, reduced warehouse travel time",
         },
         {
           name: "Carrier Validation Rule",
-          problem: "Pick tickets printed without carrier cause ShipLink integration failures",
+          problem: "Pick tickets printed without carrier cause shipping integration failures",
           solution: "DynaChange On Event rule blocks pick ticket creation if carrier_id is NULL, shows user-friendly error",
-          result: "Zero invalid pick tickets, eliminated ShipLink failures",
+          result: "Zero invalid pick tickets, eliminated shipping integration failures",
         },
       ],
     },
@@ -398,10 +398,10 @@ export const services = {
       cta: { label: "Request Portal Development Quote", href: "/contact" },
       examples: [
         {
-          name: "TDP Pricing Portal",
-          problem: "Customer service reps need fast pricing lookups for 1-25,000 items with customer-specific contracts",
+          name: "B2B Pricing Portal",
+          problem: "Customer service reps need fast pricing lookups for large catalogs with customer-specific contract pricing",
           solution: "Dual-mode portal (Quick: 1-25 SKUs instant, Bulk: 15K+ items async job) with batch API calls",
-          result: "6.44x faster via batch processing, handles 280K product catalogs",
+          result: "6.44x faster via batch processing, handles 100K+ product catalogs",
         },
         {
           name: "Configuration Portal for Bin Routing",

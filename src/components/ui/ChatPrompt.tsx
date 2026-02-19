@@ -7,7 +7,7 @@ export default function ChatPrompt() {
 
   const handleClick = useCallback(() => {
     if (typeof window !== 'undefined' && (window as any).Intercom) {
-      (window as any).Intercom('showNewMessage', 'I have a P21 question: ');
+      (window as any).Intercom('showNewMessage', 'I have an ERP question: ');
     } else {
       window.location.href = '/contact';
     }
@@ -64,7 +64,7 @@ export default function ChatPrompt() {
               className="text-sm md:text-base font-semibold mb-1"
               style={{ color: 'var(--color-text-primary)' }}
             >
-              Have a specific P21 question?
+              Have a specific ERP question?
             </p>
             <p
               className="text-xs md:text-sm leading-relaxed"

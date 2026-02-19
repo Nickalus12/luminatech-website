@@ -11,6 +11,7 @@ import ServiceSelectorQuiz from '../components/ui/ServiceSelectorQuiz';
 import GlowText from '../components/ui/GlowText.astro';
 import TextReveal from '../components/ui/TextReveal';
 import ScrollCounter from '../components/ui/ScrollCounter';
+import ChatPrompt from '../components/ui/ChatPrompt';
 import { services, brand } from '../content/copy';
 
 const description = "Comprehensive ERP consulting services: advisory, custom development, cloud migration, reporting, integrations, and managed support. Deep expertise in Prophet 21, Epicor Kinetic, and more.";
@@ -70,7 +71,7 @@ const roiModels = {
     calculation: "30 quotes * 4 min * $28/hr / 60 * 22 days = $1,232/mo saved",
     breakeven: "8.1 months",
     yearOneROI: "48%",
-    competitiveEdge: "Custom portal vs. forcing customers into clunky P21 WebPOS. Better UX = competitive advantage.",
+    competitiveEdge: "Custom portal vs. forcing customers into clunky legacy web portals. Better UX = competitive advantage.",
   },
   support: {
     assumptions: [
@@ -86,7 +87,7 @@ const roiModels = {
 };
 
 const complexityRatings = {
-  extensions: { rating: 4, factors: ["C# development", "P21 Extensions SDK", "Testing cycles", "Regression risk"] },
+  extensions: { rating: 4, factors: ["C# development", "DynaChange Extensibility Suite", "Testing cycles", "Regression risk"] },
   integrations: { rating: 3, factors: ["API documentation", "Rate limiting", "Error handling", "OAuth complexity"] },
   database: { rating: 2, factors: ["SQL proficiency", "Index design", "Query optimization", "Minimal deployment risk"] },
   warehouse: { rating: 3, factors: ["Workflow analysis", "Configuration logic", "User training", "Process change management"] },
@@ -95,11 +96,11 @@ const complexityRatings = {
 };
 
 const techStacks = {
-  extensions: ["P21 Extensions SDK (C# .NET 4.7.2+)", "Visual Studio 2019/2022", "SQL Server 2016+ (custom tables)", "P21 Transaction API v2", "DynaChange Business Rules Engine"],
+  extensions: ["DynaChange Extensibility Suite (C# .NET 4.7.2+)", "Visual Studio 2019/2022", "SQL Server 2016+ (custom tables)", "Transaction API", "DynaChange Business Rules Engine"],
   integrations: ["n8n Automation Platform", "PostgreSQL (workflow state)", "REST APIs (OAuth2 + JWT)", "Rate Limiting Middleware", "Error Logging & Monitoring"],
   database: ["SQL Server 2016-2022", "Execution Plan Analyzer", "Covering Index Design", "Keyset Pagination Patterns", "Crystal Reports / SSRS"],
-  warehouse: ["SQL Server Triggers", "n8n Workflow Engine (optional)", "P21 DynaChange Rules", "Custom Config Tables", "ShipLink / UPS WorldShip APIs"],
-  portals: ["HTML5 / CSS3 / JavaScript", "P21 GetItemPrice API", "P21 Transaction API v2", "OAuth2 / Token Auth", "SSL/TLS Encryption"],
+  warehouse: ["SQL Server Triggers", "n8n Workflow Engine (optional)", "DynaChange Rules", "Custom Config Tables", "Carrier Integration / UPS WorldShip APIs"],
+  portals: ["HTML5 / CSS3 / JavaScript", "ERP Pricing API", "Transaction API", "OAuth2 / Token Auth", "SSL/TLS Encryption"],
   support: ["Remote Desktop / VPN", "SQL Server Mgmt Studio", "Visual Studio Code", "n8n / Automation Studio", "Ticketing System (Freshdesk/Desk365)"],
 };
 
@@ -145,13 +146,13 @@ const riskProfiles = {
   extensions: {
     low: ["Business logic errors (testing catches 95%)"],
     medium: ["Performance impact on high-volume operations", "Multi-user concurrency edge cases"],
-    high: ["P21 version upgrade compatibility (mitigated by SDK patterns)"],
+    high: ["ERP version upgrade compatibility (mitigated by SDK patterns)"],
     mitigation: "Test in PLAY environment. Deploy to production during low-volume hours. 30-day warranty covers defects.",
   },
   integrations: {
     low: ["Rate limit violations (handled by retry logic)"],
     medium: ["API endpoint changes (vendor-dependent)", "OAuth token expiration (auto-refresh built-in)"],
-    high: ["Data sync failures during P21 downtime"],
+    high: ["Data sync failures during ERP downtime"],
     mitigation: "Queue-based architecture with error recovery. Email alerts for failures. 30-day support for tuning.",
   },
   database: {
@@ -198,7 +199,7 @@ const beforeAfter = {
     after: { metric: "Optimized routing", value: "75% of baseline", gain: "25% time savings, zero carrier errors" },
   },
   portals: {
-    before: { metric: "CSR pricing lookup", value: "4 min/quote", pain: "Slow P21 UI, manual navigation" },
+    before: { metric: "CSR pricing lookup", value: "4 min/quote", pain: "Slow ERP UI, manual navigation" },
     after: { metric: "Self-service portal", value: "30 sec/quote", gain: "8x faster, CSR time freed for sales" },
   },
   support: {
@@ -209,7 +210,7 @@ const beforeAfter = {
 
 const competitiveAdvantages = {
   extensions: [
-    "Real production experience: We deploy business rules weekly in a live P21 environment",
+    "Real production experience: We deploy business rules weekly in live ERP environments",
     "Fail-safe patterns: Rules never block legitimate operations (learned from costly mistakes)",
     "Multi-version support: Desktop + Web UI compatibility from day one",
     "75% cost savings vs. Epicor's $250/hr consulting rates",
@@ -223,24 +224,24 @@ const competitiveAdvantages = {
   database: [
     "Query optimization over hardware: 90% cost savings vs. $10K+ server upgrades",
     "Real-world SQL patterns: Covering indexes, keyset pagination, execution plan tuning",
-    "Crystal Reports specialization: Deep knowledge of P21's reporting quirks",
+    "Crystal Reports specialization: Deep knowledge of ERP reporting quirks",
     "90-day performance warranty: We stand behind the work",
   ],
   warehouse: [
     "95% cost savings vs. full WMS implementations ($50K-$250K budgets)",
     "Configuration-driven: Warehouse managers control logic without code changes",
     "Faster ROI: 2-4 months vs. 12-24 months for traditional WMS",
-    "P21-native: No middleware, no separate system to maintain",
+    "ERP-native: No middleware, no separate system to maintain",
   ],
   portals: [
-    "Customer UX focus: Modern web UI vs. clunky P21 WebPOS",
-    "Batch API optimization: Handle 280K+ product catalogs without timeouts",
+    "Customer UX focus: Modern web UI vs. clunky legacy web portals",
+    "Batch API optimization: Handle 100K+ product catalogs without timeouts",
     "Mobile-responsive: Glassmorphism design works on any device",
     "Competitive differentiation: Give customers a reason to choose you over Amazon",
   ],
   support: [
     "Affordable: Start at $625/mo vs. $15K/mo enterprise firms",
-    "Real P21 operator: We use the system daily, not just consult on it",
+    "Real ERP operators: We use these systems daily, not just consult on them",
     "Transparent pricing: Hourly tracking, overage approval required",
     "99.2% SLA compliance: Proven track record on response times",
   ],
@@ -366,7 +367,7 @@ const retainerTiers = [
           <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Performance Boost</p>
         </div>
         <div class="text-center">
-          <ScrollCounter value="280K" className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary" client:visible />
+          <ScrollCounter value="100K+" className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-accent-primary" client:visible />
           <p class="text-[10px] sm:text-xs text-text-tertiary mt-1">Products Synced</p>
         </div>
         <div class="text-center">
@@ -552,7 +553,7 @@ const retainerTiers = [
           </Badge>
 
           <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-6">
-            The P21 Cloud Migration<br />
+            The ERP Cloud Migration<br />
             <span class="text-accent-primary">Deadline Is Real</span>
           </h2>
 
@@ -778,6 +779,13 @@ const retainerTiers = [
           </div>
         ))}
       </div>
+    </Container>
+  </Section>
+
+  <!-- LUMINA AI CHAT TRIGGER -->
+  <Section background="base" padding="sm">
+    <Container>
+      <ChatPrompt client:visible />
     </Container>
   </Section>
 

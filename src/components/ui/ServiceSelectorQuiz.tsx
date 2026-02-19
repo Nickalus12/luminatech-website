@@ -92,7 +92,7 @@ const serviceNames: Record<string, string> = {
 
 const serviceDescriptions: Record<string, string> = {
   extensions: 'Custom business rules that automate workflows and enforce validation',
-  integrations: 'Connect P21 to SellerCloud, e-commerce, and custom APIs',
+  integrations: 'Connect your ERP to e-commerce, marketplaces, and custom APIs',
   database: 'Make reports load 10-15x faster with query optimization',
   warehouse: 'Automate pick routing, bin allocation, and shipping workflows',
   portals: 'Customer-facing portals with live pricing and availability',
