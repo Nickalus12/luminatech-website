@@ -35,7 +35,7 @@ function useGateStyles() {
 /* -- What's inside content list -- */
 const gatedSections = [
   { icon: '{}', label: 'Code Snippets & SQL Patterns', color: '#3B82F6' },
-  { icon: '\u26A1', label: 'N8N Automation Workflows', color: '#8B5CF6' },
+  { icon: '\u26A1', label: 'n8n Automation Workflows', color: '#8B5CF6' },
   { icon: '\uD83D\uDD17', label: 'API Integration Guide', color: '#06B6D4' },
   { icon: '\uD83D\uDCCA', label: 'Performance Benchmarks', color: '#10B981' },
   { icon: '\u26A0\uFE0F', label: 'Common Gotchas & Fixes', color: '#F59E0B' },

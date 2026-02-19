@@ -72,7 +72,7 @@ export const homepage = {
       {
         title: "SellerCloud Bulk Operations",
         challenge: "Manual product sync and pricing updates taking hours across 280K+ SKUs",
-        solution: "N8N workflow automating bulk operations with rate limiting and error handling",
+        solution: "n8n workflow automating bulk operations with rate limiting and error handling",
         results: [
           { label: "Products", value: "280K+", detail: "synchronized automatically" },
           { label: "API Calls", value: "140x less", detail: "optimized batch processing" },
