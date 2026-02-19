@@ -748,3 +748,185 @@ export const footer = {
     ],
   },
 } as const;
+
+// ─── Roadmap ─────────────────────────────────────────────────────────────────
+
+export const roadmap = {
+  hero: {
+    badge: "Our Vision",
+    headline: "Building the Future of ERP Consulting",
+    subtitle:
+      "We're not just solving today's ERP problems -- we're building the tools, resources, and community that wholesale distributors will rely on for years to come. Here's where we're headed.",
+    stats: [
+      { value: "4", label: "Strategic Phases" },
+      { value: "16+", label: "Key Milestones" },
+      { value: "2027", label: "Full Vision" },
+    ],
+  },
+  phases: [
+    {
+      id: 1,
+      title: "Foundation",
+      timeframe: "Q1 2026",
+      status: "in-progress" as const,
+      color: "#10B981",
+      description:
+        "Establishing our core service offerings and technical infrastructure -- the building blocks everything else is built on.",
+      milestones: [
+        {
+          title: "Core Service Pages & Pricing",
+          status: "completed" as const,
+          description:
+            "Launched comprehensive service pages covering all P21 consulting offerings with transparent, published pricing.",
+        },
+        {
+          title: "P21 Extensions & DynaChange Development",
+          status: "completed" as const,
+          description:
+            "Built our DynaChange business rule development practice with SDK-based extensions and production-tested patterns.",
+        },
+        {
+          title: "API Integration Services",
+          status: "in-progress" as const,
+          description:
+            "Expanding integration capabilities for connecting P21 with e-commerce platforms, CRMs, and third-party systems.",
+        },
+        {
+          title: "Database Optimization Services",
+          status: "in-progress" as const,
+          description:
+            "Developing SQL Server performance tuning and query optimization services with measurable before/after benchmarks.",
+        },
+        {
+          title: "Technical Blog Launch",
+          status: "upcoming" as const,
+          description:
+            "Publishing deep-dive technical content covering real-world P21 solutions for the distributor community.",
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: "Authority Building",
+      timeframe: "Q2 2026",
+      status: "upcoming" as const,
+      color: "#3B82F6",
+      description:
+        "Becoming the go-to resource for P21 expertise through interactive tools, educational content, and documented success stories.",
+      milestones: [
+        {
+          title: "Interactive Assessment Tools",
+          status: "upcoming" as const,
+          description:
+            "Self-service P21 Health Check and ROI Calculator tools so distributors can evaluate their ERP environment on their own terms.",
+        },
+        {
+          title: "Community Resources Library",
+          status: "upcoming" as const,
+          description:
+            "A curated collection of SQL snippets, business rule templates, and best practices for everyday P21 operations.",
+        },
+        {
+          title: "Video Content Series",
+          status: "upcoming" as const,
+          description:
+            "YouTube technical deep dives and walkthrough tutorials covering common P21 challenges and solutions.",
+        },
+        {
+          title: "Newsletter & Lead Magnets",
+          status: "upcoming" as const,
+          description:
+            "Regular industry insights and downloadable resources to keep distributors ahead of ERP trends.",
+        },
+        {
+          title: "Case Study Portfolio",
+          status: "upcoming" as const,
+          description:
+            "Expanding our documented success stories with detailed before/after metrics across multiple distribution verticals.",
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: "Community & Ecosystem",
+      timeframe: "Q3-Q4 2026",
+      status: "upcoming" as const,
+      color: "#8B5CF6",
+      description:
+        "Building a thriving community around ERP excellence -- open-source contributions, live events, and a partner network.",
+      milestones: [
+        {
+          title: "Open-Source GitHub Resources",
+          status: "upcoming" as const,
+          description:
+            "A public p21-resources repository with reusable code, utilities, and documentation for the P21 community.",
+        },
+        {
+          title: "Webinar Series",
+          status: "upcoming" as const,
+          description:
+            "\"ERP Tech Talks\" -- live sessions with Q&A covering advanced topics, new features, and real-world problem solving.",
+        },
+        {
+          title: "Knowledge Base & Resources Hub",
+          status: "upcoming" as const,
+          description:
+            "A searchable documentation hub with how-to guides, troubleshooting walkthroughs, and configuration references.",
+        },
+        {
+          title: "Partnership Program Launch",
+          status: "upcoming" as const,
+          description:
+            "A formal partner network connecting distributors with complementary service providers and technology vendors.",
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: "Innovation & Scale",
+      timeframe: "2027",
+      status: "upcoming" as const,
+      color: "#F59E0B",
+      description:
+        "Scaling our impact with SaaS tools, certification programs, and industry events that push ERP consulting forward.",
+      milestones: [
+        {
+          title: "SaaS Micro-Tools",
+          status: "upcoming" as const,
+          description:
+            "Self-service utilities like our ERP Dashboard Builder -- giving distributors powerful tools without a full consulting engagement.",
+        },
+        {
+          title: "Developer Certification Program",
+          status: "upcoming" as const,
+          description:
+            "A structured training and certification path for P21 developers looking to level up their skills.",
+        },
+        {
+          title: "Annual ERP Innovation Summit",
+          status: "upcoming" as const,
+          description:
+            "An industry conference bringing together distributors, developers, and technology partners to shape the future of ERP.",
+        },
+        {
+          title: "Podcast & Interview Series",
+          status: "upcoming" as const,
+          description:
+            "Conversations with ERP leaders, distribution executives, and technology innovators driving the industry forward.",
+        },
+      ],
+    },
+  ],
+  vision: {
+    heading: "Where We're Headed",
+    body: "Our long-term vision is to become the definitive resource for Prophet 21 and ERP excellence in wholesale distribution. We're building more than a consulting practice -- we're creating an ecosystem of tools, knowledge, and community that elevates the entire industry. Every phase of this roadmap moves us closer to a world where distributors have the ERP expertise they need, when they need it.",
+  },
+  cta: {
+    heading: "Ready to Transform Your ERP?",
+    subheading:
+      "Don't wait for the future -- start building it today. Schedule a free consultation and let's talk about where your ERP can take you.",
+    buttonLabel: "Schedule a Free Consultation",
+    buttonHref: "/contact",
+    email: "Discovery@Lumina-ERP.com",
+  },
+} as const;

@@ -5,6 +5,64 @@ import Container from '@components/ui/Container.astro';
 import Card from '@components/ui/Card.astro';
 import Badge from '@components/ui/Badge.astro';
 import GlowText from '@components/ui/GlowText.astro';
+import TerminalCode from '@components/ui/TerminalCode';
+
+const sqlSnippets = [
+  {
+    language: 'SQL',
+    title: 'keyset-pagination.sql',
+    lines: [
+      { text: '-- SLOW: Offset-based pagination', color: 'tertiary' as const },
+      { text: 'SELECT * FROM inventory', color: 'primary' as const },
+      { text: 'ORDER BY item_id', color: 'primary' as const },
+      { text: 'OFFSET 10000 ROWS FETCH NEXT 100 ROWS ONLY;', color: 'warning' as const },
+      { text: '', color: 'default' as const },
+      { text: '-- FAST: Keyset pagination', color: 'tertiary' as const },
+      { text: 'DECLARE @last_id VARCHAR(40) = @cursor;', color: 'violet' as const },
+      { text: '', color: 'default' as const },
+      { text: 'SELECT TOP 100 *', color: 'success' as const },
+      { text: 'FROM   inventory WITH (NOLOCK)', color: 'success' as const },
+      { text: 'WHERE  item_id > @last_id', color: 'success' as const },
+      { text: 'ORDER BY item_id;', color: 'success' as const },
+    ],
+  },
+  {
+    language: 'SQL',
+    title: 'covering-index.sql',
+    lines: [
+      { text: '-- Eliminate key lookups with covering indexes', color: 'tertiary' as const },
+      { text: '', color: 'default' as const },
+      { text: 'CREATE INDEX IX_orders_customer_date', color: 'primary' as const },
+      { text: 'ON order_header (customer_id, date_created)', color: 'primary' as const },
+      { text: 'INCLUDE (order_no, po_no, total_amount);', color: 'success' as const },
+      { text: '', color: 'default' as const },
+      { text: '-- Before: 12s table scan', color: 'tertiary' as const },
+      { text: '-- After:  <200ms index seek', color: 'tertiary' as const },
+      { text: '', color: 'default' as const },
+      { text: '-- Verify with execution plan', color: 'tertiary' as const },
+      { text: 'SET STATISTICS IO ON;', color: 'violet' as const },
+      { text: 'SET STATISTICS TIME ON;', color: 'violet' as const },
+    ],
+  },
+  {
+    language: 'SQL',
+    title: 'read-optimization.sql',
+    lines: [
+      { text: '-- Dashboard queries: avoid blocking', color: 'tertiary' as const },
+      { text: 'SELECT', color: 'primary' as const },
+      { text: '    customer_id,', color: 'default' as const },
+      { text: '    COUNT(*) as order_count,', color: 'default' as const },
+      { text: '    SUM(total_amount) as revenue', color: 'default' as const },
+      { text: 'FROM order_header WITH (NOLOCK)', color: 'primary' as const },
+      { text: 'WHERE date_created >= @start_date', color: 'default' as const },
+      { text: 'GROUP BY customer_id', color: 'primary' as const },
+      { text: 'ORDER BY revenue DESC;', color: 'success' as const },
+      { text: '', color: 'default' as const },
+      { text: '-- NOLOCK: no blocking on high-traffic tables', color: 'tertiary' as const },
+      { text: '-- Acceptable for dashboards and reports', color: 'tertiary' as const },
+    ],
+  },
+];
 ---
 
 <ServiceDetailLayout
@@ -14,10 +72,10 @@ import GlowText from '@components/ui/GlowText.astro';
   headline="Make P21 Reports Load 10x Faster Without Upgrading Hardware"
   subheadline="Slow dashboards and timeouts aren't normal. We optimize SQL Server queries, indexes, and database design to unlock P21's full performance."
   heroMetrics={[
-    { value: '150x', label: 'Faster runtime' },
-    { value: '140x', label: 'Fewer API calls' },
-    { value: 'Free', label: 'Performance audit' },
-    { value: '90-day', label: 'Performance warranty' },
+    { value: '10x', label: 'Faster Reports' },
+    { value: 'Free', label: 'Performance Audit' },
+    { value: 'SQL', label: 'Server Expertise' },
+    { value: '90-Day', label: 'Performance Warranty' },
   ]}
   ctaLabel="Schedule Free Performance Audit"
   ctaHref="/contact"
@@ -193,99 +251,32 @@ import GlowText from '@components/ui/GlowText.astro';
         ))}
       </div>
 
-      <!-- Optimization patterns with code -->
+      <!-- Optimization patterns -->
       <div class="max-w-3xl mb-8 scroll-reveal">
         <h3 class="text-[length:var(--font-size-h3)] font-semibold text-text-primary mb-2">
           Optimization Patterns We Apply
         </h3>
         <p class="text-text-secondary">
-          These are the patterns we use most often when tuning P21 SQL Server databases. Real code from production engagements.
+          Common SQL Server tuning patterns for ERP databases — keyset pagination, covering indexes, and read-optimized queries.
         </p>
       </div>
 
-      <!-- Pattern A: Keyset Pagination -->
-      <div class="mb-8 scroll-reveal" style="animation-delay: 100ms;">
-        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
-          <span class="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary text-sm font-mono">A</span>
-          Keyset Pagination (vs. Offset-Based)
-        </h4>
-        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
-            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
-            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
+      <div class="grid md:grid-cols-3 gap-4 mb-8">
+        {[
+          { letter: 'A', title: 'Keyset Pagination', desc: 'Replace offset-based queries with cursor-based lookups for consistent performance at any depth.', color: 'accent-primary' },
+          { letter: 'B', title: 'Covering Indexes', desc: 'Eliminate key lookups with targeted INCLUDE columns — turning table scans into sub-second index seeks.', color: 'accent-success' },
+          { letter: 'C', title: 'Read Optimization', desc: 'Strategic NOLOCK hints and query restructuring for dashboard and reporting workloads.', color: 'accent-violet' },
+        ].map((item, i) => (
+          <div class="scroll-reveal p-5 rounded-xl bg-bg-base border border-border/50 hover:border-accent-primary/20 transition-colors" style={`animation-delay: ${i * 80}ms;`}>
+            <span class={`inline-flex w-8 h-8 rounded-lg bg-${item.color}/10 items-center justify-center text-${item.color} text-sm font-mono font-bold mb-3`}>{item.letter}</span>
+            <h4 class="text-text-primary font-semibold text-sm mb-1">{item.title}</h4>
+            <p class="text-text-tertiary text-sm">{item.desc}</p>
           </div>
-          <div class="p-5 overflow-x-auto">
-            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- SLOW: Offset-based pagination</span>
-<span class="text-accent-primary">SELECT</span> * <span class="text-accent-primary">FROM</span> inv_mast
-<span class="text-accent-primary">ORDER BY</span> item_id
-<span class="text-accent-primary">OFFSET</span> 10000 <span class="text-accent-primary">ROWS FETCH NEXT</span> 100 <span class="text-accent-primary">ROWS ONLY</span>;
-
-<span class="text-text-tertiary">-- FAST: Keyset pagination</span>
-<span class="text-accent-primary">DECLARE</span> <span class="text-accent-violet">@last_item_id</span> <span class="text-accent-violet">VARCHAR</span>(40) = <span class="text-accent-success">'ITEM-10000'</span>;
-
-<span class="text-accent-primary">SELECT TOP</span> 100 * <span class="text-accent-primary">FROM</span> inv_mast
-<span class="text-accent-primary">WHERE</span> item_id > <span class="text-accent-violet">@last_item_id</span>
-<span class="text-accent-primary">ORDER BY</span> item_id;</code></pre>
-          </div>
-        </div>
-        <p class="mt-3 text-sm text-text-tertiary">
-          Offset pagination gets slower as you go deeper into the result set. Keyset pagination maintains consistent performance regardless of position by using the last known value as a cursor.
-        </p>
+        ))}
       </div>
 
-      <!-- Pattern B: Covering Indexes -->
-      <div class="mb-8 scroll-reveal" style="animation-delay: 200ms;">
-        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
-          <span class="w-8 h-8 rounded-lg bg-accent-success/10 flex items-center justify-center text-accent-success text-sm font-mono">B</span>
-          Covering Indexes
-        </h4>
-        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
-            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
-            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
-          </div>
-          <div class="p-5 overflow-x-auto">
-            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- Report filters on date_created and customer_id</span>
-<span class="text-text-tertiary">-- Add covering index with INCLUDE clause</span>
-
-<span class="text-accent-primary">CREATE INDEX</span> IX_oe_hdr_customer_date
-<span class="text-accent-primary">ON</span> oe_hdr (customer_id, date_created)
-<span class="text-accent-primary">INCLUDE</span> (order_no, po_no, total_dollars);</code></pre>
-          </div>
-        </div>
-        <p class="mt-3 text-sm text-text-tertiary">
-          A covering index includes all columns the query needs, eliminating key lookups back to the clustered index. This turns expensive table scans into fast index seeks.
-        </p>
-      </div>
-
-      <!-- Pattern C: NOLOCK -->
-      <div class="scroll-reveal" style="animation-delay: 300ms;">
-        <h4 class="text-text-primary font-semibold mb-4 flex items-center gap-3">
-          <span class="w-8 h-8 rounded-lg bg-accent-violet/10 flex items-center justify-center text-accent-violet text-sm font-mono">C</span>
-          Read-Only Queries with NOLOCK
-        </h4>
-        <div class="bg-bg-base rounded-lg border border-border overflow-hidden">
-          <div class="flex items-center gap-2 px-4 py-3 bg-bg-surface-2 border-b border-border">
-            <span class="w-3 h-3 rounded-full bg-accent-error/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-warning/60"></span>
-            <span class="w-3 h-3 rounded-full bg-accent-success/60"></span>
-            <span class="text-text-tertiary text-xs font-mono ml-2">SQL</span>
-          </div>
-          <div class="p-5 overflow-x-auto">
-            <pre class="text-sm font-mono text-text-secondary leading-relaxed"><code><span class="text-text-tertiary">-- Dashboard and reporting queries</span>
-<span class="text-text-tertiary">-- NOLOCK avoids blocking on high-traffic tables</span>
-
-<span class="text-accent-primary">SELECT</span> * <span class="text-accent-primary">FROM</span> oe_hdr <span class="text-accent-primary">WITH</span> (<span class="text-accent-warning">NOLOCK</span>)
-<span class="text-accent-primary">WHERE</span> customer_id = <span class="text-accent-violet">@customer_id</span>;</code></pre>
-          </div>
-        </div>
-        <p class="mt-3 text-sm text-text-tertiary">
-          For dashboards and reporting queries where 100% transactional accuracy is not required, NOLOCK eliminates blocking waits caused by concurrent write operations on the same tables.
-        </p>
+      <div class="scroll-reveal" style="animation-delay: 150ms;">
+        <TerminalCode client:visible snippets={sqlSnippets} />
       </div>
     </Container>
   </Section>

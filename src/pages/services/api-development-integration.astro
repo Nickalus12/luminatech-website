@@ -24,8 +24,6 @@ const heroMetrics = [
   heroMetrics={heroMetrics}
   ctaLabel="Request API Development Quote"
   ctaHref="/contact"
-  secondaryCtaLabel="Explore API Examples"
-  secondaryCtaHref="/contact"
 >
 
   <!-- API DEVELOPMENT SERVICES -->
@@ -99,54 +97,6 @@ const heroMetrics = [
             <p class="text-sm text-text-secondary leading-relaxed">{service.description}</p>
           </Card>
         ))}
-      </div>
-    </Container>
-  </Section>
-
-  <!-- COMMON API USE CASES TABLE -->
-  <Section background="base" padding="md">
-    <Container>
-      <div class="text-center mb-12 scroll-reveal">
-        <Badge variant="success" class="mb-5">Use Cases</Badge>
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary leading-tight mb-4">
-          Common API Use Cases
-        </h2>
-        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
-          These are the most frequently requested P21 API endpoints we build for distributors.
-        </p>
-      </div>
-
-      <div class="max-w-4xl mx-auto scroll-reveal" style="animation-delay: 100ms;">
-        <div class="overflow-x-auto rounded-xl border border-border">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="bg-bg-surface-2">
-                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Use Case</th>
-                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Method</th>
-                <th class="px-6 py-4 text-sm font-semibold text-text-primary">Example Endpoint</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { useCase: 'Customer pricing lookup', method: 'GET', endpoint: '/api/pricing?customer={id}&items={skus}', methodColor: 'accent-success' },
-                { useCase: 'Create quote', method: 'POST', endpoint: '/api/quotes', methodColor: 'accent-primary' },
-                { useCase: 'Order status', method: 'GET', endpoint: '/api/orders/{order_no}/status', methodColor: 'accent-success' },
-                { useCase: 'Inventory availability', method: 'GET', endpoint: '/api/inventory?item={id}&location={loc}', methodColor: 'accent-success' },
-                { useCase: 'Update tracking', method: 'PUT', endpoint: '/api/orders/{order_no}/tracking', methodColor: 'accent-warning' },
-              ].map((row, i) => (
-                <tr class:list={["border-t border-border/50", i % 2 === 0 ? "bg-bg-surface-1/50" : "bg-bg-base"]}>
-                  <td class="px-6 py-4 text-sm text-text-primary">{row.useCase}</td>
-                  <td class="px-6 py-4">
-                    <span class={`text-xs font-mono font-bold px-2 py-1 rounded bg-${row.methodColor}/10 text-${row.methodColor}`}>
-                      {row.method}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-sm font-mono text-text-secondary">{row.endpoint}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
     </Container>
   </Section>
