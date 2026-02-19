@@ -214,6 +214,100 @@ import { about, brand } from '../content/copy';
     </Container>
   </Section>
 
+  <!-- Pledge 1% Section -->
+  <Section background="base" padding="md" class="relative overflow-hidden">
+    <!-- Background glow -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-accent-primary/4 rounded-full blur-[120px] pointer-events-none pledge-glow" aria-hidden="true"></div>
+    <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-violet/4 rounded-full blur-[100px] pointer-events-none" aria-hidden="true"></div>
+
+    <Container>
+      <div class="relative max-w-4xl mx-auto">
+        <!-- Glassmorphism card -->
+        <div class="pledge-card relative rounded-2xl border border-border/50 bg-bg-surface-1/40 backdrop-blur-sm p-8 md:p-12 lg:p-16 scroll-reveal overflow-hidden">
+          <!-- Subtle inner glow at top -->
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[1px] bg-gradient-to-r from-transparent via-accent-primary/40 to-transparent" aria-hidden="true"></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-center">
+            <!-- Logo + badge (left) -->
+            <div class="lg:col-span-2 flex flex-col items-center text-center">
+              <a
+                href="https://www.pledge1percent.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group block mb-6"
+              >
+                <div class="pledge-logo-wrap relative w-32 h-32 md:w-40 md:h-40 mx-auto flex items-center justify-center rounded-2xl bg-bg-surface-2/60 border border-border/40">
+                  <img
+                    src="/partners/pledge1-white.svg"
+                    alt="Pledge 1% Logo"
+                    width="100"
+                    height="104"
+                    class="w-20 md:w-24 h-auto opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                    loading="lazy"
+                  />
+                  <!-- Corner glow on hover -->
+                  <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style="box-shadow: inset 0 0 30px rgba(59, 130, 246, 0.08);" aria-hidden="true"></div>
+                </div>
+              </a>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Proud Member
+              </span>
+            </div>
+
+            <!-- Content (right) -->
+            <div class="lg:col-span-3">
+              <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+                Growing by <span class="about-gradient-text">Giving Back</span>
+              </h2>
+              <p class="text-text-secondary leading-relaxed mb-6">
+                We believe the best companies are built on purpose, not just profit. As a Pledge 1% member, we commit 1% of our time, product, and resources to support the communities and industries we serve. It's woven into how we operate -- not an afterthought.
+              </p>
+
+              <div class="space-y-4">
+                <div class="flex gap-3 items-start">
+                  <div class="shrink-0 w-8 h-8 rounded-full bg-accent-primary/10 flex items-center justify-center mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-text-primary font-semibold text-sm mb-0.5">Community First</h4>
+                    <p class="text-text-tertiary text-sm leading-relaxed">Pro-bono consulting hours for nonprofits and small distributors getting started with P21.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                  <div class="shrink-0 w-8 h-8 rounded-full bg-accent-violet/10 flex items-center justify-center mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-text-primary font-semibold text-sm mb-0.5">Knowledge Sharing</h4>
+                    <p class="text-text-tertiary text-sm leading-relaxed">Open resources, guides, and industry insights to elevate the entire P21 ecosystem.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 items-start">
+                  <div class="shrink-0 w-8 h-8 rounded-full bg-accent-success/10 flex items-center justify-center mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-text-primary font-semibold text-sm mb-0.5">Sustainable Growth</h4>
+                    <p class="text-text-tertiary text-sm leading-relaxed">Building a culture where success is measured by the impact we create -- for clients, partners, and beyond.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
   <!-- Bottom CTA -->
   <Section background="gradient" padding="lg">
     <Container narrow>
@@ -363,6 +457,35 @@ import { about, brand } from '../content/copy';
     background-color: rgba(59, 130, 246, 0.15);
   }
 
+  /* ── Pledge 1% section ── */
+  .pledge-glow {
+    animation: pledge-breathe 8s ease-in-out infinite;
+  }
+
+  @keyframes pledge-breathe {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .pledge-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pledge-card:hover {
+    border-color: rgba(59, 130, 246, 0.25);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2), 0 0 30px rgba(59, 130, 246, 0.05);
+  }
+
+  .pledge-logo-wrap {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pledge-logo-wrap:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(59, 130, 246, 0.08);
+  }
+
   /* ── Reduced motion ── */
   @media (prefers-reduced-motion: reduce) {
     .about-gradient-text { animation: none; }
@@ -373,6 +496,11 @@ import { about, brand } from '../content/copy';
       transform: none;
     }
     .about-foundation-card:hover .about-icon-wrap {
+      transform: none;
+    }
+    .pledge-glow { animation: none; }
+    .pledge-card:hover,
+    .pledge-logo-wrap:hover {
       transform: none;
     }
   }
