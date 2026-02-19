@@ -13,7 +13,7 @@ export const brand = {
   founder: "Lumina ERP Team",
   copyright: `\u00A9 ${new Date().getFullYear()} Lumina Erp. All rights reserved.`,
   footerDescription:
-    "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
+    "Expert ERP consulting for wholesale distributors. From Prophet 21 and Epicor Kinetic to custom integrations and cloud migration, we illuminate the path to ERP excellence.",
 } as const;
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
@@ -32,9 +32,9 @@ export const nav = {
 
 export const homepage = {
   hero: {
-    headline: "Stop Losing Revenue to\nBroken P21 Workflows",
+    headline: "Stop Losing Revenue to\nBroken ERP Workflows",
     subheadline:
-      "Expert Prophet 21 consulting for wholesale distributors. From business rules to cloud migration, we illuminate the path to ERP excellence.",
+      "Expert ERP consulting for wholesale distributors and beyond. From Prophet 21 and Epicor Kinetic to custom integrations and cloud migration, we illuminate the path to ERP excellence.",
     primaryCta: { label: "Schedule a Free Consultation", href: "/contact" },
     secondaryCta: { label: "View Case Studies", href: "/case-studies" },
   },
@@ -46,7 +46,7 @@ export const homepage = {
     ],
   },
   metrics: {
-    heading: "Proven Results from Real P21 Projects",
+    heading: "Proven Results from Real ERP Projects",
     items: [
       { value: 150, suffix: "x", label: "Performance Improvement" },
       { value: 280, suffix: "K", label: "Bulk Product Operations" },
@@ -55,7 +55,7 @@ export const homepage = {
     ],
   },
   featuredProjects: {
-    heading: "Featured P21 Projects",
+    heading: "Featured ERP Projects",
     subheading: "Real-world optimizations delivering measurable performance gains and operational efficiency.",
     projects: [
       {
@@ -96,34 +96,34 @@ export const homepage = {
   servicesPreview: {
     heading: "How We Help",
     subheading:
-      "Whether you need a quick fix or a full migration plan, we bring hands-on P21 expertise to every engagement.",
+      "Whether you need a quick fix or a full migration plan, we bring hands-on ERP expertise to every engagement.",
     cards: [
       {
         icon: "advisory",
         title: "Strategy & Advisory",
         description:
-          "P21 health checks, migration planning, and configuration audits. We find what's slowing your system down and build a roadmap to fix it.",
+          "ERP health checks, migration planning, and configuration audits. We find what's slowing your system down and build a roadmap to fix it.",
         link: { label: "Learn More", href: "/services#service-quiz" },
       },
       {
         icon: "development",
         title: "Custom Development",
         description:
-          "Business rules, SSRS reports, SQL optimization, and API integrations. Real code from someone who writes it daily in a production P21 environment.",
+          "Business rules, SSRS reports, SQL optimization, and API integrations. Real code from a team that writes it daily in production ERP environments.",
         link: { label: "Learn More", href: "/services#extensions" },
       },
       {
         icon: "cloud",
         title: "Cloud Migration",
         description:
-          "On-prem P21 ends in 2028. We audit your customizations, plan the timeline, and guide you through every step of the cloud transition.",
+          "Whether it's P21 to Kinetic, on-prem to cloud, or a full platform switch -- we audit your customizations, plan the timeline, and guide the transition.",
         link: { label: "Learn More", href: "/services#migration" },
       },
       {
         icon: "managed",
         title: "Managed Support",
         description:
-          "Monthly retainers starting at $625/mo. Guaranteed availability, priority response, and a dedicated P21 expert on call when you need one.",
+          "Monthly retainers starting at $625/mo. Guaranteed availability, priority response, and a dedicated ERP expert on call when you need one.",
         link: { label: "Learn More", href: "/services#support" },
       },
     ],
@@ -145,11 +145,11 @@ export const homepage = {
   socialProof: {
     heading: "Results We've Delivered",
     subheading:
-      "Real metrics from real P21 projects. No vague promises -- just measurable outcomes.",
+      "Real metrics from real ERP projects. No vague promises -- just measurable outcomes.",
     footerCta: {
       label: "See All Case Studies",
       href: "/case-studies",
-      note: "These are just the highlights. We've solved dozens of P21 challenges across multiple distribution verticals.",
+      note: "These are just the highlights. We've solved dozens of ERP challenges across multiple distribution verticals.",
     },
     stories: [
       {
@@ -189,7 +189,7 @@ export const homepage = {
     ],
   },
   bottomCta: {
-    heading: "Ready to Illuminate Your P21?",
+    heading: "Ready to Illuminate Your ERP?",
     subheading:
       "Schedule a free 30-minute consultation. We'll review your setup and tell you exactly where the opportunities are -- no sales pitch, just straight talk.",
     cta: { label: "Schedule a Free Consultation", href: "/contact" },
@@ -200,9 +200,9 @@ export const homepage = {
 
 export const services = {
   hero: {
-    headline: "Prophet 21 Expertise That Delivers Results",
+    headline: "ERP Expertise That Delivers Results",
     subheadline:
-      "Production-tested P21 solutions backed by real code, proven performance metrics, and deep technical expertise. From DynaChange business rules to API integrations -- we build solutions that work in the real world.",
+      "Production-tested ERP solutions backed by real code, proven performance metrics, and deep technical expertise. From business rules and workflow automation to API integrations -- we build solutions that work in the real world.",
   },
   transparency: {
     badge: "Radically Transparent",
@@ -416,7 +416,7 @@ export const services = {
       icon: "managed",
       title: "System Administration & Support",
       description:
-        "Predictable monthly support with guaranteed response times and proactive monitoring. Like having a P21 expert on speed dial -- no emergency rates, no surprises.",
+        "Predictable monthly support with guaranteed response times and proactive monitoring. Like having an ERP expert on speed dial -- no emergency rates, no surprises.",
       includes: [
         "Guaranteed monthly hours at discounted rates (5-25% off standard)",
         "Priority response times (48hr to same-day based on tier)",
@@ -490,7 +490,7 @@ export const services = {
         number: "01",
         title: "Discovery",
         description:
-          "A free 30-minute call to understand your P21 setup, pain points, and goals. No sales pitch -- just honest assessment.",
+          "A free 30-minute call to understand your ERP setup, pain points, and goals. No sales pitch -- just honest assessment.",
       },
       {
         number: "02",
@@ -530,33 +530,33 @@ export const about = {
   intro: {
     greeting: "Our Team",
     paragraphs: [
-      "Lumina ERP was built on a simple idea: ERP consulting should come from people who actually use the system every day. Our team includes working ERP administrators at wholesale distribution companies -- managing inventory, processing orders, writing business rules, and keeping Prophet 21 running for real distribution operations.",
-      "We started this practice because we kept seeing the same pattern: distributors struggling with P21 problems that had already been solved in real distribution environments. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
-      "When you work with us, you're getting practitioners who live inside P21. We know the workarounds, the gotchas, and the shortcuts that only come from daily hands-on experience. We don't implement and leave -- we build solutions that actually work in the real world of wholesale distribution.",
-      "We're developers, too. C#, SQL, Python -- we write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. And with the mandatory cloud migration deadline approaching, we help distributors plan and execute their transition without disrupting operations.",
+      "Lumina ERP was built on a simple idea: ERP consulting should come from people who actually use the system every day. Our team includes working ERP administrators at wholesale distribution companies -- managing inventory, processing orders, writing business rules, and keeping enterprise systems running for real operations.",
+      "We specialize in Prophet 21 and the broader Epicor ecosystem, but our expertise extends across ERP platforms. Whether you're running P21, Kinetic, SAP Business One, NetSuite, or a custom-built system -- we understand the patterns, the pain points, and the shortcuts that only come from daily hands-on experience.",
+      "We started this practice because we kept seeing the same pattern: companies struggling with ERP problems that had already been solved in real production environments. They'd hire a big consulting firm, get a junior consultant who'd never actually run a distribution operation, and end up with a solution that looked good on paper but didn't survive the first busy season.",
+      "We're developers, too. C#, SQL, Python -- we write code that automates the tedious stuff, integrates your systems, and gives you data you can actually act on. From cloud migrations to API integrations, we help companies modernize their ERP stack without disrupting operations.",
     ],
   },
   skills: {
     heading: "What We Bring to the Table",
     categories: [
       {
-        title: "Core P21",
+        title: "ERP Platforms",
         items: [
+          "Prophet 21 (Specialty)",
+          "Epicor Kinetic",
+          "SAP Business One",
+          "NetSuite",
           "System Administration",
-          "Configuration & Optimization",
-          "Module Setup",
-          "User Management",
-          "Security Configuration",
         ],
       },
       {
         title: "Development",
         items: [
           "C# .NET Business Rules",
-          "DynaChange Visual Rules",
           "SQL Server & SSRS",
           "Python Automation",
           "REST API Development",
+          "Workflow Automation",
         ],
       },
       {
@@ -574,8 +574,8 @@ export const about = {
   credentials: [
     {
       metric: "Daily",
-      label: "Production P21 Use",
-      detail: "Not project-based exposure -- hands-on administration of a live distribution ERP every single day.",
+      label: "Production ERP Use",
+      detail: "Not project-based exposure -- hands-on administration of live enterprise systems every single day.",
     },
     {
       metric: "Full Stack",
@@ -583,10 +583,10 @@ export const about = {
       detail: "C#, SQL, Python, REST APIs -- we write the code, not just configure screens.",
     },
     {
-      metric: "Real",
-      label: "Distribution Operators",
+      metric: "Multi-Platform",
+      label: "ERP Expertise",
       detail:
-        "We run P21 at a live distributor. We know the inventory headaches, pricing edge cases, and reporting gaps firsthand.",
+        "P21 specialists with broad ERP experience. We know the inventory headaches, pricing edge cases, and reporting gaps across platforms.",
     },
   ],
   process: {
@@ -615,12 +615,12 @@ export const about = {
     ],
   },
   personal: {
-    text: "Based in Humble, TX (Houston metro), serving distributors nationwide. Our team combines deep P21 expertise with a passion for automation and pushing the boundaries of what ERP systems can do.",
+    text: "Based in Humble, TX (Houston metro), serving companies nationwide. Our team combines deep ERP expertise -- with a specialty in Prophet 21 -- with a passion for automation and pushing the boundaries of what enterprise systems can do.",
   },
   cta: {
     heading: "Let's See If We're a Good Fit",
     subheading:
-      "Schedule a free 30-minute call. No pressure, no sales pitch -- just a conversation about your P21 challenges.",
+      "Schedule a free 30-minute call. No pressure, no sales pitch -- just a conversation about your ERP challenges.",
     cta: { label: "Schedule a Call", href: "/contact" },
   },
 } as const;
@@ -629,7 +629,7 @@ export const about = {
 
 export const contact = {
   hero: {
-    headline: "Let's Talk P21",
+    headline: "Let's Talk ERP",
     subheadline:
       "Whether you have a specific project in mind or just want to explore your options, we're happy to chat. No commitment, no pressure.",
   },
@@ -649,7 +649,7 @@ export const contact = {
       helpType: {
         label: "How Can We Help?",
         options: [
-          "P21 Health Check / Audit",
+          "ERP Health Check / Audit",
           "Custom Business Rules",
           "Reporting & Analytics",
           "Cloud Migration Planning",
@@ -662,7 +662,7 @@ export const contact = {
       message: {
         label: "Tell Us More",
         placeholder:
-          "What's going on with your P21? The more context, the better we can help.",
+          "Tell us about your ERP environment and what you're looking to solve. The more context, the better we can help.",
         required: false,
       },
     },
@@ -696,7 +696,7 @@ export const contact = {
       {
         question: "What does a free consultation look like?",
         answer:
-          "A 30-minute video call where we ask about your P21 setup, your pain points, and what you're trying to accomplish. We'll give you honest feedback on where we see opportunities -- and whether we're the right fit to help.",
+          "A 30-minute video call where we ask about your ERP setup, your pain points, and what you're trying to accomplish. We'll give you honest feedback on where we see opportunities -- and whether we're the right fit to help.",
       },
       {
         question: "Do you work on-site or remote?",
@@ -711,7 +711,7 @@ export const contact = {
       {
         question: "What if I'm not sure what I need?",
         answer:
-          "That's what the discovery call is for. We'll ask the right questions to figure out where your biggest opportunities are. A P21 Health Check ($2,500-$5,000) is also a great starting point -- it gives us all a clear picture of your system's state.",
+          "That's what the discovery call is for. We'll ask the right questions to figure out where your biggest opportunities are. An ERP Health Check ($2,500-$5,000) is also a great starting point -- it gives us all a clear picture of your system's state.",
       },
       {
         question: "Can you help with the Kinetic UI transition?",
@@ -728,7 +728,7 @@ export const caseStudiesPage = {
   hero: {
     headline: "Real Results from\nReal Distributors",
     subheadline:
-      "Every project below solved a real problem in a real P21 environment. No hypotheticals, no lab tests -- just measurable outcomes from production systems.",
+      "Every project below solved a real problem in a real production ERP environment. No hypotheticals, no lab tests -- just measurable outcomes from live systems.",
   },
   aggregateMetrics: [
     { value: "60%", label: "Avg. Process Time Reduction" },
@@ -738,10 +738,10 @@ export const caseStudiesPage = {
   portfolioCta: {
     heading: "These Are Just the Highlights",
     subheading:
-      "Every distributor's P21 environment is unique -- different modules, different integrations, different pain points. We've solved dozens of challenges across HVAC, electrical, plumbing, and industrial supply. The projects above represent a sample of what we do.",
+      "Every company's ERP environment is unique -- different modules, different integrations, different pain points. We've solved dozens of challenges across HVAC, electrical, plumbing, and industrial supply. The projects above represent a sample of what we do.",
     emphasis:
       "Want to see how we've handled challenges similar to yours? Let's talk.",
-    cta: { label: "Discuss Your P21 Challenges", href: "/contact" },
+    cta: { label: "Discuss Your ERP Challenges", href: "/contact" },
     secondaryCta: { label: "Or email us directly", href: "mailto:Discovery@Lumina-ERP.com" },
   },
   industryNote: {
@@ -754,7 +754,7 @@ export const caseStudiesPage = {
       "Fastener Distribution",
       "Safety & Janitorial",
     ],
-    note: "Each vertical has unique P21 challenges. Our hands-on experience means faster solutions with fewer surprises.",
+    note: "Each vertical has unique ERP challenges. Our hands-on experience means faster solutions with fewer surprises.",
   },
   midPageCta: {
     text: "Seeing results you want for your operation?",

@@ -78,7 +78,7 @@ export default function StickyCTA() {
               {/* Text */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm sm:text-base font-medium text-white truncate">
-                  Ready to optimize your P21?
+                  Ready to optimize your ERP?
                 </p>
                 <p className="text-xs text-white/50 hidden sm:block">
                   Free 30-min call. No obligations.
