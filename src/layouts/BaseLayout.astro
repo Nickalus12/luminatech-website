@@ -8,7 +8,6 @@ import SchemaMarkup from '../components/SchemaMarkup.astro';
 import Analytics from '../components/Analytics.astro';
 import Intercom from '../components/Intercom.astro';
 import StickyCTA from '../components/ui/StickyCTA';
-import ExitIntent from '../components/ui/ExitIntent';
 
 interface Props {
   title: string;
@@ -86,7 +85,6 @@ const {
     </main>
     <Footer />
     <StickyCTA client:idle />
-    <ExitIntent client:idle />
     <Analytics />
     <Intercom />
 

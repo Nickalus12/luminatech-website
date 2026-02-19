@@ -7,7 +7,7 @@ export default function ChatPrompt() {
 
   const handleClick = useCallback(() => {
     if (typeof window !== 'undefined' && (window as any).Intercom) {
-      (window as any).Intercom('showNewMessage', 'I have an ERP question: ');
+      (window as any).Intercom('showNewMessage', "Hi — I had a quick question about ");
     } else {
       window.location.href = '/contact';
     }
@@ -64,13 +64,13 @@ export default function ChatPrompt() {
               className="text-sm md:text-base font-semibold mb-1"
               style={{ color: 'var(--color-text-primary)' }}
             >
-              Have a specific ERP question?
+              Need help with something specific?
             </p>
             <p
               className="text-xs md:text-sm leading-relaxed"
               style={{ color: 'var(--color-text-secondary)' }}
             >
-              Ask us anything — we typically respond within 24 hours.
+              Our team responds quickly — ask us anything about P21, integrations, or your project.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export default function ChatPrompt() {
             whileHover={{ scale: 1.03, boxShadow: '0 0 24px rgba(59, 130, 246, 0.35)' }}
             whileTap={{ scale: 0.97 }}
           >
-            Chat With Us
+            Message Us
             <svg
               width="14"
               height="14"

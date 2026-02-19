@@ -1,11 +1,11 @@
 ---
-// Intercom Messenger Widget
+// Intercom Messenger Widget — Site-wide with intelligent engagement triggers
 // App ID: o6impn8n
-// Custom launcher with Lumina logo + glassmorphism — only visible on /services
-// FIN AI handles conversations, qualifies leads, and pushes to Odoo via webhook
+// FIN AI handles conversations — branded as "Lumina Team" (not "AI")
+// Triggers: exit intent (desktop), engagement-based nudge (mobile), scroll depth
 ---
 
-<!-- Intercom Messenger (hidden launcher — we use a custom one) -->
+<!-- Intercom Messenger (hidden default launcher — custom Lumina launcher) -->
 <script is:inline>
 (function() {
   window.intercomSettings = {
@@ -43,16 +43,23 @@
 })();
 </script>
 
-<!-- Custom Lumina chat launcher — glassmorphism style, /services only -->
+<!-- Custom Lumina launcher button — visible site-wide -->
 <button
   id="lumina-chat-launcher"
-  aria-label="Chat with us"
+  aria-label="Chat with our team"
 >
   <img src="/logo-64.png" alt="" width="32" height="32" />
   <span id="lumina-chat-loader" aria-hidden="true"></span>
 </button>
 
+<!-- Engagement nudge tooltip — appears intelligently -->
+<div id="lumina-nudge" role="status" aria-live="polite">
+  <button id="lumina-nudge-close" aria-label="Dismiss">&times;</button>
+  <p id="lumina-nudge-text"></p>
+</div>
+
 <style>
+  /* ── Launcher ── */
   #lumina-chat-launcher {
     position: fixed;
     bottom: 24px;
@@ -62,11 +69,11 @@
     height: 60px;
     border-radius: 50%;
     cursor: pointer;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(59, 130, 246, 0.3);
-    background: rgba(10, 10, 15, 0.6);
+    background: rgba(10, 10, 15, 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow:
@@ -85,11 +92,10 @@
       0 8px 32px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
-  #lumina-chat-launcher:active {
-    transform: scale(0.95);
-  }
-  #lumina-chat-launcher.visible {
-    display: flex;
+  #lumina-chat-launcher:active { transform: scale(0.95); }
+  #lumina-chat-launcher:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.8);
+    outline-offset: 3px;
   }
   #lumina-chat-launcher img {
     width: 32px;
@@ -99,7 +105,7 @@
     pointer-events: none;
   }
 
-  /* Loading spinner shown while waiting for Intercom */
+  /* Loading spinner */
   #lumina-chat-loader {
     display: none;
     position: absolute;
@@ -110,66 +116,311 @@
     animation: lumina-spin 0.6s linear infinite;
     pointer-events: none;
   }
-  #lumina-chat-launcher.loading #lumina-chat-loader {
-    display: block;
+  #lumina-chat-launcher.loading #lumina-chat-loader { display: block; }
+  @keyframes lumina-spin { to { transform: rotate(360deg); } }
+
+  /* ── Engagement Nudge ── */
+  #lumina-nudge {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    z-index: 2147482999;
+    max-width: 280px;
+    padding: 14px 36px 14px 16px;
+    border-radius: 14px;
+    background: rgba(15, 15, 25, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(59, 130, 246, 0.06);
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  @keyframes lumina-spin {
-    to { transform: rotate(360deg); }
+  #lumina-nudge.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  #lumina-nudge p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+  }
+  #lumina-nudge p:hover { color: rgba(255, 255, 255, 1); }
+  #lumina-nudge-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px;
+    transition: color 0.15s;
+  }
+  #lumina-nudge-close:hover { color: rgba(255, 255, 255, 0.7); }
+
+  /* Connector dot — points from nudge to launcher */
+  #lumina-nudge::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: 22px;
+    width: 10px;
+    height: 10px;
+    background: rgba(15, 15, 25, 0.92);
+    border-right: 1px solid rgba(59, 130, 246, 0.15);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+    transform: rotate(45deg);
+  }
+
+  /* Hide nudge when Intercom frame is open */
+  .intercom-lightweight-app-launcher-enabled #lumina-nudge,
+  iframe[name="intercom-messenger-frame"] ~ #lumina-nudge {
+    display: none !important;
+  }
+
+  @media (max-width: 480px) {
+    #lumina-nudge { right: 16px; bottom: 90px; max-width: 240px; }
+    #lumina-chat-launcher { bottom: 18px; right: 18px; width: 54px; height: 54px; }
+    #lumina-chat-launcher img { width: 28px; height: 28px; }
   }
 </style>
 
 <script is:inline>
 (function() {
-  // Check if the real Intercom SDK is loaded (not just the stub)
+  var SESSION_KEY = 'lumina-chat-engaged';
+  var NUDGE_KEY = 'lumina-nudge-shown';
+
+  // ── Page-aware messaging ──
+  // Returns a contextual message based on current page
+  function getPageContext() {
+    var path = window.location.pathname;
+
+    if (path === '/' || path === '/index.html') {
+      return {
+        nudge: "Have questions about ERP consulting? We're here to help.",
+        message: "Hi — I'm exploring your services and had a question: "
+      };
+    }
+    if (path.startsWith('/services/') && path.length > 10) {
+      // Individual service page
+      return {
+        nudge: "Want to know how this works for your setup? Let's chat.",
+        message: "I'm looking at this service and wanted to ask: "
+      };
+    }
+    if (path.startsWith('/services')) {
+      return {
+        nudge: "Not sure which service fits? We can help you figure it out.",
+        message: "I'm trying to find the right service for my situation: "
+      };
+    }
+    if (path.startsWith('/about')) {
+      return {
+        nudge: "Want to learn more about working with us?",
+        message: "I'd like to learn more about your team and approach: "
+      };
+    }
+    if (path.startsWith('/contact')) {
+      return null; // Don't nudge on contact page — they're already engaging
+    }
+    if (path.startsWith('/case-studies')) {
+      return {
+        nudge: "Curious about results like these for your business?",
+        message: "I saw your case studies and was wondering: "
+      };
+    }
+    if (path.startsWith('/blog')) {
+      return {
+        nudge: "Have a follow-up question about this topic?",
+        message: "I was reading your blog and had a question: "
+      };
+    }
+    return {
+      nudge: "Questions? Our team is just a message away.",
+      message: "Hi — I had a quick question: "
+    };
+  }
+
+  // ── SDK helpers ──
   function isIntercomReady() {
     return window.Intercom && (window.__intercomSDKLoaded || !window.Intercom.q);
   }
 
-  function initIntercomLauncher() {
+  function openIntercom(prefilledMessage) {
+    if (!window.Intercom) {
+      window.location.href = '/contact';
+      return;
+    }
+
+    sessionStorage.setItem(SESSION_KEY, '1');
+    hideNudge();
+
+    if (isIntercomReady()) {
+      if (prefilledMessage) {
+        window.Intercom('showNewMessage', prefilledMessage);
+      } else {
+        window.Intercom('show');
+      }
+    } else {
+      // SDK still loading — queue it
+      var btn = document.getElementById('lumina-chat-launcher');
+      if (btn) btn.classList.add('loading');
+
+      if (prefilledMessage) {
+        window.Intercom('showNewMessage', prefilledMessage);
+      } else {
+        window.Intercom('show');
+      }
+
+      var checks = 0;
+      var poll = setInterval(function() {
+        checks++;
+        if (isIntercomReady()) {
+          clearInterval(poll);
+          if (btn) btn.classList.remove('loading');
+        } else if (checks >= 8) {
+          clearInterval(poll);
+          if (btn) btn.classList.remove('loading');
+          window.location.href = '/contact';
+        }
+      }, 500);
+    }
+  }
+
+  // ── Nudge bubble ──
+  var nudgeEl = document.getElementById('lumina-nudge');
+  var nudgeText = document.getElementById('lumina-nudge-text');
+  var nudgeClose = document.getElementById('lumina-nudge-close');
+  var nudgeTimer = null;
+
+  function showNudge(text) {
+    if (!nudgeEl || !nudgeText) return;
+    if (sessionStorage.getItem(SESSION_KEY) === '1') return;
+    if (sessionStorage.getItem(NUDGE_KEY) === '1') return;
+
+    nudgeText.textContent = text;
+    nudgeEl.classList.add('visible');
+    sessionStorage.setItem(NUDGE_KEY, '1');
+
+    // Auto-dismiss after 12s
+    nudgeTimer = setTimeout(hideNudge, 12000);
+  }
+
+  function hideNudge() {
+    if (nudgeEl) nudgeEl.classList.remove('visible');
+    if (nudgeTimer) { clearTimeout(nudgeTimer); nudgeTimer = null; }
+  }
+
+  if (nudgeClose) {
+    nudgeClose.onclick = function(e) {
+      e.stopPropagation();
+      hideNudge();
+    };
+  }
+
+  // Click nudge text to open Intercom with context
+  if (nudgeText) {
+    nudgeText.onclick = function() {
+      var ctx = getPageContext();
+      openIntercom(ctx ? ctx.message : '');
+    };
+  }
+
+  // ── Intelligent trigger logic ──
+  function initEngagementTriggers() {
+    var ctx = getPageContext();
+    if (!ctx) return; // e.g. contact page — skip triggers
+
+    // Already engaged or nudged this session? Skip
+    if (sessionStorage.getItem(SESSION_KEY) === '1') return;
+    if (sessionStorage.getItem(NUDGE_KEY) === '1') return;
+
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var isMobile = window.matchMedia('(pointer: coarse)').matches;
+
+    // ── Desktop: Exit intent ──
+    if (!isMobile) {
+      var exitFired = false;
+      function handleExitIntent(e) {
+        if (exitFired) return;
+        if (e.clientY <= 5) {
+          exitFired = true;
+          showNudge(ctx.nudge);
+          document.removeEventListener('mouseleave', handleExitIntent);
+        }
+      }
+      // Wait 8s before arming — don't trigger on accidental early mouse movement
+      setTimeout(function() {
+        document.addEventListener('mouseleave', handleExitIntent);
+      }, 8000);
+    }
+
+    // ── Mobile: engagement-based nudge (45s on page + scrolled 40%+) ──
+    if (isMobile) {
+      var mobileScrolledEnough = false;
+
+      function checkMobileScroll() {
+        var scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+        if (scrollPercent > 0.4) {
+          mobileScrolledEnough = true;
+          window.removeEventListener('scroll', checkMobileScroll);
+        }
+      }
+      window.addEventListener('scroll', checkMobileScroll, { passive: true });
+
+      setTimeout(function() {
+        if (mobileScrolledEnough && document.visibilityState === 'visible') {
+          showNudge(ctx.nudge);
+        }
+      }, 45000);
+    }
+
+    // ── Both: Deep scroll nudge (scrolled 75% of a long page) ──
+    if (!prefersReduced) {
+      var scrollNudgeFired = false;
+      function handleDeepScroll() {
+        if (scrollNudgeFired) return;
+        if (sessionStorage.getItem(NUDGE_KEY) === '1') return;
+
+        var docHeight = document.body.scrollHeight;
+        // Only on pages longer than 2 viewport heights
+        if (docHeight < window.innerHeight * 2.5) return;
+
+        var scrollPercent = window.scrollY / (docHeight - window.innerHeight);
+        if (scrollPercent > 0.75) {
+          scrollNudgeFired = true;
+          showNudge(ctx.nudge);
+          window.removeEventListener('scroll', handleDeepScroll);
+        }
+      }
+      // Arm after 15s
+      setTimeout(function() {
+        window.addEventListener('scroll', handleDeepScroll, { passive: true });
+      }, 15000);
+    }
+  }
+
+  // ── Launcher click ──
+  function initLauncher() {
     var btn = document.getElementById('lumina-chat-launcher');
     if (!btn) return;
 
-    var isServices = window.location.pathname === '/services' || window.location.pathname === '/services/';
-
-    if (isServices) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
-
-    // Wire click to open Intercom
     btn.onclick = function() {
-      if (isIntercomReady()) {
-        // Real SDK loaded — just show the messenger
-        window.Intercom('show');
-      } else if (window.Intercom && window.Intercom.q) {
-        // Stub exists but SDK still loading — show spinner, queue show, and set a fallback
-        btn.classList.add('loading');
-        window.Intercom('show');
-
-        // Wait up to 4 seconds for SDK to load and process the queue
-        var checks = 0;
-        var poll = setInterval(function() {
-          checks++;
-          if (isIntercomReady()) {
-            clearInterval(poll);
-            btn.classList.remove('loading');
-            // SDK loaded — re-fire show in case the queued one didn't work
-            window.Intercom('show');
-          } else if (checks >= 8) {
-            // 4 seconds elapsed, SDK never loaded — fall back to contact
-            clearInterval(poll);
-            btn.classList.remove('loading');
-            window.location.href = '/contact';
-          }
-        }, 500);
-      } else {
-        // No Intercom at all — go to contact page
-        window.location.href = '/contact';
-      }
+      openIntercom();
     };
 
-    // Ensure Intercom is booted on page navigation (Astro view transitions)
+    // Re-boot Intercom on view transition
     if (isIntercomReady()) {
       window.Intercom('update', window.intercomSettings);
     } else if (window.Intercom) {
@@ -177,12 +428,22 @@
     }
   }
 
-  // Astro view transitions + initial load
-  document.addEventListener('astro:page-load', initIntercomLauncher);
+  // ── Init ──
+  function init() {
+    initLauncher();
+    initEngagementTriggers();
+  }
+
+  document.addEventListener('astro:page-load', function() {
+    // Reset state on navigation — new page, new context
+    hideNudge();
+    init();
+  });
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initIntercomLauncher);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    initIntercomLauncher();
+    init();
   }
 })();
 </script>
