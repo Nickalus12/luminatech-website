@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Badge from '../components/ui/Badge.astro';
+import TextReveal from '../components/ui/TextReveal';
+---
+
+<BaseLayout
+  title="Technologies"
+  description="Explore the full technology stack Lumina ERP uses — from enterprise databases and languages to modern frameworks, cloud platforms, and automation tools."
+>
+
+  <!-- Hero -->
+  <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-accent-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-accent-violet/5 rounded-full blur-3xl pointer-events-none"></div>
+    <Container>
+      <div class="max-w-3xl mx-auto text-center scroll-reveal">
+        <Badge variant="primary" class="mb-6">Our Stack</Badge>
+        <TextReveal
+          text="Technologies That Power Enterprise Solutions"
+          as="h1"
+          className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4"
+          client:visible
+        />
+        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          We combine battle-tested enterprise tools with modern development platforms to build ERP solutions that scale, integrate, and perform.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Languages & Databases -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20">
+
+        <!-- Languages Column -->
+        <div class="scroll-reveal">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl bg-accent-violet/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h2 class="text-xl font-bold text-text-primary">Languages</h2>
+          </div>
+          <div class="space-y-4">
+            <a href="https://dotnet.microsoft.com" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#512BD4]/30 transition-all duration-300">
+              <img src="/tech/csharp.svg" alt="C#" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#512BD4] transition-colors">C# / .NET</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">Our primary language for P21 extensions, business rules, custom forms, and server-side automation. Deep expertise in .NET Framework and .NET 8+.</p>
+              </div>
+            </a>
+            <a href="https://python.org" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#3776AB]/30 transition-all duration-300">
+              <img src="/tech/python.svg" alt="Python" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#3776AB] transition-colors">Python</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">Data pipeline scripting, AI/ML integrations, ETL processes, and automation workflows. Used extensively with n8n and custom data transformations.</p>
+              </div>
+            </a>
+            <a href="https://typescriptlang.org" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#3178C6]/30 transition-all duration-300">
+              <img src="/tech/typescript.svg" alt="TypeScript" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#3178C6] transition-colors">TypeScript / JavaScript</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">Full-stack web development — client dashboards, API workers, real-time integrations. Type-safe code from database to browser.</p>
+              </div>
+            </a>
+            <a href="https://www.microsoft.com/sql-server" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#5391FE]/30 transition-all duration-300">
+              <img src="/tech/powershell.svg" alt="PowerShell" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#5391FE] transition-colors">PowerShell</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">Windows server automation, AD management, deployment scripts, and SQL Server maintenance tasks. Essential for on-prem ERP environments.</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Databases Column -->
+        <div class="scroll-reveal" style="animation-delay: 100ms;">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-10 h-10 rounded-xl bg-accent-error/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+            </div>
+            <h2 class="text-xl font-bold text-text-primary">Databases</h2>
+          </div>
+          <div class="space-y-4">
+            <a href="https://www.microsoft.com/sql-server" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#CC2927]/30 transition-all duration-300">
+              <img src="/tech/sqlserver.svg" alt="SQL Server" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#CC2927] transition-colors">Microsoft SQL Server</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">The backbone of P21 and most ERP systems. Query optimization, stored procedures, SSRS reports, backup/recovery, and performance tuning.</p>
+              </div>
+            </a>
+            <a href="https://postgresql.org" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#4169E1]/30 transition-all duration-300">
+              <img src="/tech/postgresql.svg" alt="PostgreSQL" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#4169E1] transition-colors">PostgreSQL</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">Open-source relational database for custom applications, analytics platforms, and integration data stores alongside ERP systems.</p>
+              </div>
+            </a>
+            <a href="https://redis.io" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#FF4438]/30 transition-all duration-300">
+              <img src="/tech/redis.svg" alt="Redis" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+              <div>
+                <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#FF4438] transition-colors">Redis</h3>
+                <p class="text-text-secondary text-sm leading-relaxed">High-performance caching, session management, and real-time data streaming. Perfect for API rate limiting and inventory cache layers.</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Divider -->
+  <div class="border-t border-border/30"></div>
+
+  <!-- Frameworks & Web -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <div class="flex items-center gap-3 justify-center mb-4">
+          <div class="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-text-primary">Frameworks & Web</h2>
+        </div>
+        <p class="text-text-secondary">Modern web technologies for building dashboards, portals, and client-facing tools.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        <a href="https://dotnet.microsoft.com" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#512BD4]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(81, 43, 212, 0.06), transparent 70%);"></div>
+          <img src="/tech/dotnet.svg" alt=".NET" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">.NET Framework & .NET 8+</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">P21 Extensions, APIs, Services</p>
+        </a>
+        <a href="https://react.dev" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#61DAFB]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(97, 218, 251, 0.06), transparent 70%);"></div>
+          <img src="/tech/react.svg" alt="React" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">React</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">Dashboards, Admin Panels, SPAs</p>
+        </a>
+        <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#5FA04E]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(95, 160, 78, 0.06), transparent 70%);"></div>
+          <img src="/tech/nodejs.svg" alt="Node.js" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">Node.js</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">API Workers, Real-Time Services</p>
+        </a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#E34F26]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(227, 79, 38, 0.06), transparent 70%);"></div>
+          <img src="/tech/html5.svg" alt="HTML5" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">HTML5</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">Semantic Markup, Accessibility</p>
+        </a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#1572B6]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(21, 114, 182, 0.06), transparent 70%);"></div>
+          <img src="/tech/css3.svg" alt="CSS3" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">CSS3 / Tailwind</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">Modern Styling, Design Systems</p>
+        </a>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Cloud & DevOps -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <div class="flex items-center gap-3 justify-center mb-4">
+          <div class="w-10 h-10 rounded-xl bg-accent-success/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-text-primary">Cloud & DevOps</h2>
+        </div>
+        <p class="text-text-secondary">Infrastructure, deployment, and developer operations for reliable, scalable systems.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+        <a href="https://azure.microsoft.com" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#0078D4]/30 transition-all duration-300">
+          <img src="/tech/azure.svg" alt="Azure" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#0078D4] transition-colors">Microsoft Azure</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Cloud VMs for ERP hosting, Azure SQL, Intune device management, AD/Entra ID, and hybrid cloud deployments.</p>
+          </div>
+        </a>
+        <a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#F38020]/30 transition-all duration-300">
+          <img src="/tech/cloudflare.svg" alt="Cloudflare" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#F38020] transition-colors">Cloudflare</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Edge Workers, Pages, D1, Durable Objects, Zero Trust access, DNS, and CDN. Our entire web platform runs on Cloudflare.</p>
+          </div>
+        </a>
+        <a href="https://docker.com" target="_blank" rel="noopener noreferrer" class="tech-card group flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50 hover:border-[#2496ED]/30 transition-all duration-300">
+          <img src="/tech/docker.svg" alt="Docker" width="40" height="40" class="w-10 h-10 object-contain shrink-0 mt-0.5" loading="lazy" />
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1 group-hover:text-[#2496ED] transition-colors">Docker</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Containerized development environments, microservice deployments, and reproducible build pipelines.</p>
+          </div>
+        </a>
+        <div class="flex items-start gap-4 p-5 rounded-xl border border-border/50 bg-bg-surface-1/50">
+          <div class="flex gap-2 shrink-0 mt-0.5">
+            <img src="/tech/git.svg" alt="Git" width="24" height="24" class="w-6 h-6 object-contain" loading="lazy" />
+            <img src="/tech/github.svg" alt="GitHub" width="24" height="24" class="w-6 h-6 object-contain" loading="lazy" />
+          </div>
+          <div>
+            <h3 class="text-text-primary font-semibold mb-1">Git & GitHub</h3>
+            <p class="text-text-secondary text-sm leading-relaxed">Version control for every project. CI/CD pipelines, code review, and automated deployments via GitHub Actions.</p>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- Divider -->
+  <div class="border-t border-border/30"></div>
+
+  <!-- Tools & Automation -->
+  <Section background="surface-1" padding="md">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
+        <div class="flex items-center gap-3 justify-center mb-4">
+          <div class="w-10 h-10 rounded-xl bg-accent-warning/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-text-primary">Tools & Automation</h2>
+        </div>
+        <p class="text-text-secondary">The development tools and automation platforms we use to build and maintain ERP solutions.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+        <a href="https://visualstudio.microsoft.com" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#5C2D91]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(92, 45, 145, 0.06), transparent 70%);"></div>
+          <img src="/tech/visualstudio.svg" alt="Visual Studio" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">Visual Studio</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">C# / .NET Development, P21 Customization</p>
+        </a>
+        <a href="https://code.visualstudio.com" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#007ACC]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(0, 122, 204, 0.06), transparent 70%);"></div>
+          <img src="/tech/vscode.svg" alt="VS Code" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">VS Code</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">Web Development, Scripts, SQL</p>
+        </a>
+        <a href="https://n8n.io" target="_blank" rel="noopener noreferrer" class="tech-tile group relative rounded-2xl border border-border/50 bg-bg-surface-1/80 p-6 text-center hover:border-[#EA4B71]/30 transition-all duration-300">
+          <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="background: radial-gradient(circle at 50% 50%, rgba(234, 75, 113, 0.06), transparent 70%);"></div>
+          <img src="/partners/n8n-pink-white.svg" alt="n8n" width="48" height="48" class="w-12 h-12 mx-auto mb-3 object-contain relative z-10" loading="lazy" />
+          <h3 class="text-text-primary font-semibold text-sm relative z-10">n8n</h3>
+          <p class="text-text-muted text-xs mt-1 relative z-10">Workflow Automation, ERP Integrations</p>
+        </a>
+      </div>
+    </Container>
+  </Section>
+
+  <!-- CTA -->
+  <Section background="base" padding="md">
+    <Container>
+      <div class="max-w-2xl mx-auto text-center scroll-reveal">
+        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">Need a technology partner?</h2>
+        <p class="text-text-secondary text-[length:var(--font-size-body-lg)] leading-relaxed mb-8">
+          Whether you're migrating to the cloud, building custom integrations, or optimizing your ERP — we bring the right stack to every engagement.
+        </p>
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+          style="background: var(--color-accent-primary);"
+        >
+          Start a Conversation
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </Container>
+  </Section>
+
+</BaseLayout>
+
+<style>
+  .tech-card {
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .tech-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  .tech-tile {
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .tech-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+</style>

@@ -1,157 +1,133 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 
 // ── Types ────────────────────────────────────────────────────
-
-type Category = 'all' | 'languages' | 'databases' | 'frameworks' | 'devops' | 'tools';
 
 interface Tech {
   name: string;
   logo: string;
   color: string;
   url: string;
-  category: Exclude<Category, 'all'>;
 }
 
 // ── Data ─────────────────────────────────────────────────────
 
 const technologies: Tech[] = [
-  // Languages
-  { name: 'C#', logo: '/tech/csharp.svg', color: '#512BD4', url: 'https://dotnet.microsoft.com', category: 'languages' },
-  { name: 'Python', logo: '/tech/python.svg', color: '#3776AB', url: 'https://python.org', category: 'languages' },
-  { name: 'JavaScript', logo: '/tech/javascript.svg', color: '#F7DF1E', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript', category: 'languages' },
-  { name: 'TypeScript', logo: '/tech/typescript.svg', color: '#3178C6', url: 'https://typescriptlang.org', category: 'languages' },
-  { name: 'PowerShell', logo: '/tech/powershell.svg', color: '#5391FE', url: 'https://learn.microsoft.com/powershell', category: 'languages' },
-  // Databases
-  { name: 'SQL Server', logo: '/tech/sqlserver.svg', color: '#CC2927', url: 'https://www.microsoft.com/sql-server', category: 'databases' },
-  { name: 'PostgreSQL', logo: '/tech/postgresql.svg', color: '#4169E1', url: 'https://postgresql.org', category: 'databases' },
-  { name: 'Redis', logo: '/tech/redis.svg', color: '#FF4438', url: 'https://redis.io', category: 'databases' },
-  // Frameworks
-  { name: '.NET', logo: '/tech/dotnet.svg', color: '#512BD4', url: 'https://dotnet.microsoft.com', category: 'frameworks' },
-  { name: 'React', logo: '/tech/react.svg', color: '#61DAFB', url: 'https://react.dev', category: 'frameworks' },
-  { name: 'Node.js', logo: '/tech/nodejs.svg', color: '#5FA04E', url: 'https://nodejs.org', category: 'frameworks' },
-  { name: 'HTML5', logo: '/tech/html5.svg', color: '#E34F26', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML', category: 'frameworks' },
-  { name: 'CSS3', logo: '/tech/css3.svg', color: '#1572B6', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS', category: 'frameworks' },
-  // DevOps
-  { name: 'Docker', logo: '/tech/docker.svg', color: '#2496ED', url: 'https://docker.com', category: 'devops' },
-  { name: 'Azure', logo: '/tech/azure.svg', color: '#0078D4', url: 'https://azure.microsoft.com', category: 'devops' },
-  { name: 'Cloudflare', logo: '/tech/cloudflare.svg', color: '#F38020', url: 'https://cloudflare.com', category: 'devops' },
-  { name: 'Git', logo: '/tech/git.svg', color: '#F05032', url: 'https://git-scm.com', category: 'devops' },
-  { name: 'GitHub', logo: '/tech/github.svg', color: '#181717', url: 'https://github.com', category: 'devops' },
-  // Tools
-  { name: 'Visual Studio', logo: '/tech/visualstudio.svg', color: '#5C2D91', url: 'https://visualstudio.microsoft.com', category: 'tools' },
-  { name: 'VS Code', logo: '/tech/vscode.svg', color: '#007ACC', url: 'https://code.visualstudio.com', category: 'tools' },
-  { name: 'n8n', logo: '/partners/n8n-pink-white.svg', color: '#EA4B71', url: 'https://n8n.io', category: 'tools' },
+  { name: 'C#', logo: '/tech/csharp.svg', color: '#512BD4', url: 'https://dotnet.microsoft.com' },
+  { name: 'Python', logo: '/tech/python.svg', color: '#3776AB', url: 'https://python.org' },
+  { name: 'JavaScript', logo: '/tech/javascript.svg', color: '#F7DF1E', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
+  { name: 'TypeScript', logo: '/tech/typescript.svg', color: '#3178C6', url: 'https://typescriptlang.org' },
+  { name: 'PowerShell', logo: '/tech/powershell.svg', color: '#5391FE', url: 'https://learn.microsoft.com/powershell' },
+  { name: 'SQL Server', logo: '/tech/sqlserver.svg', color: '#CC2927', url: 'https://www.microsoft.com/sql-server' },
+  { name: 'PostgreSQL', logo: '/tech/postgresql.svg', color: '#4169E1', url: 'https://postgresql.org' },
+  { name: 'Redis', logo: '/tech/redis.svg', color: '#FF4438', url: 'https://redis.io' },
+  { name: '.NET', logo: '/tech/dotnet.svg', color: '#512BD4', url: 'https://dotnet.microsoft.com' },
+  { name: 'React', logo: '/tech/react.svg', color: '#61DAFB', url: 'https://react.dev' },
+  { name: 'Node.js', logo: '/tech/nodejs.svg', color: '#5FA04E', url: 'https://nodejs.org' },
+  { name: 'HTML5', logo: '/tech/html5.svg', color: '#E34F26', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
+  { name: 'CSS3', logo: '/tech/css3.svg', color: '#1572B6', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
+  { name: 'Docker', logo: '/tech/docker.svg', color: '#2496ED', url: 'https://docker.com' },
+  { name: 'Azure', logo: '/tech/azure.svg', color: '#0078D4', url: 'https://azure.microsoft.com' },
+  { name: 'Cloudflare', logo: '/tech/cloudflare.svg', color: '#F38020', url: 'https://cloudflare.com' },
+  { name: 'Git', logo: '/tech/git.svg', color: '#F05032', url: 'https://git-scm.com' },
+  { name: 'GitHub', logo: '/tech/github.svg', color: '#181717', url: 'https://github.com' },
+  { name: 'Visual Studio', logo: '/tech/visualstudio.svg', color: '#5C2D91', url: 'https://visualstudio.microsoft.com' },
+  { name: 'VS Code', logo: '/tech/vscode.svg', color: '#007ACC', url: 'https://code.visualstudio.com' },
+  { name: 'n8n', logo: '/partners/n8n-pink-white.svg', color: '#EA4B71', url: 'https://n8n.io' },
 ];
 
-const filters: { id: Category; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'languages', label: 'Languages' },
-  { id: 'databases', label: 'Databases' },
-  { id: 'frameworks', label: 'Frameworks' },
-  { id: 'devops', label: 'DevOps' },
-  { id: 'tools', label: 'Tools' },
-];
+// Split into two rows for dual-track marquee
+const row1 = technologies.slice(0, 11);
+const row2 = technologies.slice(11);
 
-// ── Animation variants ───────────────────────────────────────
+// ── Marquee Row ──────────────────────────────────────────────
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.04 } },
-};
+function MarqueeRow({ items, reverse = false, speed = 40 }: { items: Tech[]; reverse?: boolean; speed?: number }) {
+  // Duplicate items enough times to fill the scroll seamlessly
+  const doubled = [...items, ...items];
+  const totalWidth = items.length * 140; // approximate px per item
+  const duration = totalWidth / speed;
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+  return (
+    <div className="relative overflow-hidden" style={{ maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)' }}>
+      <div
+        className="flex gap-4 w-max"
+        style={{
+          animation: `marquee-scroll ${duration}s linear infinite${reverse ? ' reverse' : ''}`,
+        }}
+      >
+        {doubled.map((tech, i) => (
+          <a
+            key={`${tech.name}-${i}`}
+            href={tech.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 shrink-0 rounded-xl px-5 py-3.5 border transition-all duration-200 hover:scale-[1.04]"
+            style={{
+              background: 'var(--color-bg-surface-1)',
+              borderColor: 'var(--color-border)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget.closest('[style*="animation"]') as HTMLElement | null)?.style.setProperty('animation-play-state', 'paused');
+              e.currentTarget.style.boxShadow = `0 0 20px ${tech.color}25`;
+              e.currentTarget.style.borderColor = `${tech.color}40`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget.closest('[style*="animation"]') as HTMLElement | null)?.style.setProperty('animation-play-state', 'running');
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
+          >
+            <img
+              src={tech.logo}
+              alt={tech.name}
+              width={28}
+              height={28}
+              loading="lazy"
+              className="w-7 h-7 object-contain"
+            />
+            <span
+              className="text-sm font-medium whitespace-nowrap"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {tech.name}
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // ── Component ────────────────────────────────────────────────
 
 export default function TechGrid({ className }: { className?: string }) {
-  const [active, setActive] = useState<Category>('all');
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
-
-  const filtered = active === 'all'
-    ? technologies
-    : technologies.filter((t) => t.category === active);
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <div ref={ref} className={className}>
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2 mb-8 justify-center" role="tablist" aria-label="Filter technologies">
-        {filters.map((f) => (
-          <button
-            key={f.id}
-            role="tab"
-            aria-selected={active === f.id}
-            onClick={() => setActive(f.id)}
-            className="relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 cursor-pointer"
-            style={{
-              color: active === f.id
-                ? 'var(--color-text-primary)'
-                : 'var(--color-text-tertiary)',
-            }}
-          >
-            {active === f.id && (
-              <motion.div
-                layoutId="tech-filter"
-                className="absolute inset-0 rounded-full"
-                style={{ background: 'var(--color-bg-surface-2)', border: '1px solid var(--color-border)' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-            )}
-            <span className="relative z-10">{f.label}</span>
-          </button>
-        ))}
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="space-y-4">
+        <MarqueeRow items={row1} speed={35} />
+        <MarqueeRow items={row2} reverse speed={30} />
       </div>
 
-      {/* Grid */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={active}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
-          role="tabpanel"
-        >
-          {filtered.map((tech) => (
-            <motion.div key={tech.name} variants={itemVariants}>
-              <motion.a
-                href={tech.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-3 rounded-xl p-5 border transition-colors duration-200"
-                style={{
-                  background: 'var(--color-bg-surface-1)',
-                  borderColor: 'var(--color-border)',
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: `0 0 20px ${tech.color}30`,
-                }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
-                <img
-                  src={tech.logo}
-                  alt={tech.name}
-                  width={32}
-                  height={32}
-                  loading="lazy"
-                  className="w-8 h-8 object-contain"
-                />
-                <span
-                  className="text-sm font-medium text-center leading-tight"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {tech.name}
-                </span>
-              </motion.a>
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+      {/* Keyframes injected once */}
+      <style>{`
+        @keyframes marquee-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [style*="marquee-scroll"] { animation: none !important; }
+        }
+      `}</style>
+    </motion.div>
   );
 }

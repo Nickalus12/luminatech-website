@@ -7,8 +7,6 @@ import Button from '../components/ui/Button.astro';
 import GlowText from '../components/ui/GlowText.astro';
 import Badge from '../components/ui/Badge.astro';
 import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
-import MetricsGrid from '../components/ui/MetricsGrid';
-import SocialProof from '../components/ui/SocialProof';
 import AnimatedTrustBar from '../components/ui/AnimatedTrustBar';
 import OnboardingFlow from '../components/ui/OnboardingFlow';
 import ChatPrompt from '../components/ui/ChatPrompt';
@@ -112,7 +110,7 @@ import { homepage } from '../content/copy';
   ═══════════════════════════════════════════════════════════════════════════ -->
   <Section background="base" padding="md">
     <Container>
-      <div class="max-w-3xl mx-auto text-center mb-8 scroll-reveal">
+      <div class="max-w-3xl mx-auto text-center mb-6 scroll-reveal">
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
           Technologies We Work With
         </h2>
@@ -121,6 +119,14 @@ import { homepage } from '../content/copy';
         </p>
       </div>
       <TechGrid client:visible />
+      <div class="text-center mt-6">
+        <a href="/technologies" class="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors duration-200">
+          Explore our full technology stack
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
     </Container>
   </Section>
 
@@ -397,28 +403,6 @@ import { homepage } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       METRICS SECTION
-       Animated counters with Geist Mono
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <Section background="surface-1" padding="md">
-    <Container>
-      <div class="max-w-3xl mx-auto text-center mb-12 scroll-reveal">
-        <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary">
-          {homepage.metrics.heading}
-        </h2>
-      </div>
-
-      <MetricsGrid
-        client:visible
-        metrics={homepage.metrics.items.map(m => ({
-          value: String(m.value),
-          label: m.label,
-          suffix: m.suffix || '',
-        }))}
-      />
-    </Container>
-  </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        BEFORE / AFTER SHOWCASE
@@ -462,21 +446,6 @@ import { homepage } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       SOCIAL PROOF / RESULTS SECTION
-       Three real project outcome cards with animated metrics
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <Section background="base" padding="md">
-    <Container>
-      <SocialProof
-        heading={homepage.socialProof.heading}
-        subheading={homepage.socialProof.subheading}
-        stories={homepage.socialProof.stories}
-        footerCta={homepage.socialProof.footerCta}
-        client:visible
-      />
-    </Container>
-  </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        CONTEXTUAL CHAT TRIGGER
