@@ -8,8 +8,8 @@ export const brand = {
   tagline: "Illuminate your ERP potential.",
   domain: "Lumina-ERP.com",
   email: "Discovery@Lumina-ERP.com",
-  location: "Humble, TX",
-  locationFull: "Based in Humble, TX. Serving distributors nationwide.",
+  location: "Houston, TX",
+  locationFull: "Based in Houston, TX. Serving distributors nationwide.",
   founder: "Lumina ERP Team",
   copyright: `\u00A9 ${new Date().getFullYear()} Lumina ERP, LLC. All rights reserved.`,
   footerDescription:
@@ -545,7 +545,7 @@ export const about = {
     ],
   },
   personal: {
-    text: "Based in Humble, TX (Houston metro), serving companies nationwide. Our team combines deep ERP expertise -- with a specialty in Prophet 21 -- with a passion for automation and pushing the boundaries of what enterprise systems can do.",
+    text: "Based in Houston, TX, serving companies nationwide. Our team combines deep ERP expertise -- with a specialty in Prophet 21 -- with a passion for automation and pushing the boundaries of what enterprise systems can do.",
   },
   cta: {
     heading: "Let's See If We're a Good Fit",
@@ -609,7 +609,7 @@ export const contact = {
     ],
     directContact: {
       email: "Support@Lumina-ERP.com",
-      location: "Humble, TX (Houston Metro)",
+      location: "Houston, TX",
       availability: "Mon-Fri evenings & weekends",
     },
     scheduling: {
@@ -733,7 +733,7 @@ export const footer = {
         },
         {
           label: "GitHub",
-          href: "https://github.com/LuminaHQ",
+          href: "https://github.com/LuminaERP",
           external: true,
         },
       ],
