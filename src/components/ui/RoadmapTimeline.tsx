@@ -324,38 +324,17 @@ function PhaseStation({
   const isActive = phase.status === 'in-progress';
   const iconPath = PHASE_ICONS[phase.icon] || PHASE_ICONS.foundation;
 
-  // Per-phase scroll tracking for entrance transform
-  const stationRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: stationScroll } = useScroll({
-    target: stationRef,
-    offset: ['start end', 'start 0.4'],
-  });
-
-  const stationY = useSpring(
-    useTransform(stationScroll, [0, 1], [120, 0]),
-    { stiffness: 100, damping: 30 },
-  );
-  const stationScale = useSpring(
-    useTransform(stationScroll, [0, 1], [0.85, 1]),
-    { stiffness: 100, damping: 30 },
-  );
-  const stationOpacity = useTransform(stationScroll, [0, 0.3], [0, 1]);
-
-  // SVG ring progress for the phase icon
-  const ringProgress = useSpring(
-    useTransform(stationScroll, [0.2, 0.8], [0, 1]),
-    { stiffness: 80, damping: 20 },
-  );
-
   const completedCount = phase.milestones.filter(m => m.status === 'completed').length;
   const progressPct = (completedCount / phase.milestones.length) * 100;
 
   return (
     <motion.div
-      ref={stationRef}
       id={`phase-${phase.id}`}
       className="relative"
-      style={reduced ? {} : { y: stationY, scale: stationScale, opacity: stationOpacity }}
+      initial={reduced ? false : { opacity: 0, y: 100, scale: 0.88 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={SPRING_DRAMATIC}
     >
       {/* Connection line to next phase */}
       {index < total - 1 && (
@@ -378,30 +357,6 @@ function PhaseStation({
           whileHover={reduced ? {} : { scale: 1.1 }}
           transition={SPRING_SNAPPY}
         >
-          {/* Ring that draws on scroll */}
-          <svg
-            className="absolute -inset-2"
-            viewBox="0 0 64 64"
-            fill="none"
-            style={{ width: 64, height: 64 }}
-          >
-            <motion.circle
-              cx="32"
-              cy="32"
-              r="29"
-              stroke={isCompleted || isActive ? phase.color : 'rgba(255,255,255,0.08)'}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              fill="none"
-              style={{
-                pathLength: reduced ? 1 : ringProgress,
-                rotate: -90,
-                transformOrigin: 'center',
-              }}
-              opacity={0.5}
-            />
-          </svg>
-
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center relative"
             style={{
