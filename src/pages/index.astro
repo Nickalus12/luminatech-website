@@ -9,7 +9,6 @@ import Badge from '../components/ui/Badge.astro';
 import BeforeAfterSlider from '../components/ui/BeforeAfterSlider';
 import AnimatedTrustBar from '../components/ui/AnimatedTrustBar';
 import OnboardingFlow from '../components/ui/OnboardingFlow';
-import ChatPrompt from '../components/ui/ChatPrompt';
 import TextReveal from '../components/ui/TextReveal';
 import RotatingWords from '../components/ui/RotatingWords';
 import Spotlight from '../components/ui/Spotlight';
@@ -447,16 +446,6 @@ import { homepage } from '../content/copy';
     </Container>
   </Section>
 
-
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       CONTEXTUAL CHAT TRIGGER
-       Inline CTA that opens Tawk.to or links to /contact
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <Section background="base" padding="sm">
-    <Container>
-      <ChatPrompt client:visible />
-    </Container>
-  </Section>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        CLIENT ONBOARDING FLOW
