@@ -303,9 +303,9 @@ function PreviewPanel({
       id={`svc-panel-${service.id}`}
       role="tabpanel"
       aria-labelledby={`svc-tab-${service.id}`}
-      initial={noMotion ? undefined : { opacity: 0, y: 16, filter: 'blur(6px)' }}
-      animate={noMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
-      exit={noMotion ? undefined : { opacity: 0, y: -8, filter: 'blur(4px)' }}
+      initial={noMotion ? undefined : { opacity: 0, y: 16, scale: 0.97 }}
+      animate={noMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+      exit={noMotion ? undefined : { opacity: 0, y: -8, scale: 0.97 }}
       transition={{ duration: 0.32, ease: [0.22, 0.68, 0.32, 1] }}
       className="relative rounded-2xl overflow-hidden"
       style={{

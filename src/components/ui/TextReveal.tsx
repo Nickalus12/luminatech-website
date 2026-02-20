@@ -45,8 +45,8 @@ export default function TextReveal({
             <motion.span
               key={`${segIdx}-${i}`}
               className="inline-block mr-[0.25em] last:mr-0"
-              initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{
                 duration: 0.5,

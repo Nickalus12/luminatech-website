@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import {
   motion,
   useScroll,
@@ -42,12 +42,17 @@ const PHASE_ICONS: Record<string, string> = {
   authority: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
   community: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
   scale: 'M13 2L3 14h9l-1 8 10-12h-9l1-8',
+  innovation:
+    'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
 };
+
+const SPRING_SMOOTH = { stiffness: 60, damping: 20 };
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 300, damping: 24 };
+const SPRING_DRAMATIC = { type: 'spring' as const, stiffness: 80, damping: 25, mass: 1.5 };
 
 /* ── AnimatedCheckmark ────────────────────────────────────── */
 
-function AnimatedCheckmark({ visible, size = 18 }: { visible: boolean; size?: number }) {
-  const len = 20;
+function AnimatedCheckmark({ visible, size = 14 }: { visible: boolean; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <motion.path
@@ -56,57 +61,226 @@ function AnimatedCheckmark({ visible, size = 18 }: { visible: boolean; size?: nu
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray={len}
-        initial={{ strokeDashoffset: len }}
-        animate={{ strokeDashoffset: visible ? 0 : len }}
-        transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: visible ? 1 : 0, opacity: visible ? 1 : 0 }}
+        transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
       />
     </svg>
   );
 }
 
+/* ── Atmosphere ─ scroll-driven background color shift ────── */
+
+function Atmosphere({
+  scrollRef,
+  phases,
+  reduced,
+}: {
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  phases: Phase[];
+  reduced: boolean | null;
+}) {
+  const { scrollYProgress } = useScroll({
+    target: scrollRef,
+    offset: ['start start', 'end end'],
+  });
+
+  const stops = useMemo(() => {
+    const n = phases.length;
+    return phases.map((_, i) => i / (n - 1 || 1));
+  }, [phases]);
+
+  const glowColor = useTransform(
+    scrollYProgress,
+    stops,
+    phases.map(p => p.color),
+  );
+
+  const glowOpacity = useSpring(
+    useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.03, 0.07, 0.07, 0.03]),
+    SPRING_SMOOTH,
+  );
+
+  const glowY = useSpring(
+    useTransform(scrollYProgress, [0, 1], ['0%', '60%']),
+    SPRING_SMOOTH,
+  );
+
+  if (reduced) return null;
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+      <motion.div
+        className="absolute -left-1/4 w-[150%] h-[40%] rounded-full"
+        style={{
+          top: glowY,
+          background: useTransform(glowColor, c => `radial-gradient(ellipse at center, ${c}, transparent 70%)`),
+          opacity: glowOpacity,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── JourneyProgress ─ scroll-linked top bar ──────────────── */
+
+function JourneyProgress({
+  phases,
+  scrollRef,
+  reduced,
+}: {
+  phases: Phase[];
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  reduced: boolean | null;
+}) {
+  const { scrollYProgress } = useScroll({
+    target: scrollRef,
+    offset: ['start start', 'end end'],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, SPRING_SMOOTH);
+
+  const stops = useMemo(() => {
+    const n = phases.length;
+    return phases.map((_, i) => i / (n - 1 || 1));
+  }, [phases]);
+
+  const bgColor = useTransform(
+    smoothProgress,
+    stops,
+    phases.map(p => p.color),
+  );
+
+  return (
+    <div className="sticky top-16 z-20 h-0.5 bg-white/[0.03]">
+      <motion.div
+        className="h-full origin-left"
+        style={{
+          scaleX: reduced ? 1 : smoothProgress,
+          background: reduced
+            ? `linear-gradient(to right, ${phases.map(p => p.color).join(', ')})`
+            : bgColor,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── ScrollBeam ─ vertical SVG beam with draw-on effect ───── */
+
+function ScrollBeam({
+  scrollRef,
+  phases,
+  reduced,
+}: {
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  phases: Phase[];
+  reduced: boolean | null;
+}) {
+  const { scrollYProgress } = useScroll({
+    target: scrollRef,
+    offset: ['start 0.3', 'end 0.8'],
+  });
+
+  const smoothY = useSpring(scrollYProgress, { stiffness: 40, damping: 18 });
+
+  const gradientStops = phases.map(p => p.color).join(', ');
+
+  return (
+    <div className="hidden md:block absolute left-[23px] top-0 bottom-0 w-[2px] pointer-events-none">
+      {/* Track */}
+      <div className="absolute inset-0 bg-white/[0.04] rounded-full" />
+
+      {/* Filled beam */}
+      {reduced ? (
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{ background: `linear-gradient(to bottom, ${gradientStops})` }}
+        />
+      ) : (
+        <>
+          <motion.div
+            className="absolute top-0 left-0 right-0 rounded-full origin-top"
+            style={{
+              height: '100%',
+              scaleY: smoothY,
+              background: `linear-gradient(to bottom, ${gradientStops})`,
+            }}
+          />
+          {/* Glow tip that travels down the beam */}
+          <motion.div
+            className="absolute left-1/2 -translate-x-1/2 w-2 h-8 rounded-full"
+            style={{
+              top: useTransform(smoothY, v => `calc(${v * 100}% - 16px)`),
+              background: useTransform(
+                smoothY,
+                phases.map((_, i) => i / (phases.length - 1 || 1)),
+                phases.map(p => `radial-gradient(circle, ${p.color}cc, transparent)`),
+              ),
+              opacity: useTransform(smoothY, [0, 0.02, 0.98, 1], [0, 1, 1, 0]),
+            }}
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ── MilestoneItem ────────────────────────────────────────── */
+
+const milestoneContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+  },
+};
+
+const milestoneItemVariants = {
+  hidden: { opacity: 0, x: -24 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: SPRING_SNAPPY,
+  },
+};
 
 function MilestoneItem({
   milestone,
   phaseColor,
-  index,
   reduced,
 }: {
   milestone: Milestone;
   phaseColor: string;
-  index: number;
   reduced: boolean | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-30px' });
+  const inView = useInView(ref, { once: true, margin: '-20px' });
 
   return (
     <motion.div
       ref={ref}
-      initial={reduced ? false : { opacity: 0, x: -20 }}
-      animate={inView ? { opacity: 1, x: 0 } : undefined}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.08,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+      variants={reduced ? undefined : milestoneItemVariants}
       className="group relative flex items-start gap-3 py-3"
     >
       {/* Status indicator */}
       <div className="relative shrink-0 mt-0.5">
         {milestone.status === 'completed' ? (
-          <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `${phaseColor}20` }}>
-            <AnimatedCheckmark visible={!reduced && inView} size={14} />
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center"
+            style={{ background: `${phaseColor}20` }}
+          >
+            <AnimatedCheckmark visible={!reduced && inView} />
           </div>
         ) : milestone.status === 'in-progress' ? (
           <div className="w-6 h-6 rounded-full flex items-center justify-center relative">
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{ background: phaseColor }}
-              animate={reduced ? {} : { scale: [1, 1.6, 1], opacity: [0.3, 0, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
+            {!reduced && (
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                style={{ background: phaseColor }}
+                animate={{ scale: [1, 1.6, 1], opacity: [0.3, 0, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
             <div className="w-2.5 h-2.5 rounded-full relative" style={{ background: phaseColor }} />
           </div>
         ) : (
@@ -148,11 +322,41 @@ function PhaseStation({
 
   const isCompleted = phase.status === 'completed';
   const isActive = phase.status === 'in-progress';
-
   const iconPath = PHASE_ICONS[phase.icon] || PHASE_ICONS.foundation;
 
+  // Per-phase scroll tracking for entrance transform
+  const stationRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: stationScroll } = useScroll({
+    target: stationRef,
+    offset: ['start end', 'start 0.4'],
+  });
+
+  const stationY = useSpring(
+    useTransform(stationScroll, [0, 1], [60, 0]),
+    { stiffness: 100, damping: 30 },
+  );
+  const stationScale = useSpring(
+    useTransform(stationScroll, [0, 1], [0.95, 1]),
+    { stiffness: 100, damping: 30 },
+  );
+  const stationOpacity = useTransform(stationScroll, [0, 0.3], [0, 1]);
+
+  // SVG ring progress for the phase icon
+  const ringProgress = useSpring(
+    useTransform(stationScroll, [0.2, 0.8], [0, 1]),
+    { stiffness: 80, damping: 20 },
+  );
+
+  const completedCount = phase.milestones.filter(m => m.status === 'completed').length;
+  const progressPct = (completedCount / phase.milestones.length) * 100;
+
   return (
-    <div ref={ref} id={`phase-${phase.id}`} className="relative">
+    <motion.div
+      ref={stationRef}
+      id={`phase-${phase.id}`}
+      className="relative"
+      style={reduced ? {} : { y: stationY, scale: stationScale, opacity: stationOpacity }}
+    >
       {/* Connection line to next phase */}
       {index < total - 1 && (
         <div
@@ -167,18 +371,37 @@ function PhaseStation({
       )}
 
       {/* Phase header row */}
-      <motion.div
-        initial={reduced ? false : { opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : undefined}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-start gap-4 mb-4 md:mb-6"
-      >
-        {/* Phase node on the beam */}
+      <div ref={ref} className="flex items-start gap-4 mb-4 md:mb-6">
+        {/* Phase node with SVG ring */}
         <motion.div
           className="relative shrink-0 hidden md:flex"
           whileHover={reduced ? {} : { scale: 1.1 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          transition={SPRING_SNAPPY}
         >
+          {/* Ring that draws on scroll */}
+          <svg
+            className="absolute -inset-1.5"
+            viewBox="0 0 56 56"
+            fill="none"
+            style={{ width: 56, height: 56 }}
+          >
+            <motion.circle
+              cx="28"
+              cy="28"
+              r="25"
+              stroke={isCompleted || isActive ? phase.color : 'rgba(255,255,255,0.08)'}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              fill="none"
+              style={{
+                pathLength: reduced ? 1 : ringProgress,
+                rotate: -90,
+                transformOrigin: 'center',
+              }}
+              opacity={0.5}
+            />
+          </svg>
+
           <div
             className="w-12 h-12 rounded-2xl flex items-center justify-center relative"
             style={{
@@ -186,7 +409,6 @@ function PhaseStation({
                 ? `linear-gradient(135deg, ${phase.color}30, ${phase.color}10)`
                 : 'rgba(255,255,255,0.04)',
               border: `1.5px solid ${isCompleted || isActive ? phase.color + '40' : 'rgba(255,255,255,0.08)'}`,
-              boxShadow: isActive ? `0 0 20px ${phase.color}20` : 'none',
             }}
           >
             <svg
@@ -202,12 +424,12 @@ function PhaseStation({
               <path d={iconPath} />
             </svg>
 
-            {/* Active pulse ring */}
+            {/* Active glow pulse */}
             {isActive && !reduced && (
               <motion.div
                 className="absolute inset-0 rounded-2xl"
-                style={{ border: `1.5px solid ${phase.color}` }}
-                animate={{ scale: [1, 1.3], opacity: [0.5, 0] }}
+                style={{ border: `1.5px solid ${phase.color}`, boxShadow: `0 0 20px ${phase.color}25` }}
+                animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
               />
             )}
@@ -215,7 +437,12 @@ function PhaseStation({
         </motion.div>
 
         {/* Phase info */}
-        <div className="flex-1 min-w-0">
+        <motion.div
+          className="flex-1 min-w-0"
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : undefined}
+          transition={SPRING_DRAMATIC}
+        >
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <span
               className="text-[11px] font-mono font-bold tracking-wider"
@@ -225,12 +452,18 @@ function PhaseStation({
             </span>
             <span className="text-[11px] text-white/30 font-mono">{phase.timeframe}</span>
             {isCompleted && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${phase.color}15`, color: phase.color }}>
+              <span
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: `${phase.color}15`, color: phase.color }}
+              >
                 COMPLETE
               </span>
             )}
             {isActive && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1" style={{ background: `${phase.color}15`, color: phase.color }}>
+              <span
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"
+                style={{ background: `${phase.color}15`, color: phase.color }}
+              >
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: phase.color }} />
                 IN PROGRESS
               </span>
@@ -242,15 +475,15 @@ function PhaseStation({
           <p className="text-sm text-white/45 leading-relaxed max-w-xl">
             {phase.description}
           </p>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* Milestones area */}
       <motion.div
+        className="md:ml-16"
         initial={reduced ? false : { opacity: 0 }}
         animate={inView ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="md:ml-16"
       >
         {/* Expand/collapse for upcoming phases */}
         {phase.status === 'upcoming' && (
@@ -267,7 +500,7 @@ function PhaseStation({
               strokeWidth="2"
               strokeLinecap="round"
               animate={{ rotate: expanded ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
+              transition={SPRING_SNAPPY}
             >
               <polyline points="9 18 15 12 9 6" />
             </motion.svg>
@@ -298,7 +531,7 @@ function PhaseStation({
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[10px] font-medium text-white/30 uppercase tracking-wider">Progress</span>
                     <span className="text-[10px] font-mono text-white/30">
-                      {phase.milestones.filter(m => m.status === 'completed').length}/{phase.milestones.length}
+                      {completedCount}/{phase.milestones.length}
                     </span>
                   </div>
                   <div className="h-1 rounded-full bg-white/5 overflow-hidden">
@@ -306,169 +539,71 @@ function PhaseStation({
                       className="h-full rounded-full"
                       style={{ background: phase.color }}
                       initial={{ width: 0 }}
-                      animate={inView ? {
-                        width: `${(phase.milestones.filter(m => m.status === 'completed').length / phase.milestones.length) * 100}%`,
-                      } : { width: 0 }}
+                      animate={inView ? { width: `${progressPct}%` } : { width: 0 }}
                       transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     />
                   </div>
                 </div>
 
-                {/* Milestones */}
-                <div className="divide-y divide-white/[0.04]">
-                  {phase.milestones.map((m, i) => (
+                {/* Milestones with staggered reveals */}
+                <motion.div
+                  className="divide-y divide-white/[0.04]"
+                  variants={reduced ? undefined : milestoneContainerVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.2 }}
+                >
+                  {phase.milestones.map((m) => (
                     <MilestoneItem
                       key={m.title}
                       milestone={m}
                       phaseColor={phase.color}
-                      index={i}
                       reduced={reduced}
                     />
                   ))}
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
-/* ── JourneyProgress (scroll-linked top bar) ──────────────── */
+/* ── PhaseCounter (sticky floating side nav) ──────────────── */
 
-function JourneyProgress({
-  phases,
-  scrollRef,
-  reduced,
-}: {
-  phases: Phase[];
-  scrollRef: React.RefObject<HTMLDivElement | null>;
-  reduced: boolean | null;
-}) {
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ['start start', 'end end'],
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 60, damping: 20 });
-
-  // Map scroll progress to a gradient that shifts through phase colors
-  const bgColor = useTransform(
-    smoothProgress,
-    [0, 0.25, 0.5, 0.75, 1],
-    phases.map(p => p.color).concat(phases[phases.length - 1]?.color || '#F59E0B'),
-  );
-
-  return (
-    <div className="sticky top-16 z-20 h-0.5 bg-white/[0.03]">
-      <motion.div
-        className="h-full origin-left"
-        style={{
-          scaleX: reduced ? 1 : smoothProgress,
-          background: reduced
-            ? `linear-gradient(to right, ${phases.map(p => p.color).join(', ')})`
-            : bgColor,
-        }}
-      />
-    </div>
-  );
-}
-
-/* ── ScrollBeam (vertical beam on desktop) ────────────────── */
-
-function ScrollBeam({
-  scrollRef,
-  phases,
-  reduced,
-}: {
-  scrollRef: React.RefObject<HTMLDivElement | null>;
-  phases: Phase[];
-  reduced: boolean | null;
-}) {
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ['start 0.3', 'end 0.8'],
-  });
-
-  const smoothY = useSpring(scrollYProgress, { stiffness: 40, damping: 18 });
-
-  return (
-    <div className="hidden md:block absolute left-[23px] top-0 bottom-0 w-[2px] pointer-events-none">
-      {/* Track */}
-      <div className="absolute inset-0 bg-white/[0.04] rounded-full" />
-
-      {/* Filled portion */}
-      {reduced ? (
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: `linear-gradient(to bottom, ${phases.map(p => p.color).join(', ')})`,
-          }}
-        />
-      ) : (
-        <motion.div
-          className="absolute top-0 left-0 right-0 rounded-full origin-top"
-          style={{
-            height: '100%',
-            scaleY: smoothY,
-            background: `linear-gradient(to bottom, ${phases.map(p => p.color).join(', ')})`,
-            boxShadow: '0 0 8px rgba(99, 102, 241, 0.3)',
-          }}
-        />
-      )}
-
-      {/* Glow tip */}
-      {!reduced && (
-        <motion.div
-          className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
-          style={{
-            top: useTransform(smoothY, v => `calc(${v * 100}% - 6px)`),
-            background: 'radial-gradient(circle, rgba(99,102,241,0.8), transparent)',
-            boxShadow: '0 0 12px rgba(99,102,241,0.5)',
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-/* ── PhaseCounter (sticky floating) ───────────────────────── */
-
-function PhaseCounter({ phases }: { phases: Phase[] }) {
+function PhaseCounter({ phases, reduced }: { phases: Phase[]; reduced: boolean | null }) {
   const completed = phases.filter(p => p.status === 'completed').length;
-  const total = phases.length;
 
   return (
     <div className="hidden lg:flex fixed right-8 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-3">
-      {phases.map((phase, i) => (
-        <a
+      {phases.map((phase) => (
+        <motion.a
           key={phase.id}
           href={`#phase-${phase.id}`}
           className="group relative flex items-center"
           title={phase.title}
+          whileHover={reduced ? {} : { scale: 1.6 }}
+          transition={SPRING_SNAPPY}
         >
           <div
-            className="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150"
+            className="w-2.5 h-2.5 rounded-full"
             style={{
-              background: phase.status === 'completed'
+              background: phase.status === 'completed' || phase.status === 'in-progress'
                 ? phase.color
-                : phase.status === 'in-progress'
-                  ? phase.color
-                  : 'rgba(255,255,255,0.15)',
-              boxShadow: phase.status === 'in-progress'
-                ? `0 0 8px ${phase.color}60`
-                : 'none',
+                : 'rgba(255,255,255,0.15)',
+              boxShadow: phase.status === 'in-progress' ? `0 0 8px ${phase.color}60` : 'none',
             }}
           />
           {/* Tooltip */}
-          <span className="absolute right-6 whitespace-nowrap text-[11px] text-white/60 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 backdrop-blur px-2 py-1 rounded pointer-events-none">
+          <span className="absolute right-6 whitespace-nowrap text-[11px] text-white/60 opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 backdrop-blur-sm px-2 py-1 rounded pointer-events-none">
             {phase.title}
           </span>
-        </a>
+        </motion.a>
       ))}
       <span className="text-[9px] font-mono text-white/20 mt-1">
-        {completed}/{total}
+        {completed}/{phases.length}
       </span>
     </div>
   );
@@ -482,19 +617,22 @@ export default function RoadmapTimeline({ phases, className = '' }: RoadmapTimel
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
+      {/* Atmospheric glow that shifts color as you scroll */}
+      <Atmosphere scrollRef={containerRef} phases={phases} reduced={reduced} />
+
       {/* Scroll-linked progress bar */}
       <JourneyProgress phases={phases} scrollRef={containerRef} reduced={reduced} />
 
       {/* Phase counter dots (right side) */}
-      <PhaseCounter phases={phases} />
+      <PhaseCounter phases={phases} reduced={reduced} />
 
       {/* Main timeline */}
       <div className="relative pt-8 md:pt-12">
-        {/* Vertical beam */}
+        {/* Vertical beam with draw-on effect */}
         <ScrollBeam scrollRef={containerRef} phases={phases} reduced={reduced} />
 
         {/* Phase stations */}
-        <div className="flex flex-col gap-16 md:gap-20">
+        <div className="flex flex-col gap-16 md:gap-24">
           {phases.map((phase, i) => (
             <PhaseStation
               key={phase.id}
@@ -507,28 +645,34 @@ export default function RoadmapTimeline({ phases, className = '' }: RoadmapTimel
         </div>
       </div>
 
-      {/* Journey completion message */}
+      {/* Journey completion */}
       <motion.div
-        className="text-center mt-16 md:mt-20"
-        initial={reduced ? false : { opacity: 0, y: 20 }}
+        className="text-center mt-16 md:mt-24"
+        initial={reduced ? false : { opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={SPRING_DRAMATIC}
       >
-        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/[0.06] bg-white/[0.02]">
-          <div className="flex -space-x-1">
-            {phases.map((p) => (
-              <div
-                key={p.id}
-                className="w-2 h-2 rounded-full ring-1 ring-black/50"
-                style={{
-                  background: p.status === 'completed' ? p.color : `${p.color}40`,
-                }}
-              />
-            ))}
+        <div className="inline-flex flex-col items-center gap-3">
+          <div className="flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/[0.05] bg-white/[0.015]">
+            <div className="flex -space-x-1">
+              {phases.map((p) => (
+                <motion.div
+                  key={p.id}
+                  className="w-2.5 h-2.5 rounded-full ring-1 ring-black/50"
+                  style={{ background: p.status === 'completed' ? p.color : `${p.color}30` }}
+                  whileHover={reduced ? {} : { scale: 1.5 }}
+                  transition={SPRING_SNAPPY}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-white/30 font-medium">
+              {phases.filter(p => p.status === 'completed').length} of {phases.length} phases complete
+            </span>
           </div>
-          <span className="text-xs text-white/35 font-medium">
-            {phases.filter(p => p.status === 'completed').length} of {phases.length} phases complete
+          <span className="text-[11px] text-white/15 font-mono">
+            {phases.reduce((sum, p) => sum + p.milestones.filter(m => m.status === 'completed').length, 0)}/
+            {phases.reduce((sum, p) => sum + p.milestones.length, 0)} milestones delivered
           </span>
         </div>
       </motion.div>
