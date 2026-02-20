@@ -732,6 +732,11 @@ export const footer = {
           external: true,
         },
         {
+          label: "Facebook",
+          href: "https://facebook.com/LuminaERPOfficial",
+          external: true,
+        },
+        {
           label: "GitHub",
           href: "https://github.com/LuminaERP",
           external: true,

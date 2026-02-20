@@ -43,12 +43,12 @@ const PHASE_ICONS: Record<string, string> = {
   community: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
   scale: 'M13 2L3 14h9l-1 8 10-12h-9l1-8',
   innovation:
-    'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
+    'M12 2a7 7 0 00-5 11.9V16h10v-2.1A7 7 0 0012 2zM9 18h6M10 22h4',
 };
 
-const SPRING_SMOOTH = { stiffness: 60, damping: 20 };
-const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 300, damping: 24 };
-const SPRING_DRAMATIC = { type: 'spring' as const, stiffness: 80, damping: 25, mass: 1.5 };
+const SPRING_SMOOTH = { stiffness: 100, damping: 22 };
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 300, damping: 20 };
+const SPRING_DRAMATIC = { type: 'spring' as const, stiffness: 120, damping: 22, mass: 2 };
 
 /* ── AnimatedCheckmark ────────────────────────────────────── */
 
@@ -187,7 +187,7 @@ function ScrollBeam({
   const gradientStops = phases.map(p => p.color).join(', ');
 
   return (
-    <div className="hidden md:block absolute left-[23px] top-0 bottom-0 w-[2px] pointer-events-none">
+    <div className="hidden md:block absolute left-[27px] top-0 bottom-0 w-[2px] pointer-events-none">
       {/* Track */}
       <div className="absolute inset-0 bg-white/[0.04] rounded-full" />
 
@@ -231,12 +231,12 @@ function ScrollBeam({
 const milestoneContainerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.15, delayChildren: 0.25 },
   },
 };
 
 const milestoneItemVariants = {
-  hidden: { opacity: 0, x: -24 },
+  hidden: { opacity: 0, x: -40 },
   visible: {
     opacity: 1,
     x: 0,
@@ -332,11 +332,11 @@ function PhaseStation({
   });
 
   const stationY = useSpring(
-    useTransform(stationScroll, [0, 1], [60, 0]),
+    useTransform(stationScroll, [0, 1], [120, 0]),
     { stiffness: 100, damping: 30 },
   );
   const stationScale = useSpring(
-    useTransform(stationScroll, [0, 1], [0.95, 1]),
+    useTransform(stationScroll, [0, 1], [0.85, 1]),
     { stiffness: 100, damping: 30 },
   );
   const stationOpacity = useTransform(stationScroll, [0, 0.3], [0, 1]);
@@ -360,7 +360,7 @@ function PhaseStation({
       {/* Connection line to next phase */}
       {index < total - 1 && (
         <div
-          className="absolute left-[23px] top-[56px] w-[2px] hidden md:block"
+          className="absolute left-[27px] top-[64px] w-[2px] hidden md:block"
           style={{
             bottom: -48,
             background: isCompleted
@@ -380,15 +380,15 @@ function PhaseStation({
         >
           {/* Ring that draws on scroll */}
           <svg
-            className="absolute -inset-1.5"
-            viewBox="0 0 56 56"
+            className="absolute -inset-2"
+            viewBox="0 0 64 64"
             fill="none"
-            style={{ width: 56, height: 56 }}
+            style={{ width: 64, height: 64 }}
           >
             <motion.circle
-              cx="28"
-              cy="28"
-              r="25"
+              cx="32"
+              cy="32"
+              r="29"
               stroke={isCompleted || isActive ? phase.color : 'rgba(255,255,255,0.08)'}
               strokeWidth="1.5"
               strokeLinecap="round"
@@ -403,7 +403,7 @@ function PhaseStation({
           </svg>
 
           <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center relative"
+            className="w-14 h-14 rounded-2xl flex items-center justify-center relative"
             style={{
               background: isCompleted || isActive
                 ? `linear-gradient(135deg, ${phase.color}30, ${phase.color}10)`
@@ -412,12 +412,12 @@ function PhaseStation({
             }}
           >
             <svg
-              width="20"
-              height="20"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="none"
               stroke={isCompleted || isActive ? phase.color : 'rgba(255,255,255,0.25)'}
-              strokeWidth="1.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -480,7 +480,7 @@ function PhaseStation({
 
       {/* Milestones area */}
       <motion.div
-        className="md:ml-16"
+        className="md:ml-18"
         initial={reduced ? false : { opacity: 0 }}
         animate={inView ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.2 }}
