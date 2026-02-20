@@ -1,17 +1,17 @@
-// Lumina Erp - Website Copy
+// Lumina ERP - Website Copy
 // All website copy as typed constants for page builders to import
 
 // ─── Brand ────────────────────────────────────────────────────────────────────
 
 export const brand = {
-  name: "Lumina Erp",
+  name: "Lumina ERP",
   tagline: "Illuminate your ERP potential.",
   domain: "Lumina-ERP.com",
   email: "Discovery@Lumina-ERP.com",
   location: "Humble, TX",
   locationFull: "Based in Humble, TX. Serving distributors nationwide.",
   founder: "Lumina ERP Team",
-  copyright: `\u00A9 ${new Date().getFullYear()} Lumina Erp. All rights reserved.`,
+  copyright: `\u00A9 ${new Date().getFullYear()} Lumina ERP, LLC. All rights reserved.`,
   footerDescription:
     "Expert ERP consulting for wholesale distributors. From Prophet 21 and Epicor Kinetic to custom integrations and cloud migration, we illuminate the path to ERP excellence.",
 } as const;
@@ -696,7 +696,7 @@ export const caseStudiesPage = {
 
 export const footer = {
   brand: {
-    name: "Lumina Erp",
+    name: "Lumina ERP",
     description: brand.footerDescription,
     tagline: brand.tagline,
   },
@@ -756,10 +756,10 @@ export const roadmap = {
     badge: "Our Vision",
     headline: "Building the Future of ERP Consulting",
     subtitle:
-      "We're not just solving today's ERP problems -- we're building the tools, resources, and community that wholesale distributors will rely on for years to come. Here's where we're headed.",
+      "We're not just solving today's ERP problems — we're building the tools, resources, and community that wholesale distributors will rely on for years to come.",
     stats: [
       { value: "4", label: "Strategic Phases" },
-      { value: "16+", label: "Key Milestones" },
+      { value: "14", label: "Key Milestones" },
       { value: "2027", label: "Full Vision" },
     ],
   },
@@ -768,10 +768,11 @@ export const roadmap = {
       id: 1,
       title: "Foundation",
       timeframe: "Q1 2026",
-      status: "in-progress" as const,
+      status: "completed" as const,
       color: "#10B981",
+      icon: "foundation",
       description:
-        "Establishing our core service offerings and technical infrastructure -- the building blocks everything else is built on.",
+        "Core service offerings and technical infrastructure established — the building blocks everything else is built on.",
       milestones: [
         {
           title: "Core Service Pages & Pricing",
@@ -787,21 +788,15 @@ export const roadmap = {
         },
         {
           title: "API Integration Services",
-          status: "in-progress" as const,
+          status: "completed" as const,
           description:
-            "Expanding integration capabilities for connecting P21 with e-commerce platforms, CRMs, and third-party systems.",
+            "Expanded integration capabilities for connecting P21 with e-commerce platforms, CRMs, and third-party systems via REST APIs and OAuth2.",
         },
         {
           title: "Database Optimization Services",
-          status: "in-progress" as const,
+          status: "completed" as const,
           description:
-            "Developing SQL Server performance tuning and query optimization services with measurable before/after benchmarks.",
-        },
-        {
-          title: "Technical Blog Launch",
-          status: "upcoming" as const,
-          description:
-            "Publishing deep-dive technical content covering real-world P21 solutions for the distributor community.",
+            "Launched SQL Server performance tuning and query optimization services with measurable before/after benchmarks.",
         },
       ],
     },
@@ -809,14 +804,15 @@ export const roadmap = {
       id: 2,
       title: "Authority Building",
       timeframe: "Q2 2026",
-      status: "upcoming" as const,
+      status: "in-progress" as const,
       color: "#3B82F6",
+      icon: "authority",
       description:
         "Becoming the go-to resource for P21 expertise through interactive tools, educational content, and documented success stories.",
       milestones: [
         {
           title: "Interactive Assessment Tools",
-          status: "upcoming" as const,
+          status: "in-progress" as const,
           description:
             "Self-service P21 Health Check and ROI Calculator tools so distributors can evaluate their ERP environment on their own terms.",
         },
@@ -833,12 +829,6 @@ export const roadmap = {
             "YouTube technical deep dives and walkthrough tutorials covering common P21 challenges and solutions.",
         },
         {
-          title: "Newsletter & Lead Magnets",
-          status: "upcoming" as const,
-          description:
-            "Regular industry insights and downloadable resources to keep distributors ahead of ERP trends.",
-        },
-        {
           title: "Case Study Portfolio",
           status: "upcoming" as const,
           description:
@@ -849,11 +839,12 @@ export const roadmap = {
     {
       id: 3,
       title: "Community & Ecosystem",
-      timeframe: "Q3-Q4 2026",
+      timeframe: "Q3–Q4 2026",
       status: "upcoming" as const,
       color: "#8B5CF6",
+      icon: "community",
       description:
-        "Building a thriving community around ERP excellence -- open-source contributions, live events, and a partner network.",
+        "Building a thriving community around ERP excellence — open-source contributions, live events, and a partner network.",
       milestones: [
         {
           title: "Open-Source GitHub Resources",
@@ -865,19 +856,13 @@ export const roadmap = {
           title: "Webinar Series",
           status: "upcoming" as const,
           description:
-            "\"ERP Tech Talks\" -- live sessions with Q&A covering advanced topics, new features, and real-world problem solving.",
+            "\"ERP Tech Talks\" — live sessions with Q&A covering advanced topics, new features, and real-world problem solving.",
         },
         {
           title: "Knowledge Base & Resources Hub",
           status: "upcoming" as const,
           description:
             "A searchable documentation hub with how-to guides, troubleshooting walkthroughs, and configuration references.",
-        },
-        {
-          title: "Partnership Program Launch",
-          status: "upcoming" as const,
-          description:
-            "A formal partner network connecting distributors with complementary service providers and technology vendors.",
         },
       ],
     },
@@ -887,6 +872,7 @@ export const roadmap = {
       timeframe: "2027",
       status: "upcoming" as const,
       color: "#F59E0B",
+      icon: "innovation",
       description:
         "Scaling our impact with SaaS tools, certification programs, and industry events that push ERP consulting forward.",
       milestones: [
@@ -894,7 +880,7 @@ export const roadmap = {
           title: "SaaS Micro-Tools",
           status: "upcoming" as const,
           description:
-            "Self-service utilities like our ERP Dashboard Builder -- giving distributors powerful tools without a full consulting engagement.",
+            "Self-service utilities like our ERP Dashboard Builder — giving distributors powerful tools without a full consulting engagement.",
         },
         {
           title: "Developer Certification Program",
@@ -908,23 +894,17 @@ export const roadmap = {
           description:
             "An industry conference bringing together distributors, developers, and technology partners to shape the future of ERP.",
         },
-        {
-          title: "Podcast & Interview Series",
-          status: "upcoming" as const,
-          description:
-            "Conversations with ERP leaders, distribution executives, and technology innovators driving the industry forward.",
-        },
       ],
     },
   ],
   vision: {
     heading: "Where We're Headed",
-    body: "Our long-term vision is to become the definitive resource for Prophet 21 and ERP excellence in wholesale distribution. We're building more than a consulting practice -- we're creating an ecosystem of tools, knowledge, and community that elevates the entire industry. Every phase of this roadmap moves us closer to a world where distributors have the ERP expertise they need, when they need it.",
+    body: "Our long-term vision is to become the definitive resource for Prophet 21 and ERP excellence in wholesale distribution. We're building more than a consulting practice — we're creating an ecosystem of tools, knowledge, and community that elevates the entire industry.",
   },
   cta: {
     heading: "Ready to Transform Your ERP?",
     subheading:
-      "Don't wait for the future -- start building it today. Schedule a free consultation and let's talk about where your ERP can take you.",
+      "Don't wait for the future — start building it today. Schedule a free consultation and let's talk about where your ERP can take you.",
     buttonLabel: "Schedule a Free Consultation",
     buttonHref: "/contact",
     email: "Discovery@Lumina-ERP.com",

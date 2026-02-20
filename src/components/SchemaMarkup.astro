@@ -17,7 +17,7 @@ const siteUrl = Astro.site?.href ?? 'https://luminatech.xyz';
 const professionalService = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  name: 'Lumina Erp',
+  name: 'Lumina ERP',
   url: siteUrl,
   logo: `${siteUrl}logo.png`,
   description: 'Expert Prophet 21 (P21) consulting for wholesale distributors. Implementation, business rules, cloud migration, and managed support.',
@@ -46,7 +46,7 @@ const localBusiness = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   '@id': `${siteUrl}#business`,
-  name: 'Lumina Erp',
+  name: 'Lumina ERP',
   url: siteUrl,
   description: 'Boutique Prophet 21 ERP consulting for wholesale distributors. Based in Humble, TX, serving distributors nationwide.',
   address: {
@@ -108,7 +108,7 @@ function buildArticleSchema(p: NonNullable<typeof post>) {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Lumina Erp',
+      name: 'Lumina ERP',
       url: siteUrl,
     },
   };

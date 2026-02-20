@@ -6,7 +6,7 @@ import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
 import TextReveal from '../components/ui/TextReveal';
 import RoadmapTimeline from '../components/ui/RoadmapTimeline';
-import { roadmap, brand } from '../content/copy';
+import { roadmap } from '../content/copy';
 ---
 
 <BaseLayout
@@ -15,29 +15,36 @@ import { roadmap, brand } from '../content/copy';
   schemaType="about"
 >
 
-  <!-- Hero -->
-  <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-8 md:pb-12 relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-96 h-96 bg-accent-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute bottom-0 left-0 w-72 h-72 bg-accent-violet/5 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- ═══════════════════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════════════════ -->
+  <Section background="base" padding="sm" class="pt-28 md:pt-32 pb-12 md:pb-16 relative overflow-hidden">
+    <!-- Floating gradient orbs -->
+    <div class="floating-orb absolute -top-24 -right-32 w-[400px] h-[400px] bg-accent-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="floating-orb-2 absolute -bottom-20 -left-28 w-[350px] h-[350px] bg-accent-violet/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="floating-orb-3 absolute top-32 left-1/4 w-[300px] h-[300px] bg-accent-success/5 rounded-full blur-3xl pointer-events-none"></div>
+
     <Container>
       <div class="max-w-3xl scroll-reveal">
         <Badge variant="primary" class="mb-6">{roadmap.hero.badge}</Badge>
+
         <TextReveal
           text={roadmap.hero.headline}
           as="h1"
-          className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-4"
+          className="text-[length:var(--font-size-hero)] font-bold leading-[1.1] text-text-primary mb-6"
           client:visible
         />
-        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary max-w-2xl leading-relaxed mb-10">
+
+        <p class="text-lg text-text-secondary max-w-2xl leading-relaxed mb-12">
           {roadmap.hero.subtitle}
         </p>
 
-        <!-- Stat row -->
-        <div class="grid grid-cols-3 gap-6 max-w-md">
+        <!-- Stats row -->
+        <div class="grid grid-cols-3 gap-6 max-w-lg">
           {roadmap.hero.stats.map((stat) => (
-            <div class="text-center">
-              <div class="text-2xl md:text-3xl font-bold text-text-primary font-mono">{stat.value}</div>
-              <div class="text-xs md:text-sm text-text-tertiary mt-1">{stat.label}</div>
+            <div class="bg-bg-surface-1/50 backdrop-blur-sm border border-border/30 rounded-xl p-4 text-center">
+              <div class="stat-value text-3xl md:text-4xl font-bold font-mono">{stat.value}</div>
+              <div class="text-xs text-text-tertiary mt-1 uppercase tracking-wider">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -45,60 +52,107 @@ import { roadmap, brand } from '../content/copy';
     </Container>
   </Section>
 
-  <!-- Sticky Phase Navigation -->
-  <div class="sticky top-16 z-30 bg-bg-base/90 backdrop-blur-lg border-b border-border/50" id="phase-nav">
+  <!-- ═══════════════════════════════════════════════════════════
+       STICKY PHASE NAVIGATION
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="sticky top-16 z-30 backdrop-blur-xl border-b border-border/30" style="background: rgba(10,10,15,0.85);">
     <Container>
       <nav class="flex gap-2 py-3 overflow-x-auto scrollbar-hide" role="tablist" aria-label="Roadmap phases">
         {roadmap.phases.map((phase) => (
           <a
             href={`#phase-${phase.id}`}
             role="tab"
-            class="shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-border/50 hover:border-accent-primary/30 transition-colors bg-bg-surface-1/50 hover:bg-bg-surface-2/50"
+            class:list={[
+              'phase-nav-pill shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-300',
+            ]}
+            style={
+              phase.status === 'completed'
+                ? `border-color: ${phase.color}30; background: ${phase.color}08;`
+                : phase.status === 'in-progress'
+                  ? `border-color: ${phase.color}40; background: ${phase.color}10; box-shadow: 0 0 12px ${phase.color}15;`
+                  : 'border-color: rgba(42,42,54,0.5); background: rgba(18,18,26,0.5);'
+            }
           >
-            <span class="w-2 h-2 rounded-full shrink-0" style={`background: ${phase.color};`}></span>
+            {/* Phase dot */}
+            {phase.status === 'completed' ? (
+              <span class="w-2 h-2 rounded-full shrink-0" style={`background: ${phase.color};`}></span>
+            ) : phase.status === 'in-progress' ? (
+              <span class="relative shrink-0 w-2 h-2">
+                <span class="absolute inset-0 rounded-full animate-ping opacity-40" style={`background: ${phase.color};`}></span>
+                <span class="relative block w-2 h-2 rounded-full" style={`background: ${phase.color};`}></span>
+              </span>
+            ) : (
+              <span class="w-2 h-2 rounded-full shrink-0 border border-text-tertiary/50"></span>
+            )}
+
+            {/* Phase info */}
             <span class="text-text-secondary whitespace-nowrap">
-              <span class="text-text-tertiary font-mono text-xs mr-1">0{phase.id}</span>
+              <span class="font-mono text-xs text-text-tertiary mr-1">0{phase.id}</span>
               {phase.title}
             </span>
+
+            {/* Timeframe (hidden on small) */}
             <span class="text-text-tertiary text-xs hidden sm:inline">{phase.timeframe}</span>
+
+            {/* Completed check */}
+            {phase.status === 'completed' && (
+              <svg class="w-3.5 h-3.5" style={`color: ${phase.color};`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
           </a>
         ))}
       </nav>
     </Container>
   </div>
 
-  <!-- Interactive Timeline -->
+  <!-- ═══════════════════════════════════════════════════════════
+       INTERACTIVE TIMELINE
+       ═══════════════════════════════════════════════════════════ -->
   <Section background="base" padding="lg">
     <Container>
       <RoadmapTimeline phases={roadmap.phases} client:visible />
     </Container>
   </Section>
 
-  <!-- Vision Statement -->
+  <!-- ═══════════════════════════════════════════════════════════
+       VISION STATEMENT
+       ═══════════════════════════════════════════════════════════ -->
   <Section background="surface-1" padding="md">
     <Container>
       <div class="max-w-2xl mx-auto text-center relative scroll-reveal">
+        <!-- Outer glow -->
         <div class="absolute inset-0 -m-8 bg-accent-primary/3 rounded-2xl blur-2xl pointer-events-none"></div>
-        <div class="relative bg-bg-surface-1/40 backdrop-blur-sm border border-border/50 rounded-2xl p-8 md:p-12">
-          <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
-            {roadmap.vision.heading}
-          </h2>
-          <p class="text-[length:var(--font-size-body-lg)] text-text-secondary leading-relaxed">
-            {roadmap.vision.body}
-          </p>
+
+        <!-- Animated gradient border wrapper -->
+        <div class="vision-card-wrapper relative">
+          <div class="vision-card-inner p-8 md:p-12">
+            <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
+              {roadmap.vision.heading}
+            </h2>
+            <p class="text-lg text-text-secondary leading-relaxed">
+              {roadmap.vision.body}
+            </p>
+          </div>
         </div>
       </div>
     </Container>
   </Section>
 
-  <!-- Bottom CTA -->
+  <!-- ═══════════════════════════════════════════════════════════
+       CTA
+       ═══════════════════════════════════════════════════════════ -->
   <Section background="gradient" padding="lg">
     <Container>
-      <div class="text-center max-w-2xl mx-auto scroll-reveal">
+      <div class="text-center max-w-2xl mx-auto relative scroll-reveal">
+        <!-- Small floating orbs -->
+        <div class="floating-orb absolute -top-16 -right-16 w-32 h-32 bg-accent-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="floating-orb-2 absolute -bottom-12 -left-12 w-28 h-28 bg-accent-violet/5 rounded-full blur-2xl pointer-events-none"></div>
+
         <h2 class="text-[length:var(--font-size-h2)] font-bold text-text-primary mb-4">
           {roadmap.cta.heading}
         </h2>
-        <p class="text-[length:var(--font-size-body-lg)] text-text-secondary mb-8">
+        <p class="text-lg text-text-secondary mb-8">
           {roadmap.cta.subheading}
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -114,11 +168,79 @@ import { roadmap, brand } from '../content/copy';
 </BaseLayout>
 
 <style>
+  /* ── Scrollbar hide for horizontal nav ────────────────── */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* ── Floating orb animations ──────────────────────────── */
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    33% { transform: translateY(-20px) translateX(10px); }
+    66% { transform: translateY(10px) translateX(-5px); }
+  }
+
+  .floating-orb {
+    animation: float-slow 20s ease-in-out infinite;
+  }
+  .floating-orb-2 {
+    animation: float-slow 25s ease-in-out infinite reverse;
+  }
+  .floating-orb-3 {
+    animation: float-slow 18s ease-in-out infinite;
+    animation-delay: -7s;
+  }
+
+  /* ── Gradient text for stat values ────────────────────── */
+  .stat-value {
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── Vision card animated border ──────────────────────── */
+  .vision-card-wrapper {
+    position: relative;
+    border-radius: 16px;
+    padding: 1px;
+    background: conic-gradient(from var(--border-angle, 0deg), rgba(59,130,246,0.3), rgba(139,92,246,0.3), rgba(59,130,246,0.1), rgba(139,92,246,0.3));
+    animation: rotate-border 8s linear infinite;
+  }
+  .vision-card-inner {
+    border-radius: 15px;
+    background: rgba(18,18,26,0.9);
+    backdrop-filter: blur(12px);
+  }
+
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes rotate-border {
+    to { --border-angle: 360deg; }
+  }
+
+  /* ── Phase nav pill hover ─────────────────────────────── */
+  .phase-nav-pill:hover {
+    background: rgba(26,26,36,0.8) !important;
+    border-color: rgba(59,130,246,0.3) !important;
+  }
+
+  /* ── Reduced motion ───────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .floating-orb,
+    .floating-orb-2,
+    .floating-orb-3 {
+      animation: none;
+    }
+    .vision-card-wrapper {
+      animation: none;
+    }
   }
 </style>
