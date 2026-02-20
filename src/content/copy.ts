@@ -762,11 +762,6 @@ export const roadmap = {
     headline: "Building the Future of ERP Consulting",
     subtitle:
       "We're not just solving today's ERP problems — we're building the tools, resources, and community that wholesale distributors will rely on for years to come.",
-    stats: [
-      { value: "4", label: "Strategic Phases" },
-      { value: "14", label: "Key Milestones" },
-      { value: "2027", label: "Full Vision" },
-    ],
   },
   phases: [
     {

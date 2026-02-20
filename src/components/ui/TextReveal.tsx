@@ -41,10 +41,11 @@ export default function TextReveal({
         const words = segment.split(/\s+/).filter(Boolean);
         return words.map((word) => {
           const i = wordIndex++;
+          const isERP = word === 'ERP';
           return (
             <motion.span
               key={`${segIdx}-${i}`}
-              className="inline-block mr-[0.25em] last:mr-0"
+              className={`inline-block mr-[0.25em] last:mr-0${isERP ? ' siri-glow' : ''}`}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: '-100px' }}

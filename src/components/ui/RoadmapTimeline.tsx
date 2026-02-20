@@ -435,7 +435,7 @@ function PhaseStation({
 
       {/* Milestones area */}
       <motion.div
-        className="md:ml-18"
+        className="md:ml-[4.5rem]"
         initial={reduced ? false : { opacity: 0 }}
         animate={inView ? { opacity: 1 } : undefined}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -575,8 +575,7 @@ export default function RoadmapTimeline({ phases, className = '' }: RoadmapTimel
       {/* Atmospheric glow that shifts color as you scroll */}
       <Atmosphere scrollRef={containerRef} phases={phases} reduced={reduced} />
 
-      {/* Scroll-linked progress bar */}
-      <JourneyProgress phases={phases} scrollRef={containerRef} reduced={reduced} />
+      {/* JourneyProgress removed — ScrollBeam on the left is sufficient */}
 
       {/* Phase counter dots (right side) */}
       <PhaseCounter phases={phases} reduced={reduced} />
@@ -587,7 +586,7 @@ export default function RoadmapTimeline({ phases, className = '' }: RoadmapTimel
         <ScrollBeam scrollRef={containerRef} phases={phases} reduced={reduced} />
 
         {/* Phase stations */}
-        <div className="flex flex-col gap-16 md:gap-24">
+        <div className="flex flex-col gap-10 md:gap-24">
           {phases.map((phase, i) => (
             <PhaseStation
               key={phase.id}
@@ -602,7 +601,7 @@ export default function RoadmapTimeline({ phases, className = '' }: RoadmapTimel
 
       {/* Journey completion */}
       <motion.div
-        className="text-center mt-16 md:mt-24"
+        className="text-center mt-10 md:mt-24"
         initial={reduced ? false : { opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
